@@ -1,17 +1,6 @@
-import { Inter, Homemade_Apple } from "next/font/google";
 import Link from "next/link";
+import FooterFocusBar from "../components/FooterFocusBar";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-const homemade = Homemade_Apple({
-  weight: "400",
-  variable: "--font-accent",
-  subsets: ["latin"],
-});
 
 export const metadata = {
   title: "MindShift",
@@ -21,9 +10,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} ${homemade.variable} antialiased`}
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Homemade+Apple&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className={`antialiased`}>
         <header className="border-b">
           <nav className="mx-auto max-w-5xl px-6 py-3 flex items-center justify-between">
             <Link href="/" className="font-semibold text-lg" aria-label="Go to Home">
@@ -35,6 +29,7 @@ export default function RootLayout({ children }) {
           </nav>
         </header>
         <main className="mx-auto max-w-5xl px-6 py-6">{children}</main>
+        <FooterFocusBar />
       </body>
     </html>
   );
