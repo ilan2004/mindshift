@@ -3,8 +3,8 @@
 /* Maggie Theme – Fonts, Colors, Utilities */
 :root {
   /* Fonts */
-  --font-sans: var(--font-sans); /* from next/font Inter */
-  --font-accent: var(--font-accent); /* from next/font Homemade Apple */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-accent: "Homemade Apple", cursive;
 
   /* Core colors */
   --color-mint-500: rgb(130, 237, 166);
@@ -168,4 +168,59 @@ body {
   .nav-btn { height: 42px; padding: 0 12px; font-size: 0.93rem; }
   .nav-icon-btn { width: 42px; height: 42px; }
   .nav-icon { width: 20px; height: 20px; }
+}
+
+/* NAV container */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Pill button base */
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 2px solid var(--color-green-900);
+  background: var(--surface);
+  color: var(--color-green-900);
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20);
+  transition: transform 120ms ease, box-shadow 140ms ease, filter 140ms ease, background-color 140ms ease;
+}
+
+.nav-pill:hover {
+  filter: brightness(1.02);
+  box-shadow: 0 5px 0 var(--color-green-900), 0 10px 28px var(--color-green-900-20);
+}
+.nav-pill:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 0 var(--color-green-900), 0 6px 18px var(--color-green-900-20);
+}
+
+/* Variants */
+.nav-pill--outline {
+  background: transparent;
+  border-color: var(--color-green-900);
+  color: var(--color-green-900);
+}
+
+.nav-pill--cyan {
+  background: var(--color-cyan-200);
+  color: var(--color-green-900);
+}
+
+/* Small screens */
+@media (max-width: 809.98px) {
+  .navbar-actions { gap: 10px; }
+  .nav-pill { height: 42px; padding: 0 14px; font-size: 0.95rem; }
 }

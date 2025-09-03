@@ -1,17 +1,6 @@
-import { Inter, Homemade_Apple } from "next/font/google";
 import Link from "next/link";
+import FooterFocusBar from "../components/FooterFocusBar";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-const homemade = Homemade_Apple({
-  weight: "400",
-  variable: "--font-accent",
-  subsets: ["latin"],
-});
 
 export const metadata = {
   title: "MindShift",
@@ -21,31 +10,27 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} ${homemade.variable} antialiased`}
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Homemade+Apple&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className={`antialiased`}>
         <header className="border-b">
-          <nav className="nav mx-auto max-w-5xl px-6 py-3">
-            <Link href="/" className="nav-btn nav-btn--outline" aria-label="Go to Home">
+          <nav className="mx-auto max-w-5xl px-6 py-3 flex items-center justify-between">
+            <Link href="/" className="font-semibold text-lg" aria-label="Go to Home">
               MindShift
             </Link>
-
-            <Link href="/" className="nav-btn">Home</Link>
-
-            <button className="nav-icon-btn" aria-label="Open menu" type="button">
-              <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-              </svg>
-            </button>
-
-            <Link href="/leaderboard" className="nav-btn">Leaderboard</Link>
-
-            <a href="#get-app" className="nav-btn nav-btn--primary">Get the app</a>
+            <div className="navbar-actions">
+              <Link href="/leaderboard" className="nav-pill nav-pill--cyan">Leaderboard</Link>
+              <Link href="/game" className="nav-pill nav-pill--cyan">Game</Link>
+            </div>
           </nav>
         </header>
         <main className="mx-auto max-w-5xl px-6 py-6">{children}</main>
+        <FooterFocusBar />
       </body>
     </html>
   );
