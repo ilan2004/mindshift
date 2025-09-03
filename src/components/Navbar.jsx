@@ -30,13 +30,19 @@ export default function Navbar() {
     <header className="border-b">
       <nav className="mx-auto max-w-6xl px-4 md:px-6 py-3">
         <div className="flex items-center justify-between">
-          <Link href="/" className="font-semibold text-lg" aria-label="Go to Home">
+          <Link
+            href="/"
+            className="font-tanker font-semibold text-4xl md:text-5xl leading-none tracking-widest"
+            aria-label="Go to Home"
+          >
             MindShift
           </Link>
-          {/* Desktop actions */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Desktop counters + actions */}
+          <div className="hidden md:flex items-center gap-3">
+            <Link href="/dashboard" className="nav-pill nav-pill--cyan">Dashboard</Link>
             <Link href="/leaderboard" className="nav-pill nav-pill--cyan">Leaderboard</Link>
             <Link href="/game" className="nav-pill nav-pill--cyan">Game</Link>
+            <Link href="/stake" className="nav-pill nav-pill--cyan">Stake</Link>
           </div>
           {/* Mobile hamburger (never rendered on desktop) */}
           {isMobile && (
@@ -57,11 +63,17 @@ export default function Navbar() {
           className={`md:hidden overflow-hidden transition-[max-height,opacity] duration-200 ease-out ${open ? "max-h-48 opacity-100" : "max-h-0 opacity-0"}`}
         >
           <div className="pt-3 pb-2 flex flex-col gap-2">
+            <Link href="/dashboard" className="nav-pill nav-pill--cyan w-full text-center" onClick={() => setOpen(false)}>
+              Dashboard
+            </Link>
             <Link href="/leaderboard" className="nav-pill nav-pill--cyan w-full text-center" onClick={() => setOpen(false)}>
               Leaderboard
             </Link>
             <Link href="/game" className="nav-pill nav-pill--cyan w-full text-center" onClick={() => setOpen(false)}>
               Game
+            </Link>
+            <Link href="/stake" className="nav-pill nav-pill--cyan w-full text-center" onClick={() => setOpen(false)}>
+              Stake
             </Link>
           </div>
         </div>

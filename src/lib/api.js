@@ -97,3 +97,62 @@ export async function getUsersByIds(userIds = []) {
     users.filter(user => userIds.includes(user.id))
   );
 }
+
+// -----------------------------
+// Stakes (Contracts) API
+// -----------------------------
+const STAKES_KEY = "mindshift_stakes";
+
+function lsGet(key, fallback) {
+  try {
+    const raw = typeof localStorage !== "undefined" ? localStorage.getItem(key) : null;
+    return raw ? JSON.parse(raw) : fallback;
+  } catch { return fallback; }
+}
+function lsSet(key, value) {
+  try {
+    if (typeof localStorage !== "undefined") localStorage.setItem(key, JSON.stringify(value));
+  } catch {}
+}
+
+export async function getStakes() {
+  const items = lsGet(STAKES_KEY, []);
+  return simulateApiCall(items);
+}
+
+export async function createStake(payload) {
+  const items = lsGet(STAKES_KEY, []);
+  const now = Date.now();
+  const id = `${now}-${Math.random().toString(36).slice(2, 8)}`;
+  const stake = {
+    id,
+    status: "active", // active | succeeded | failed | cancelled
+    createdAt: now,
+    pinned: false,
+    // optional fields supported in payload: type, amount, points, peer, goal, note,
+    // startAt (ms), dueAt (ms), pinned (bool), days, minPerDay
+    ...payload,
+  };
+  lsSet(STAKES_KEY, [stake, ...items]);
+  return simulateApiCall(stake);
+}
+
+export async function updateStakeStatus(id, status) {
+  const items = lsGet(STAKES_KEY, []);
+  const next = items.map((s) => (s.id === id ? { ...s, status } : s));
+  lsSet(STAKES_KEY, next);
+  return simulateApiCall({ success: true });
+}
+
+export async function updateStake(id, patch) {
+  const items = lsGet(STAKES_KEY, []);
+  const next = items.map((s) => (s.id === id ? { ...s, ...patch } : s));
+  lsSet(STAKES_KEY, next);
+  return simulateApiCall(next.find((s) => s.id === id));
+}
+
+export async function deleteStake(id) {
+  const items = lsGet(STAKES_KEY, []);
+  lsSet(STAKES_KEY, items.filter((s) => s.id !== id));
+  return simulateApiCall({ success: true });
+}

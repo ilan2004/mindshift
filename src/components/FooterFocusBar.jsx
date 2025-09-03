@@ -30,6 +30,30 @@ function formatMMSS(ms) {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+// Helpers for ProductivityGraph logging
+function todayKey() {
+  try { return new Date().toLocaleDateString("en-CA"); } catch { return new Date().toISOString().slice(0, 10); }
+}
+function readSessions() {
+  try {
+    const raw = localStorage.getItem("mindshift_focus_sessions");
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+function writeSessions(list) {
+  try { localStorage.setItem("mindshift_focus_sessions", JSON.stringify(list)); } catch {}
+}
+function dispatchFocusUpdate() {
+  try { window.dispatchEvent(new Event("mindshift:focus:update")); } catch {}
+}
+function dispatchSessionCompleted(minutes) {
+  try {
+    const ev = new CustomEvent("mindshift:session:completed", { detail: { minutes } });
+    window.dispatchEvent(ev);
+  } catch {}
+}
+
 export default function FooterFocusBar() {
   const [presets] = useState(DEFAULT_PRESETS);
   const [durationMin, setDurationMin] = useState(25);
@@ -120,18 +144,31 @@ export default function FooterFocusBar() {
     // Notify extension
     send("startSession", { durationMinutes: m, domains });
     // Persist total duration locally so UI can restore ring progress on refresh
-    try { localStorage.setItem("mindshift_session_total_ms", String(m * 60 * 1000)); } catch {}
+    try {
+      localStorage.setItem("mindshift_session_total_ms", String(m * 60 * 1000));
+      localStorage.setItem("mindshift_session_mode", "focus");
+      localStorage.removeItem("mindshift_session_stopped");
+    } catch {}
   };
 
   const onPause = () => send("pauseSession");
   const onResume = () => send("resumeSession");
   const onStop = () => {
+    // Mark as manually stopped to avoid logging as completed
+    try { localStorage.setItem("mindshift_session_stopped", "1"); } catch {}
     send("stopSession");
-    try { localStorage.removeItem("mindshift_session_total_ms"); } catch {}
+    try {
+      localStorage.removeItem("mindshift_session_total_ms");
+      localStorage.removeItem("mindshift_session_mode");
+    } catch {}
   };
   const onStartBreak = (m = 5) => {
     send("startBreak", { durationMinutes: m });
-    try { localStorage.setItem("mindshift_session_total_ms", String(m * 60 * 1000)); } catch {}
+    try {
+      localStorage.setItem("mindshift_session_total_ms", String(m * 60 * 1000));
+      localStorage.setItem("mindshift_session_mode", "break");
+      localStorage.removeItem("mindshift_session_stopped");
+    } catch {}
   };
 
   const onAddDomain = async () => {
@@ -165,6 +202,43 @@ export default function FooterFocusBar() {
     if (status.mode === "paused") return "Paused";
     return "Idle";
   }, [status.active, status.mode]);
+
+  // Detect natural completion of a focus session and log minutes for ProductivityGraph
+  const prevStatusRef = useRef(status);
+  useEffect(() => {
+    const prev = prevStatusRef.current;
+    const curr = status;
+    // Transition to inactive/idle with timer reaching zero
+    const ended = prev?.active && (!curr.active || curr.mode === "idle") && (prev.remainingMs === 0 || curr.remainingMs === 0);
+    if (ended) {
+      let mode = "";
+      let totalMs = 0;
+      let manuallyStopped = false;
+      try {
+        mode = localStorage.getItem("mindshift_session_mode") || "";
+        totalMs = Number(localStorage.getItem("mindshift_session_total_ms")) || 0;
+        manuallyStopped = !!localStorage.getItem("mindshift_session_stopped");
+      } catch {}
+      if (!manuallyStopped && mode === "focus" && totalMs > 0) {
+        const minutes = Math.max(1, Math.round(totalMs / 60000));
+        const key = todayKey();
+        const sessions = readSessions();
+        const idx = sessions.findIndex((s) => s && s.date === key);
+        if (idx >= 0) sessions[idx] = { ...sessions[idx], minutes: (Number(sessions[idx].minutes) || 0) + minutes };
+        else sessions.push({ date: key, minutes });
+        writeSessions(sessions);
+        dispatchFocusUpdate();
+        dispatchSessionCompleted(minutes);
+      }
+      // Clear session markers after handling
+      try {
+        localStorage.removeItem("mindshift_session_total_ms");
+        localStorage.removeItem("mindshift_session_mode");
+        localStorage.removeItem("mindshift_session_stopped");
+      } catch {}
+    }
+    prevStatusRef.current = curr;
+  }, [status]);
 
   const primaryAction = useMemo(() => {
     if (!status.active) return { label: "Start", onClick: onStart };

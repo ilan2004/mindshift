@@ -239,6 +239,12 @@ body {
   color: var(--color-green-900);
 }
 
+/* Additional badge color variant */
+.nav-pill--purple {
+  background: var(--color-purple-400);
+  color: var(--color-green-900);
+}
+
 /* Small screens */
 @media (max-width: 809.98px) {
   .navbar-actions { gap: 10px; }

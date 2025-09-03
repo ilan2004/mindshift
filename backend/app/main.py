@@ -1,24 +1,36 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api import routes_history, routes_questions, routes_answers, routes_events
 
-from .routers import health, questions, profile
+# ---------- FASTAPI APP ----------
+app = FastAPI(
+    title="MindShift API with Groq",
+    version="0.3.0",
+    description="AI-powered productivity assistant with personality profiling 🚀"
+)
 
-app = FastAPI(title="MindShift Backend", version="0.1.0")
+# ---------- CORS ----------
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost",
+    "https://localhost",
+]
 
-# Allow local dev origins; tighten for prod
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(health.router, prefix="/api")
-app.include_router(questions.router, prefix="/api")
-app.include_router(profile.router, prefix="/api")
-
-
 @app.get("/")
 def root():
-    return {"name": "MindShift Backend", "status": "ok"}
+    return {"message": "MindShift API with Groq is running 🚀"}
+
+# ---------- ROUTES ----------
+app.include_router(routes_history.router, prefix="/history", tags=["History"])
+app.include_router(routes_questions.router, prefix="/questions", tags=["Questions"])
+app.include_router(routes_answers.router, prefix="/answers", tags=["Answers"])
+app.include_router(routes_events.router, prefix="/events", tags=["Events"])
