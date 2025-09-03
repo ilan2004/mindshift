@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { fetchBlocklist, saveBlocklist as saveBlocklistDB, startSession as startSessionDB } from "../lib/focusStore";
 
 // Messaging keys
 const MSG_REQUEST = "mindshift:focus";
@@ -45,7 +46,7 @@ export default function FooterFocusBar() {
     window.postMessage({ type: MSG_REQUEST, action, payload }, "*");
   }, []);
 
-  // Ask extension for status on mount
+  // Ask extension for status on mount and load blocklist from Supabase
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -65,6 +66,18 @@ export default function FooterFocusBar() {
     // initial status request
     send("getStatus");
 
+    // Load blocklist from Supabase as source of truth; if extension sends one later, it will override
+    (async () => {
+      try {
+        const dbDomains = await fetchBlocklist();
+        if (Array.isArray(dbDomains) && dbDomains.length) {
+          setDomains(dbDomains);
+          // Inform extension of current list
+          send("updateBlocklist", { domains: dbDomains });
+        }
+      } catch {}
+    })();
+
     return () => window.removeEventListener("message", onMessage);
   }, [send]);
 
@@ -82,8 +95,12 @@ export default function FooterFocusBar() {
     setCustomMin(m);
   };
 
-  const onStart = () => {
+  const onStart = async () => {
     const m = Number(customMin) || durationMin || 25;
+    // Persist to Supabase
+    try { await saveBlocklistDB(domains); } catch {}
+    try { await startSessionDB({ mode: "focus", durationMinutes: m }); } catch {}
+    // Notify extension
     send("startSession", { durationMinutes: m, domains });
   };
 
@@ -92,7 +109,7 @@ export default function FooterFocusBar() {
   const onStop = () => send("stopSession");
   const onStartBreak = (m = 5) => send("startBreak", { durationMinutes: m });
 
-  const onAddDomain = () => {
+  const onAddDomain = async () => {
     const raw = (quickDomain || "").trim();
     if (!raw) return;
     // Basic normalization: strip protocol/path, keep hostname
@@ -102,6 +119,7 @@ export default function FooterFocusBar() {
       if (!domains.includes(host)) {
         const next = [...domains, host];
         setDomains(next);
+        try { await saveBlocklistDB(next); } catch {}
         send("updateBlocklist", { domains: next });
       }
     } catch (_) {
@@ -110,6 +128,7 @@ export default function FooterFocusBar() {
       if (!domains.includes(host)) {
         const next = [...domains, host];
         setDomains(next);
+        try { await saveBlocklistDB(next); } catch {}
         send("updateBlocklist", { domains: next });
       }
     }
