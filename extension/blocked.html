@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Stay Focused • MindShift</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=Homemade+Apple&display=swap" rel="stylesheet">
+    <style>
+      :root{
+        --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        --font-accent: "Homemade Apple", cursive;
+        --color-cyan-200: rgb(174, 251, 255);
+        --color-green-900: rgb(3, 89, 77);
+      }
+      html, body { height: 100%; }
+      body {
+        margin: 0; display: grid; place-items: center; min-height: 100%;
+        font-family: var(--font-sans); background: #fff;
+      }
+      .card {
+        width: min(640px, 92vw);
+        border: 1px solid rgba(0,0,0,0.08);
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        padding: 24px;
+        text-align: center;
+      }
+      h1 { font-size: 20px; margin: 0 0 6px; }
+      .accent { font-family: var(--font-accent); font-size: 20px; color: var(--color-green-900); }
+      p { color: #444; margin: 8px 0 20px; }
+      .nav-pill { appearance: none; border: none; cursor: pointer; font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: .03em; padding: 10px 14px; border-radius: 999px; box-shadow: 0 2px 0 rgba(0,0,0,0.08); background: #f3f4f6; }
+      .nav-pill--cyan { background: var(--color-cyan-200); color: var(--color-green-900); }
+      .row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .small { font-size: 12px; color: #6b7280; margin-top: 12px; }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="accent">MindShift</div>
+      <h1>Stay Focused</h1>
+      <p>This site is blocked during your focus session.</p>
+      <div class="row">
+        <button class="nav-pill nav-pill--cyan" id="back">Go Back</button>
+        <button class="nav-pill" id="pass5">Emergency Pass 5m</button>
+      </div>
+      <div class="small" id="host"></div>
+    </main>
+    <script src="blocked.js"></script>
+  </body>
+</html>

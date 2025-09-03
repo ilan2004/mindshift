@@ -3,8 +3,8 @@
 /* Maggie Theme – Fonts, Colors, Utilities */
 :root {
   /* Fonts */
-  --font-sans: var(--font-sans); /* from next/font Inter */
-  --font-accent: var(--font-accent); /* from next/font Homemade Apple */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-accent: "Homemade Apple", cursive;
 
   /* Core colors */
   --color-mint-500: rgb(130, 237, 166);

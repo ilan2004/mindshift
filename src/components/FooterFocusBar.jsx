@@ -90,6 +90,21 @@ export default function FooterFocusBar() {
     return () => clearInterval(id);
   }, [status.active, status.remainingMs]);
 
+  // Refresh status when page regains focus/visibility and with a light polling interval
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onFocus = () => send("getStatus");
+    const onVisibility = () => { if (document.visibilityState === "visible") send("getStatus"); };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
+    const poll = setInterval(() => { if (document.visibilityState === "visible") send("getStatus"); }, 30000);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
+      clearInterval(poll);
+    };
+  }, [send]);
+
   const onPreset = (m) => {
     setDurationMin(m);
     setCustomMin(m);

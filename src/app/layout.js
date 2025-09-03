@@ -25,6 +25,7 @@ export default function RootLayout({ children }) {
             </Link>
             <div className="navbar-actions">
               <Link href="/leaderboard" className="nav-pill nav-pill--cyan">Leaderboard</Link>
+              <Link href="/game" className="nav-pill nav-pill--cyan">Game</Link>
             </div>
           </nav>
         </header>
