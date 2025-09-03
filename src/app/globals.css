@@ -1,26 +1,171 @@
 @import "tailwindcss";
 
+/* Maggie Theme – Fonts, Colors, Utilities */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Fonts */
+  --font-sans: var(--font-sans); /* from next/font Inter */
+  --font-accent: var(--font-accent); /* from next/font Homemade Apple */
+
+  /* Core colors */
+  --color-mint-500: rgb(130, 237, 166);
+  --color-green-900: rgb(3, 89, 77);
+  --color-lilac-300: rgb(246, 187, 253);
+  --color-orange-500: rgb(255, 145, 36);
+  --color-amber-400: rgb(253, 192, 104);
+  --color-cyan-200: rgb(174, 251, 255);
+  --color-blue-400: rgb(88, 154, 240);
+  --color-purple-400: rgb(200, 140, 253);
+  --color-cream: rgb(249, 248, 244);
+  --color-pink-200: rgb(252, 205, 220);
+  --color-pink-500: rgb(252, 86, 129);
+  --color-yellow-200: rgb(255, 255, 148);
+  --color-lime-300: rgb(216, 226, 104);
+  --color-teal-300: rgb(137, 169, 161);
+  --color-green-900-20: rgba(3, 89, 77, 0.2);
+
+  /* Semantic aliases */
+  --bg-default: var(--color-mint-500);
+  --text-default: var(--color-green-900);
+  --surface: var(--color-cream);
+  --accent: var(--color-pink-500);
+  --muted: var(--color-teal-300);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Base */
+html, body {
+  margin: 0;
+  padding: 0;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  color: var(--text-default);
+  background: var(--bg-default);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography helpers */
+.h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.1; }
+.h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 600; line-height: 1.15; }
+.h3 { font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 600; line-height: 1.2; }
+
+.font-accent { font-family: var(--font-accent); }
+.font-sans { font-family: var(--font-sans); }
+
+/* Color utilities */
+.text-green { color: var(--color-green-900); }
+.text-accent { color: var(--accent); }
+.bg-mint { background-color: var(--color-mint-500); }
+.bg-surface { background-color: var(--surface); }
+.border-green { border-color: var(--color-green-900); }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font: 500 1rem/1 var(--font-sans);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--color-green-900);
+  color: white;
+  box-shadow: 0 6px 20px var(--color-green-900-20);
+}
+.btn-primary:hover { filter: brightness(1.05); }
+.btn-outline { background: transparent; border-color: var(--color-green-900); color: var(--color-green-900); }
+.btn-accent { background: var(--accent); color: white; }
+
+/* Chips / Pills */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: var(--color-cream);
+  color: var(--color-green-900);
+  border: 1px solid var(--color-green-900-20);
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 1.25rem;
+  border: 1px solid var(--color-green-900-20);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+/* SVG theming */
+.svg-fill-green { fill: var(--color-green-900); }
+.svg-stroke-green { stroke: var(--color-green-900); }
+
+/* Nav container */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Nav button base */
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background: var(--surface);
+  color: var(--color-green-900);
+  font: 600 0.95rem/1 var(--font-sans);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 6px 20px var(--color-green-900-20);
+  transition: background-color 140ms ease, border-color 140ms ease, transform 120ms ease, box-shadow 140ms ease, color 140ms ease;
+}
+
+.nav-btn:hover { background: #fff; box-shadow: 0 8px 28px var(--color-green-900-20); }
+.nav-btn:active { transform: translateY(1px); }
+
+/* Filled/primary variant */
+.nav-btn--primary { background: var(--color-green-900); color: #fff; }
+.nav-btn--primary:hover { filter: brightness(1.05); }
+
+/* Outline variant */
+.nav-btn--outline { background: transparent; border-color: var(--color-green-900); color: var(--color-green-900); }
+
+/* Icon-only button (e.g., hamburger) */
+.nav-icon-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--color-green-900);
+  border: 1px solid var(--color-green-900-20);
+  box-shadow: 0 6px 20px var(--color-green-900-20);
+}
+.nav-icon-btn:hover { background: #fff; }
+
+/* Icon sizing */
+.nav-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+/* Responsive tweaks */
+@media (max-width: 809.98px) {
+  .nav-btn { height: 42px; padding: 0 12px; font-size: 0.93rem; }
+  .nav-icon-btn { width: 42px; height: 42px; }
+  .nav-icon { width: 20px; height: 20px; }
 }
