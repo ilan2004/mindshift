@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>MindShift</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; padding: 12px; min-width: 220px; }
+      h1 { font-size: 16px; margin: 0 0 8px; }
+      button { background:#22c55e; color:#000; border:0; padding:8px 12px; border-radius:8px; font-weight:600; cursor:pointer; }
+      small { color:#666; }
+    </style>
+  </head>
+  <body>
+    <h1>MindShift</h1>
+    <p><small>Quick controls for focus nudges.</small></p>
+    <button id="ping">Ping background</button>
+    <script>
+      document.getElementById('ping').addEventListener('click', () => {
+        chrome.runtime.sendMessage({ type: 'PING' }, (res) => {
+          alert('Background responded: ' + JSON.stringify(res));
+        });
+      });
+    </script>
+  </body>
+</html>

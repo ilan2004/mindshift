@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "MindShift Focus",
+  "version": "0.1.0",
+  "description": "Blocks distraction sites with profile-based nudges.",
+  "permissions": ["storage", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "MindShift" },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
