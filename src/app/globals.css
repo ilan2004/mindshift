@@ -5,7 +5,7 @@
   /* Fonts */
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   --font-accent: "Homemade Apple", cursive;
-
+  /* Local font variable injected by next/font/local in layout: --font-tanker */
   /* Core colors */
   --color-mint-500: rgb(130, 237, 166);
   --color-green-900: rgb(3, 89, 77);
@@ -51,6 +51,8 @@ body {
 
 .font-accent { font-family: var(--font-accent); }
 .font-sans { font-family: var(--font-sans); }
+/* Tanker font utility */
+.font-tanker { font-family: var(--font-tanker), var(--font-sans); }
 
 /* Color utilities */
 .text-green { color: var(--color-green-900); }
@@ -219,8 +221,40 @@ body {
   color: var(--color-green-900);
 }
 
+/* New functional color variants for footer buttons */
+.nav-pill--primary { /* Start / Resume */
+  background: var(--color-green-900);
+  color: #fff;
+}
+.nav-pill--primary:hover { filter: brightness(1.05); }
+
+.nav-pill--accent { /* Stop / Destructive */
+  background: var(--accent);
+  color: #fff;
+}
+.nav-pill--accent:hover { filter: brightness(1.05); }
+
+.nav-pill--amber { /* Pause */
+  background: var(--color-amber-400);
+  color: var(--color-green-900);
+}
+
 /* Small screens */
 @media (max-width: 809.98px) {
   .navbar-actions { gap: 10px; }
   .nav-pill { height: 42px; padding: 0 14px; font-size: 0.95rem; }
+}
+
+/* Simple responsive utilities (project does not use Tailwind) */
+.only-mobile { display: inline-flex; }
+.only-desktop { display: none; }
+@media (min-width: 810px) {
+  .only-mobile { display: none !important; }
+  .only-desktop { display: inline-flex !important; }
+}
+
+/* Flex wrap control: wrap on mobile, single line on desktop */
+.nowrap-desktop { flex-wrap: wrap; }
+@media (min-width: 810px) {
+  .nowrap-desktop { flex-wrap: nowrap !important; }
 }

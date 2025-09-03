@@ -1,11 +1,26 @@
 import Link from "next/link";
+import localFont from "next/font/local";
 import FooterFocusBar from "../components/FooterFocusBar";
+import Navbar from "../components/Navbar";
 import "./globals.css";
 
 export const metadata = {
   title: "MindShift",
   description: "MindShift app",
 };
+
+// Load Tanker font and expose as CSS variable --font-tanker
+const tanker = localFont({
+  src: [
+    {
+      path: "../../public/Tanker_Complete/Fonts/WEB/fonts/Tanker-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-tanker",
+  display: "swap",
+});
 
 export default function RootLayout({ children }) {
   return (
@@ -17,19 +32,9 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className={`antialiased`}>
-        <header className="border-b">
-          <nav className="mx-auto max-w-5xl px-6 py-3 flex items-center justify-between">
-            <Link href="/" className="font-semibold text-lg" aria-label="Go to Home">
-              MindShift
-            </Link>
-            <div className="navbar-actions">
-              <Link href="/leaderboard" className="nav-pill nav-pill--cyan">Leaderboard</Link>
-              <Link href="/game" className="nav-pill nav-pill--cyan">Game</Link>
-            </div>
-          </nav>
-        </header>
-        <main className="mx-auto max-w-5xl px-6 py-6">{children}</main>
+      <body className={`antialiased ${tanker.variable}`}>
+        <Navbar />
+        <main className="mx-auto max-w-6xl px-4 md:px-6 py-6">{children}</main>
         <FooterFocusBar />
       </body>
     </html>

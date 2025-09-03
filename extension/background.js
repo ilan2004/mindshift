@@ -156,7 +156,7 @@ async function stopSession() {
 async function startBreak(durationMinutes) {
   // Break: active but no blocking rules
   const endsAt = Date.now() + durationMinutes * 60 * 1000;
-  const next = { active: true, mode: "break", endsAt, remainingMs: 0 };
+  const next = { active: true, mode: "break", endsAt, remainingMs: 0, lastDurationMin: durationMinutes };
   await saveSession(next);
   await chrome.alarms.clear(ALARM_NAME);
   await chrome.alarms.create(ALARM_NAME, { when: endsAt });
@@ -174,7 +174,14 @@ async function updateBlocklist(domains) {
 
 function statusPayload(session, blocklist) {
   const remainingMs = session.mode === "paused" ? (session.remainingMs || 0) : computeRemainingMs(session);
-  return { active: session.active, mode: session.mode, remainingMs, domains: blocklist };
+  return {
+    active: session.active,
+    mode: session.mode,
+    remainingMs,
+    endsAt: session.endsAt || null,
+    lastDurationMin: session.lastDurationMin || null,
+    domains: blocklist,
+  };
 }
 
 async function temporaryAllow(domain, minutes = 5) {

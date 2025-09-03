@@ -37,6 +37,8 @@ export default function FooterFocusBar() {
   const [status, setStatus] = useState({ active: false, mode: "idle", remainingMs: 0, domains: [] });
   const [domains, setDomains] = useState(DEFAULT_BLOCKLIST);
   const [quickDomain, setQuickDomain] = useState("");
+  const [showQuickAddMobile, setShowQuickAddMobile] = useState(false);
+  const [showMoreMobile, setShowMoreMobile] = useState(false);
 
   const hasExtensionRef = useRef(false);
 
@@ -117,12 +119,20 @@ export default function FooterFocusBar() {
     try { await startSessionDB({ mode: "focus", durationMinutes: m }); } catch {}
     // Notify extension
     send("startSession", { durationMinutes: m, domains });
+    // Persist total duration locally so UI can restore ring progress on refresh
+    try { localStorage.setItem("mindshift_session_total_ms", String(m * 60 * 1000)); } catch {}
   };
 
   const onPause = () => send("pauseSession");
   const onResume = () => send("resumeSession");
-  const onStop = () => send("stopSession");
-  const onStartBreak = (m = 5) => send("startBreak", { durationMinutes: m });
+  const onStop = () => {
+    send("stopSession");
+    try { localStorage.removeItem("mindshift_session_total_ms"); } catch {}
+  };
+  const onStartBreak = (m = 5) => {
+    send("startBreak", { durationMinutes: m });
+    try { localStorage.setItem("mindshift_session_total_ms", String(m * 60 * 1000)); } catch {}
+  };
 
   const onAddDomain = async () => {
     const raw = (quickDomain || "").trim();
@@ -162,66 +172,129 @@ export default function FooterFocusBar() {
     return { label: "Pause", onClick: onPause };
   }, [status.active, status.mode]);
 
-  return (
-    <div className="fixed bottom-0 left-0 right-0 border-t bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/75">
-      <div className="mx-auto max-w-5xl px-4 py-3 flex items-center gap-3 justify-between">
-        {/* Status */}
-        <div className="flex items-center gap-3 min-w-[180px]">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm border"
-                style={{ background: "var(--color-cyan-200)", color: "#064e3b", borderColor: "rgba(0,0,0,0.06)" }}>
-            {statusLabel}
-          </span>
-          <span className="font-mono text-sm tabular-nums">{formatMMSS(status.remainingMs)}</span>
-        </div>
+  const primaryClass = useMemo(() => {
+    // Start/Resume -> primary (green); Pause -> amber
+    if (!status.active) return "nav-pill nav-pill--primary";
+    if (status.mode === "paused") return "nav-pill nav-pill--primary";
+    return "nav-pill nav-pill--amber"; // when focusing/breaking, primary action is Pause
+  }, [status.active, status.mode]);
 
-        {/* Presets */}
-        <div className="hidden md:flex items-center gap-2">
-          {presets.map((m) => (
-            <button key={m}
-              type="button"
-              onClick={() => onPreset(m)}
-              className={`nav-pill ${m === durationMin ? "nav-pill--cyan" : ""}`}
-            >
-              {m}m
-            </button>
-          ))}
+  return (
+    <div className="fixed left-0 right-0 bottom-4 md:bottom-10 z-40 pointer-events-none">
+      <div className="mx-auto max-w-6xl px-3 md:px-6">
+        <div
+          className="pointer-events-auto rounded-[999px] px-3 md:px-8 py-2.5 md:py-4.5 flex flex-wrap items-center gap-1.5 md:gap-3 justify-center"
+          style={{
+            background: "var(--surface)",
+            border: "2px solid var(--color-green-900)",
+            boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
+          }}
+        >
+        {/* Desktop: All controls in one line */}
+        <div className="hidden md:flex items-center gap-3">
+          {/* Status */}
+          <div className="flex items-center gap-3">
+            <span className="nav-pill nav-pill--cyan">{statusLabel}</span>
+            <span className="font-mono text-sm tabular-nums">{formatMMSS(status.remainingMs)}</span>
+          </div>
+
+          {/* Presets */}
           <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min={1}
-              value={customMin}
-              onChange={(e) => setCustomMin(e.target.value)}
-              className="w-16 px-2 py-1 border rounded text-sm"
-            />
-            <span className="text-sm text-neutral-600">min</span>
+            {presets.map((m) => (
+              <button key={m}
+                type="button"
+                onClick={() => onPreset(m)}
+                className={`nav-pill ${m === durationMin ? "nav-pill--cyan" : ""}`}
+              >
+                {m}m
+              </button>
+            ))}
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={1}
+                value={customMin}
+                onChange={(e) => setCustomMin(e.target.value)}
+                className="w-20 px-3 py-2 rounded-[999px] text-sm"
+                style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 3px 0 var(--color-green-900)" }}
+              />
+              <span className="text-sm text-neutral-600">min</span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={primaryAction.onClick} className={primaryClass}>
+              {primaryAction.label}
+            </button>
+            <button type="button" onClick={onStop} className="nav-pill nav-pill--accent">Stop</button>
+            <button type="button" onClick={() => onStartBreak(5)} className="nav-pill nav-pill--cyan">Break 5m</button>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2">
-          <button type="button" onClick={primaryAction.onClick} className="nav-pill nav-pill--cyan">
-            {primaryAction.label}
-          </button>
-          <button type="button" onClick={onStop} className="nav-pill">Stop</button>
-          <button type="button" onClick={() => onStartBreak(5)} className="nav-pill">Break 5m</button>
+        {/* Mobile: Status */}
+        <div className="flex md:hidden items-center gap-2">
+          <span className="nav-pill nav-pill--cyan">{statusLabel}</span>
+          <span className="font-mono text-xs tabular-nums">{formatMMSS(status.remainingMs)}</span>
         </div>
 
-        {/* Quick add domain */}
-        <div className="flex items-center gap-2 min-w-[280px]">
+        {/* Mobile: Actions */}
+        <div className="flex md:hidden flex-wrap items-center gap-1.5">
+          <button type="button" onClick={primaryAction.onClick} className={primaryClass}>
+            {primaryAction.label}
+          </button>
+          <button
+            type="button"
+            className="nav-pill"
+            onClick={() => setShowMoreMobile((v) => !v)}
+            aria-expanded={showMoreMobile}
+            aria-controls="more-actions-row"
+          >
+            More
+          </button>
+          <button
+            type="button"
+            className="nav-pill"
+            onClick={() => setShowQuickAddMobile((v) => !v)}
+            aria-expanded={showQuickAddMobile}
+            aria-controls="quick-add-row"
+          >
+            + Domain
+          </button>
+        </div>
+
+        {/* Mobile-only extra actions row */}
+        <div
+          id="more-actions-row"
+          className={`${showMoreMobile ? "flex" : "hidden"} md:hidden basis-full justify-center items-center gap-2`}
+        >
+          <button type="button" onClick={onStop} className="nav-pill nav-pill--accent">Stop</button>
+          <button type="button" onClick={() => onStartBreak(5)} className="nav-pill nav-pill--cyan">Break 5m</button>
+        </div>
+
+        {/* Quick add domain
+            - Mobile: hidden until toggled via '+ Domain' to reduce stacking
+            - Desktop: always visible centered on its own row */}
+        <div
+          id="quick-add-row"
+          className={`${showQuickAddMobile ? "flex" : "hidden"} md:flex basis-full justify-center items-center gap-2`}
+        >
           <input
             type="text"
             placeholder="Add domain to block (e.g., twitter.com)"
             value={quickDomain}
             onChange={(e) => setQuickDomain(e.target.value)}
-            className="flex-1 px-3 py-2 border rounded text-sm"
+            className="px-3 py-2 rounded-[999px] text-sm w-full max-w-[320px] md:max-w-[360px]"
+            style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)" }}
           />
           <button type="button" onClick={onAddDomain} className="nav-pill">+ Add</button>
+        </div>
         </div>
       </div>
 
       {/* Helper text when extension not detected */}
       {!hasExtensionRef.current && (
-        <div className="text-center text-xs text-neutral-500 pb-2">Install/enable the MindShift extension to enforce blocks and run the timer in the background.</div>
+        <div className="mt-1 text-center text-[11px] text-neutral-600">Install/enable the MindShift extension to enforce blocks and run the timer in the background.</div>
       )}
     </div>
   );
