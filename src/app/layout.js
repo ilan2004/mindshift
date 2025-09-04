@@ -2,6 +2,7 @@ import Link from "next/link";
 import localFont from "next/font/local";
 import FooterFocusBar from "../components/FooterFocusBar";
 import Navbar from "../components/Navbar";
+import ClientLayout from "../components/ClientLayout";
 import "./globals.css";
 
 export const metadata = {
@@ -33,17 +34,19 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`antialiased ${tanker.variable}`}>
-        <Navbar />
-        {/* Global SVG symbols (placed once) */}
-        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
-          <defs>
-            <symbol id="chev-down" viewBox="0 0 24 24">
-              <polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </symbol>
-          </defs>
-        </svg>
-        <main className="mx-auto px-4 md:px-6 py-6">{children}</main>
-        <FooterFocusBar />
+        <ClientLayout>
+          <Navbar />
+          {/* Global SVG symbols (placed once) */}
+          <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
+            <defs>
+              <symbol id="chev-down" viewBox="0 0 24 24">
+                <polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </symbol>
+            </defs>
+          </svg>
+          <main className="mx-auto px-4 md:px-6 py-6">{children}</main>
+          <FooterFocusBar />
+        </ClientLayout>
       </body>
     </html>
   );

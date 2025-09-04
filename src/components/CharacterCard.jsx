@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import FocusRing from "@/components/FocusRing";
-import { getAssetPath } from "@/lib/assets";
+import { getAssetPath, getVideoPath } from "@/lib/assets";
 import {
   getUserId,
   postHistory,
@@ -55,14 +55,16 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
     try {
       const v = localStorage.getItem("mindshift_personality_type");
       if (v) setStoredType(v);
-      else {
-        // Auto-open test for new users with no stored type
-        setShowTest(true);
-      }
+      // Do NOT auto-open any internal test modal; intro flow handles this now
     } catch {}
   }, []);
 
   const type = normalizeType(personalityType) || normalizeType(storedType) || null;
+
+  // Character variant (M/W) should be available before any effects use it
+  const [gender, setGender] = useState(() => {
+    try { return localStorage.getItem("ms_gender") || ""; } catch { return ""; }
+  });
 
   // Session status for ring progress
   const [status, setStatus] = useState({ active: false, mode: "idle", remainingMs: 0 });
@@ -106,6 +108,41 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
     const t = setTimeout(() => setShowIntro(false), 3000);
     return () => clearTimeout(t);
   }, []);
+
+  // Character animation video overlay
+  const videoRef = useRef(null);
+  const [showAnim, setShowAnim] = useState(false);
+  const [videoSrc, setVideoSrc] = useState(null);
+  const [videoNonce, setVideoNonce] = useState(0); // force reload
+
+  // Play on initial mount when character is known
+  useEffect(() => {
+    if (!type) return;
+    const src = getVideoPath(type, gender || "M");
+    setVideoSrc(src);
+    setShowAnim(true);
+    setVideoNonce((n) => n + 1);
+    const safety = setTimeout(() => setShowAnim(false), 6000);
+    return () => clearTimeout(safety);
+  }, [type, gender]);
+
+  // Detect timer completion and replay animation
+  const prevStatusRef = useRef({ active: false, remainingMs: 0 });
+  useEffect(() => {
+    const prev = prevStatusRef.current;
+    const now = status;
+    const completed = (prev.active && !now.active) || (prev.remainingMs > 0 && (now.remainingMs || 0) === 0 && prev.active);
+    if (completed && type) {
+      const src = getVideoPath(type, gender || "M");
+      setVideoSrc(src);
+      setShowAnim(true);
+      setVideoNonce((n) => n + 1);
+      const safety = setTimeout(() => setShowAnim(false), 6000);
+      // Cleanup timer on next change
+      return () => clearTimeout(safety);
+    }
+    prevStatusRef.current = { active: !!now.active, remainingMs: Number(now.remainingMs || 0) };
+  }, [status, type, gender]);
 
   // Responsive card size: if size prop not provided, compute from viewport (min 260, max 512)
   const [autoSize, setAutoSize] = useState(() => {
@@ -188,18 +225,42 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
   const [showNameModal, setShowNameModal] = useState(false);
   useEffect(() => {
     try {
+      const introDone = localStorage.getItem("ms_intro_complete") === "1";
       const n = localStorage.getItem("ms_display_name") || "";
       const g = localStorage.getItem("ms_gender") || "";
       if (n) setDisplayName(n);
+      if (!introDone) {
+        // Suppress internal name modal while new intro flow is in charge
+        setShowNameModal(false);
+        return;
+      }
       if (!n || !g) setShowNameModal(true);
     } catch {
-      setShowNameModal(true);
+      // Only show if intro is done
+      try {
+        const introDone = localStorage.getItem("ms_intro_complete") === "1";
+        setShowNameModal(!!introDone);
+      } catch {}
     }
   }, []);
   const heading = displayName || title || "Player";
-  const [gender, setGender] = useState(() => {
-    try { return localStorage.getItem("ms_gender") || ""; } catch { return ""; }
-  });
+
+  // Sync profile to the extension (MV3) so blocked page can personalize
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mbti = type || "";
+    const genderSafe = (gender || "").toUpperCase();
+    const name = displayName || "";
+    // Only send when we have at least MBTI
+    if (!mbti) return;
+    try {
+      window.postMessage({
+        type: MSG_REQUEST,
+        action: "setProfile",
+        payload: { mbti, gender: genderSafe, name }
+      }, "*");
+    } catch {}
+  }, [type, gender, displayName]);
 
   // ---------- Test Modal State ----------
   const [showTest, setShowTest] = useState(false);
@@ -392,16 +453,11 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
         {!type ? (
           <div className="absolute inset-0 rounded-full border border-dashed border-neutral-300 bg-neutral-50 flex flex-col items-center justify-center text-center p-6">
             <div className="text-sm text-neutral-700 mb-2">Take the short test to unlock your character</div>
-            <button
-              className="px-3 py-1.5 text-sm rounded-md bg-emerald-600 text-white hover:bg-emerald-700"
-              onClick={() => setShowTest(true)}
-            >
-              Take Test
-            </button>
+            {/* Internal test disabled; intro flow will handle */}
           </div>
         ) : (
           <div className="absolute inset-0 overflow-hidden rounded-full">
-            {/* Static image per MBTI+gender. Video intro can be added per-asset later. */}
+            {/* Base static image per MBTI+gender */}
             <div className="absolute inset-0">
               <Image
                 src={getAssetPath(type, gender || "M")}
@@ -411,6 +467,25 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
                 className={`w-full h-full object-contain object-bottom select-none`}
               />
             </div>
+            {/* Video overlay for character animation */}
+            {showAnim && videoSrc ? (
+              <div className="absolute inset-0 bg-transparent">
+                <video
+                  key={videoNonce}
+                  ref={videoRef}
+                  src={videoSrc}
+                  className="w-full h-full object-contain object-bottom"
+                  autoPlay
+                  muted
+                  playsInline
+                  onEnded={() => setShowAnim(false)}
+                  onError={() => setShowAnim(false)}
+                  onLoadedMetadata={() => {
+                    try { videoRef.current && videoRef.current.play && videoRef.current.play(); } catch {}
+                  }}
+                />
+              </div>
+            ) : null}
           </div>
         )}
       </div>
@@ -469,8 +544,8 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
         );
       })()}
 
-      {/* Modal */}
-      {showTest && (
+      {/* Internal test modal disabled by new intro flow */}
+      {false && showTest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/30" onClick={() => setShowTest(false)} />
           <div className="relative w-full max-w-2xl rounded-xl bg-white shadow-lg border border-neutral-200 p-4">

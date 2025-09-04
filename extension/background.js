@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   SESSION: "mindshift_session",
   BLOCKLIST: "mindshift_blocklist",
   TEMP_ALLOW: "mindshift_tempAllowUntil", // { [domain]: epochMs }
+  PROFILE: "mindshift_profile", // { mbti, gender, name }
 };
 
 const RULE_ID_BASE = 1000; // dynamic rule ids base
@@ -240,7 +241,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     else if (action === "startBreak") out = await startBreak(payload?.durationMinutes || 5);
     else if (action === "updateBlocklist") out = await updateBlocklist(payload?.domains || []);
     else if (action === "temporaryAllow") out = await temporaryAllow(payload?.domain, payload?.minutes || 5);
-    else if (action === "getStatus") {
+    else if (action === "setProfile") {
+      const mbti = (payload?.mbti || "").toUpperCase();
+      const gender = (payload?.gender || "").toUpperCase();
+      const name = payload?.name || "";
+      await setStorage({ [STORAGE_KEYS.PROFILE]: { mbti, gender, name } });
+      sendResponse({ ok: true, type: "mindshift:focus:profile", payload: { saved: true } });
+      return;
+    } else if (action === "getProfile") {
+      const res = await getStorage([STORAGE_KEYS.PROFILE]);
+      const profile = res[STORAGE_KEYS.PROFILE] || null;
+      sendResponse({ ok: true, type: "mindshift:focus:profile", payload: { profile } });
+      return;
+    } else if (action === "getStatus") {
       const { session, blocklist } = await getState();
       out = { session, blocklist };
     } else if (action === "getLastBlocked") {

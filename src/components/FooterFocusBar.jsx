@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchBlocklist, saveBlocklist as saveBlocklistDB, startSession as startSessionDB } from "../lib/focusStore";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Messaging keys
 const MSG_REQUEST = "mindshift:focus";
@@ -65,6 +67,55 @@ export default function FooterFocusBar() {
   const [showMoreMobile, setShowMoreMobile] = useState(false);
 
   const hasExtensionRef = useRef(false);
+  const barRef = useRef(null);
+
+  // Show/hide the footer bar on scroll direction using GSAP ScrollTrigger
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    gsap.registerPlugin(ScrollTrigger);
+    const el = barRef.current;
+    if (!el) return;
+
+    // Respect reduced motion
+    const prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Ensure starting position and optimize for transform
+    gsap.set(el, { yPercent: 0, willChange: "transform" });
+
+    // Use quickTo for smoother, debounced updates
+    const yTo = gsap.quickTo(el, "yPercent", { duration: prefersReducedMotion ? 0 : 0.65, ease: "power3.out", overwrite: true });
+
+    // Slight scroll offset before we start hiding to avoid jitter on micro scroll
+    let armed = false;
+    const armAt = 30; // px scrolled before enabling hide/show logic
+
+    const st = ScrollTrigger.create({
+      start: 0,
+      end: "max",
+      onUpdate: (self) => {
+        if (prefersReducedMotion) return;
+        const scroll = self.scroller ? self.scroller.scrollTop : window.scrollY || 0;
+        if (!armed && scroll > armAt) armed = true;
+        if (!armed) return;
+
+        if (self.direction === 1) {
+          // Scrolling down -> hide (reduced travel to 105%)
+          yTo(105);
+        } else {
+          // Scrolling up -> show
+          yTo(0);
+        }
+      },
+      onRefresh: () => {
+        // Keep visible on refresh
+        yTo(0);
+      },
+    });
+
+    return () => {
+      st.kill();
+    };
+  }, []);
 
   const send = useCallback((action, payload = {}) => {
     if (typeof window === "undefined") return;
@@ -254,7 +305,7 @@ export default function FooterFocusBar() {
   }, [status.active, status.mode]);
 
   return (
-    <div className="fixed left-0 right-0 bottom-4 md:bottom-10 z-40 pointer-events-none">
+    <div ref={barRef} className="fixed left-0 right-0 bottom-4 md:bottom-10 z-40 pointer-events-none">
       <div className="mx-auto max-w-6xl px-3 md:px-6">
         <div
           className="pointer-events-auto rounded-[999px] px-3 md:px-8 py-2.5 md:py-4.5 flex flex-wrap items-center gap-1.5 md:gap-3 justify-center"

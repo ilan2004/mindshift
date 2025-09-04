@@ -43,3 +43,20 @@ export function getAssetPath(mbti, gender) {
   // Fallback guesses by extension
   return `/images/${key}.png`;
 }
+
+// Optional explicit map for videos if filenames differ from the default pattern
+export const VIDEO_MAP = {
+  // Only map videos that exist in /public/videos
+  ENFJM: "/videos/ENFJM.mp4",
+  ENFPW: "/videos/ENFPW.mp4",
+  ESTJM: "/videos/ESTJM.mp4",
+  INFPM: "/videos/INFPM.mp4",
+  INTJM: "/videos/INTJM.mp4",
+};
+
+export function getVideoPath(mbti, gender) {
+  if (!mbti || !gender) return null;
+  const key = `${mbti}${gender}`;
+  // Only return path if explicitly mapped; otherwise null (no video for this character)
+  return VIDEO_MAP[key] || null;
+}

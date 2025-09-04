@@ -1,5 +1,3 @@
-# app/services/groq_service.py
-
 import os
 import requests
 from typing import List
@@ -7,18 +5,25 @@ from dotenv import load_dotenv
 
 # --- Config ---
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY") or "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"
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_MODEL = "llama-3.1-8b-instant"  # or "llama-3.1-70b-versatile"
+GROQ_MODEL = "llama-3.1-8b-instant"
 
+# --- Fallback questions if Groq fails ---
+FALLBACK_QUESTIONS = [
+    "I feel productive when I complete tasks without distractions.",
+    "I actively make time for my hobbies and interests.",
+    "I focus best when I minimize interruptions.",
+    "I set clear priorities for my work and stick to them.",
+]
 
 def _call_groq(prompt: str) -> str:
     """
-    Calls Groq Chat Completions API with strict system instruction.
-    Returns raw assistant content string.
+    Calls Groq API with strict system instructions for first-person statements.
+    Returns the assistant response as a string.
     """
     if not GROQ_API_KEY:
-        # No key configured; skip remote call
+        print("Groq API key not set. Using fallback statements.")
         return ""
 
     headers = {
@@ -33,9 +38,10 @@ def _call_groq(prompt: str) -> str:
                 "role": "system",
                 "content": (
                     "You are a helpful assistant. "
-                    "When asked to generate questions, output ONLY the questions, "
-                    "one per line, no numbering, no bullets, no extra commentary."
-                ),
+                    "Generate ONLY first-person statements suitable for 'Agree' or 'Disagree'. "
+                    "Do NOT output questions. "
+                    "Output one statement per line, no numbering, no bullets, no commentary."
+                )
             },
             {"role": "user", "content": prompt},
         ],
@@ -45,49 +51,67 @@ def _call_groq(prompt: str) -> str:
     }
 
     try:
-        resp = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=30)
+        resp = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=15)
         resp.raise_for_status()
         data = resp.json()
-        return data["choices"][0]["message"]["content"]
-    except requests.exceptions.HTTPError as e:
-        print(f"Groq HTTP error: {e} | Response: {getattr(e, 'response', None) and e.response.text}")
-        return ""
-    except requests.exceptions.RequestException as e:
-        print(f"Groq request error: {e}")
-        return ""
-    except (KeyError, IndexError) as e:
-        print(f"Groq parse error: {e}")
+        return data.get("choices", [{}])[0].get("message", {}).get("content", "")
+    except Exception as e:
+        print(f"Groq API call failed: {e}")
         return ""
 
+
+def generate_questions_with_prompt(prompt: str) -> List[str]:
+    """
+    Generate 10–15 first-person statements using a fully custom prompt.
+    Cleans and deduplicates lines; falls back to FALLBACK_QUESTIONS on empty.
+    """
+    content = _call_groq(prompt)
+    if not content:
+        return FALLBACK_QUESTIONS.copy()
+
+    lines = [line.strip() for line in content.split("\n") if line.strip()]
+    seen = set()
+    cleaned = []
+    for ln in lines:
+        if ln not in seen:
+            seen.add(ln)
+            if not ln.endswith("."):
+                ln += "."
+            cleaned.append(ln)
+    return cleaned if cleaned else FALLBACK_QUESTIONS.copy()
 
 def generate_questions_from_themes(themes: List[str]) -> List[str]:
     """
-    Generate 10–15 personalized productivity questions from themes using Groq.
-    Returns a list of clean question strings.
+    Generate 10–15 personalized first-person statements based on themes.
+    Falls back to static statements if Groq fails.
     """
     if not themes:
-        return []
+        return FALLBACK_QUESTIONS.copy()
 
     prompt = (
-        "Generate 10–15 highly personalized productivity questions tailored to these themes: "
-        f"{themes}. Output ONLY the questions, one per line, no numbering, no bullets."
+        f"Generate 10–15 first-person statements based on these themes: {themes}. "
+        "Each statement should describe a real-world habit, behavior, or scenario related to the theme. "
+        "Statements must be suitable for 'Agree' or 'Disagree' responses. "
+        "Do NOT output questions. "
+        "Use real-life scenarios wherever possible. "
+        "Output one statement per line, no numbering, no bullets, no commentary."
     )
 
     content = _call_groq(prompt)
     if not content:
-        return []
+        print("Groq returned empty response. Using fallback statements.")
+        return FALLBACK_QUESTIONS.copy()
 
-    # Split and clean lines
-    lines = [ln.strip() for ln in content.split("\n")]
+    # Clean and deduplicate lines
+    lines = [line.strip() for line in content.split("\n") if line.strip()]
+    seen = set()
     cleaned = []
     for ln in lines:
-        if not ln:
-            continue
-        if ln[:3].isdigit() and ln[1:2] == ".":
-            ln = ln.split(".", 1)[1].strip()
-        for prefix in ("- ", "* ", "• "):
-            if ln.startswith(prefix):
-                ln = ln[len(prefix):].strip()
-        cleaned.append(ln)
+        if ln not in seen:
+            seen.add(ln)
+            # Ensure each statement ends with a period
+            if not ln.endswith("."):
+                ln += "."
+            cleaned.append(ln)
 
-    return cleaned
+    return cleaned if cleaned else FALLBACK_QUESTIONS.copy()
