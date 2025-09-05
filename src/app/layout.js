@@ -30,6 +30,8 @@ export default function RootLayout({ children }) {
         {/* PWA: manifest and theme color */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#10b981" />
+        {/* Mobile PWA support */}
+        <meta name="mobile-web-app-capable" content="yes" />
         {/* Apple PWA support */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

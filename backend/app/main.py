@@ -13,16 +13,20 @@ app = FastAPI(
 # ---------- CORS ----------
 # Read allowed origins from env (comma-separated). Fallback to common localhost origins.
 _env_origins = os.getenv("ALLOWED_ORIGINS", "").strip()
-origins = [o.strip() for o in _env_origins.split(",") if o.strip()] or [
+origins = [o.strip().rstrip('/') for o in _env_origins.split(",") if o.strip()] or [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost",
     "https://localhost",
 ]
+# Optional regex to allow wildcard domains (e.g., Vercel previews):
+# Example: ^https://.*\.vercel\.app$
+origin_regex = os.getenv("ALLOWED_ORIGIN_REGEX", "").strip() or None
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins if not origin_regex else [],
+    allow_origin_regex=origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
