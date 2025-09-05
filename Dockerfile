@@ -16,11 +16,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy requirements and install
-COPY requirements.txt /app/requirements.txt
+COPY backend/requirements.txt /app/requirements.txt
 RUN pip install --upgrade pip && pip install -r /app/requirements.txt
 
 # Copy backend code
-COPY app /app/app
+COPY backend/app /app/app
 
 # Expose the port Fly.io will route to
 EXPOSE 8080
