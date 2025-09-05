@@ -7,6 +7,8 @@ import LeaderboardSection from "@/components/LeaderboardSection";
 import PeerStatusPanel from "@/components/PeerStatusPanel";
 import ContractResultFeed from "@/components/ContractResultFeed";
 import CommunityChallenges from "@/components/CommunityChallenges";
+import TextReveal from "@/components/TextReveal";
+import AnimatedCard from "@/components/AnimatedCard";
 import { useState } from "react";
 import { getUserId, postHistory, getQuestions, postAnswers, postEvent } from "@/lib/backend";
 
@@ -76,21 +78,30 @@ export default function Dashboard() {
   return (
     <section className="min-h-[70vh] flex flex-col items-center justify-start py-10">
       <div className="w-full max-w-6xl px-4 md:px-6">
-        <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
+        <TextReveal animateOnScroll={false} delay={8.5}>
+          <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
+        </TextReveal>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
+          <AnimatedCard delay={8.8} animateOnScroll={false}>
             <ProductivityGraph />
-          </div>
-          <div>
+          </AnimatedCard>
+          <AnimatedCard delay={9.0} animateOnScroll={false}>
             <LeaderboardSection />
-          </div>
+          </AnimatedCard>
         </div>
+        
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <PeerStatusPanel />
-          <ContractResultFeed />
+          <AnimatedCard delay={9.2} animateOnScroll={false}>
+            <PeerStatusPanel />
+          </AnimatedCard>
+          <AnimatedCard delay={9.4} animateOnScroll={false}>
+            <ContractResultFeed />
+          </AnimatedCard>
         </div>
+        
         {/* Backend Test Panel */}
-        <div className="mt-6">
+        <AnimatedCard delay={9.6} animateOnScroll={false} className="mt-6">
           <div className="rounded-xl border border-neutral-200/80 bg-white/70 backdrop-blur-sm p-4" style={{ boxShadow: "0 6px 0 var(--color-green-900-20)" }}>
             <div className="flex flex-wrap gap-2 mb-3">
               <button className="nav-pill nav-pill--cyan" onClick={runHistory} disabled={loading}>Test /history</button>
@@ -100,10 +111,12 @@ export default function Dashboard() {
             </div>
             <pre className="text-xs whitespace-pre-wrap break-words">{loading ? "Loading..." : result ? JSON.stringify(result, null, 2) : "Click a button to test the backend."}</pre>
           </div>
-        </div>
-        <div className="mt-6">
+        </AnimatedCard>
+        
+        <AnimatedCard delay={0.2} className="mt-6">
           <CommunityChallenges />
-        </div>
+        </AnimatedCard>
+        
         <FocusSummaryModal />
       </div>
     </section>

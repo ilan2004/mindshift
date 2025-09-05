@@ -5,6 +5,7 @@
     const hostEl = document.getElementById('host');
     // If you also have a "Manage Wi‑Fi connections" button:
     const wifiBtn = document.getElementById('wifi');
+  const personalEl = document.getElementById('personal');
   
     let lastUrl = null;
     let currentTabId = null;
@@ -19,6 +20,47 @@
           action: 'getLastBlocked',
           payload: { tabId: currentTabId }
         });
+
+  // Personalized copy based on MBTI
+  function copyFor(mbti) {
+    const t = (mbti || '').toUpperCase();
+    const clusters = {
+      // Analysts
+      INTJ: "Strategic minds thrive on deep focus. Protect this block to unlock compounding gains.",
+      INTP: "Curiosity is your edge. Park ideas in a note and return after this focus sprint.",
+      ENTJ: "Decisive leaders deliver. Ship one concrete outcome before switching contexts.",
+      ENTP: "Channel your experimentation—one test at a time. Capture the rest for later.",
+      // Diplomats
+      INFJ: "Clarity fuels purpose. One meaningful step now creates momentum for the day.",
+      INFP: "Your values guide you. Focus on the task that feels most true right now.",
+      ENFJ: "Your energy lifts others. Finish this block, then share the win.",
+      ENFP: "You spark possibilities. Contain the spark for 25 minutes—then explore.",
+      // Sentinels
+      ISTJ: "Consistency compounds. Complete the checklist item in front of you.",
+      ISFJ: "Reliable care starts with focus. One thing done well helps everyone.",
+      ESTJ: "Own the execution. Clear the path by closing this task decisively.",
+      ESFJ: "Support thrives on structure. Honor this block—then reconnect.",
+      // Explorers
+      ISTP: "Precision wins. Tune out noise and optimize one system now.",
+      ISFP: "Craft with intention. Make something a little better in this block.",
+      ESTP: "Action is leverage. Do the high-impact move first.",
+      ESFP: "Bring your spark to the work. Finish this block, then celebrate."
+    };
+    return clusters[t] || "This site is blocked during your focus session. Protect this block—future you will thank you.";
+  }
+
+  async function renderPersonalized() {
+    try {
+      const res = await chrome.runtime.sendMessage({ type: 'mindshift:focus', action: 'getProfile', payload: {} });
+      const profile = res && res.payload ? res.payload.profile : null;
+      const msg = copyFor(profile?.mbti);
+      if (personalEl) personalEl.textContent = msg;
+    } catch {
+      // keep default text
+    }
+  }
+
+  renderPersonalized();
         const url = res && res.payload ? res.payload.url : null;
         if (url) {
           lastUrl = url;

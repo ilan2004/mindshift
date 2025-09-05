@@ -63,14 +63,18 @@ export function postQuestions({ user_id, themes, mbti_hint }) {
   return request("/questions/", { method: "POST", body: { user_id, themes, mbti_hint } });
 }
 
-// GET /questions/general
-export function getGeneralQuestions(user_id) {
-  const url = new URL("/questions/general", API_BASE);
+// GET /questions/ (simplified API): returns [{question, options}] -> normalize to {questions: string[]}
+export async function getGeneralQuestions(user_id) {
+  // user_id not used by backend now, but kept for API parity
+  const url = new URL("/questions/", API_BASE);
   if (user_id) url.searchParams.set("user_id", user_id);
-  return fetch(url.toString()).then(async (res) => {
-    if (!res.ok) throw new Error(`Backend GET /questions/general failed ${res.status}`);
-    return res.json();
-  });
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`Backend GET /questions failed ${res.status}`);
+  const data = await res.json(); // expected: Array<{question: string, options: string[]}> or Array<string>
+  const list = Array.isArray(data)
+    ? data.map((it) => (it && typeof it === "object" ? String(it.question || "") : String(it || ""))).filter(Boolean)
+    : [];
+  return { questions: list };
 }
 
 // POST /answers/

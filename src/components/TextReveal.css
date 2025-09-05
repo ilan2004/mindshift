@@ -1,0 +1,17 @@
+/* TextReveal component styles - adapted from Terrene's Copy.css */
+.text-reveal-line {
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Ensure proper line wrapping and clipping */
+[data-text-reveal-wrapper="true"] .text-reveal-line,
+.text-reveal-line {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+/* Animation will be handled by GSAP, but ensure proper initial state */
+.text-reveal-line {
+  will-change: transform;
+}

@@ -1,3 +1,5 @@
+"use client";
+
 import CharacterCard from "@/components/CharacterCard";
 import QuestBoard from "@/components/QuestBoard";
 import ProductivityGraph from "@/components/ProductivityGraph";
@@ -7,47 +9,227 @@ import NudgeBox from "@/components/NudgeBox";
 import PeerStatusPanel from "@/components/PeerStatusPanel";
 import CommunityChallenges from "@/components/CommunityChallenges";
 import LeaderboardSection from "@/components/LeaderboardSection";
+import { useEffect, useMemo, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+function readMBTI() {
+  try { return (localStorage.getItem("mindshift_personality_type") || "").toUpperCase(); } catch { return ""; }
+}
+
+function mbtiToCluster(mbti) {
+  const t = (mbti || "").toUpperCase();
+  if (["ENFJ","ESFJ","ESTJ"].includes(t)) return "achievers";
+  if (["INTJ","INTP","ENTJ"].includes(t)) return "analysts";
+  if (["ENFP","ESFP","ESTP"].includes(t)) return "explorers";
+  if (["INFJ","INFP","ISFJ"].includes(t)) return "diplomats";
+  return "achievers"; // sensible default
+}
+
+function clusterTone(cluster) {
+  return cluster === "achievers" ? "social"
+    : cluster === "analysts" ? "logic"
+    : cluster === "explorers" ? "fun"
+    : "meaningful"; // diplomats
+}
 
 export default function Home() {
+  const [mbti, setMbti] = useState("");
+  useEffect(() => { setMbti(readMBTI()); }, []);
+
+  const cluster = useMemo(() => mbtiToCluster(mbti), [mbti]);
+  const tone = useMemo(() => clusterTone(cluster), [cluster]);
+
+  // Decide which components appear in hero side columns and which go to More For You
+  const heroLeft = useMemo(() => {
+    switch (cluster) {
+      case "analysts":
+        return (
+          <div className="w-full max-w-md">
+            <ProductivityGraph />
+          </div>
+        );
+      case "explorers":
+        return (
+          <div className="w-full max-w-md">
+            <QuestBoard />
+          </div>
+        );
+      case "diplomats":
+        return (
+          <div className="w-full max-w-md">
+            <PeerStatusPanel />
+          </div>
+        );
+      case "achievers":
+      default:
+        return (
+          <div className="w-full max-w-md">
+            <LeaderboardSection />
+          </div>
+        );
+    }
+  }, [cluster]);
+
+  const heroRight = useMemo(() => {
+    switch (cluster) {
+      case "analysts":
+        return (
+          <div className="w-full max-w-sm">
+            <LeaderboardSection />
+          </div>
+        );
+      case "explorers":
+        return (
+          <div className="w-full max-w-sm">
+            <CommunityChallenges />
+          </div>
+        );
+      case "diplomats":
+        return (
+          <div className="w-full max-w-sm">
+            <CommunityChallenges />
+          </div>
+        );
+      case "achievers":
+      default:
+        return (
+          <div className="w-full max-w-sm">
+            <PeerStatusPanel />
+          </div>
+        );
+    }
+  }, [cluster]);
+
+  // Determine which lower sections to hide because they already appear in hero
+  const used = useMemo(() => {
+    const set = new Set(["character", "nudge"]);
+    if (cluster === "analysts") { set.add("ProductivityGraph"); set.add("LeaderboardSection"); }
+    if (cluster === "explorers") { set.add("QuestBoard"); set.add("CommunityChallenges"); }
+    if (cluster === "diplomats") { set.add("PeerStatusPanel"); set.add("CommunityChallenges"); }
+    if (cluster === "achievers") { set.add("LeaderboardSection"); set.add("PeerStatusPanel"); }
+    return set;
+  }, [cluster]);
+
+  // Low-priority components per cluster to show in collapsed area
+  const moreItems = useMemo(() => {
+    switch (cluster) {
+      case "analysts":
+        return ["QuestBoard", "Badges"];
+      case "explorers":
+        return ["ProductivityGraph"]; // heavy stats hidden here
+      case "diplomats":
+        return ["LeaderboardSection", "ProductivityGraph"];
+      case "achievers":
+      default:
+        return ["QuestBoard", "Badges", "ProductivityGraph"]; // graphs/deep stats
+    }
+  }, [cluster]);
+
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  // In-view animations for section wrappers
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray(".reveal-on-scroll").forEach((el) => {
+        gsap.from(el, {
+          opacity: 0,
+          y: 24,
+          duration: 0.6,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      });
+    });
+    // Refresh to catch dynamic "More for you" content
+    ScrollTrigger.refresh();
+    return () => ctx.revert();
+  }, [moreOpen]);
+
   return (
     <section className="min-h-[70vh] flex flex-col items-center justify-start">
       <div className="w-full px-4 md:px-6 flex flex-col items-center gap-8">
-        {/* Hero: 3-column with side components flanking Character */}
+        {/* Hero: 3-column with side components flanking Character (center fixed) */}
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-20 lg:gap-28 items-start">
-          {/* Left side (compact panel) */}
-          <div className="order-2 md:order-1 flex justify-center md:justify-start mt-12 md:mt-16 lg:mt-20 px-6 lg:px-8 md:-ml-4 lg:-ml-8">
-            <div className="w-full max-w-md">
-              <PeerStatusPanel />
-            </div>
+          {/* Left side */}
+          <div className="order-2 md:order-1 flex justify-center md:justify-start mt-12 md:mt-16 lg:mt-20 px-6 lg:px-8 md:-ml-4 lg:-ml-8 reveal-on-scroll">
+            {heroLeft}
           </div>
-          {/* Center: Character */}
-          <div className="order-1 md:order-2 flex flex-col items-center gap-3">
-            <CharacterCard title="ben" />
-            <NudgeBox />
+          {/* Center: Character always centered + Nudge with tone */}
+          <div className="order-1 md:order-2 flex flex-col items-center gap-3 reveal-on-scroll">
+            <CharacterCard />
+            <NudgeBox tone={tone} />
           </div>
-          {/* Right side (compact panel) */}
-          <div className="order-3 md:order-3 flex justify-center md:justify-end mt-12 md:mt-16 lg:mt-20 px-6 lg:px-8">
-            <div className="w-full max-w-sm">
-              <CommunityChallenges />
-            </div>
+          {/* Right side */}
+          <div className="order-3 md:order-3 flex justify-center md:justify-end mt-12 md:mt-16 lg:mt-20 px-6 lg:px-8 reveal-on-scroll">
+            {heroRight}
           </div>
         </div>
-        {/* Below hero only: Productivity Graph */}
-        <div className="w-full">
-          <ProductivityGraph />
-        </div>
-        {/* Leaderboard */}
-        <div className="w-full">
-          <LeaderboardSection />
-        </div>
-        {/* Full width: Quest Board */}
-        <div className="w-full">
-          <QuestBoard />
-        </div>
-        {/* Full width: Badges */}
-        <div className="w-full">
-          <Badges />
-        </div>
+
+        {/* Lower sections: hide duplicates shown in hero */}
+        {!used.has("ProductivityGraph") && (
+          <div className="w-full reveal-on-scroll">
+            <ProductivityGraph />
+          </div>
+        )}
+        {!used.has("LeaderboardSection") && (
+          <div className="w-full reveal-on-scroll">
+            <LeaderboardSection />
+          </div>
+        )}
+        {!used.has("QuestBoard") && (
+          <div className="w-full reveal-on-scroll">
+            <QuestBoard />
+          </div>
+        )}
+        {!used.has("Badges") && (
+          <div className="w-full reveal-on-scroll">
+            <Badges />
+          </div>
+        )}
+
+        {/* More for you (collapsed) */}
+        {moreItems.length > 0 && (
+          <div className="w-full max-w-6xl">
+            <button
+              type="button"
+              className="nav-pill nav-pill--neutral"
+              onClick={() => setMoreOpen((v) => !v)}
+              aria-expanded={moreOpen}
+            >
+              {moreOpen ? "Hide" : "More for you"}
+            </button>
+            {moreOpen && (
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {moreItems.includes("ProductivityGraph") && (
+                  <div className="w-full reveal-on-scroll">
+                    <ProductivityGraph />
+                  </div>
+                )}
+                {moreItems.includes("LeaderboardSection") && (
+                  <div className="w-full reveal-on-scroll">
+                    <LeaderboardSection />
+                  </div>
+                )}
+                {moreItems.includes("QuestBoard") && (
+                  <div className="w-full reveal-on-scroll">
+                    <QuestBoard />
+                  </div>
+                )}
+                {moreItems.includes("Badges") && (
+                  <div className="w-full reveal-on-scroll">
+                    <Badges />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <FocusSummaryModal />
     </section>

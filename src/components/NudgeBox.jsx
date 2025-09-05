@@ -39,7 +39,7 @@ function getTimeOfDay(now = new Date()) {
   return "evening";
 }
 
-export default function NudgeBox() {
+export default function NudgeBox({ tone }) {
   const [points, setPoints] = useState(0);
   const [streak, setStreak] = useState(0);
   const [personality, setPersonality] = useState("");
@@ -87,7 +87,31 @@ export default function NudgeBox() {
         end: "Celebrate the smallest win; it compounds.",
       },
     };
+    // Optional tone-flavored stems (overrides when tone is provided)
+    const toneStems = {
+      social: {
+        start: "Set an intent your future teammates will thank you for.",
+        mid: "Protect your collab block; message later.",
+        end: "Share one takeaway with a peer.",
+      },
+      logic: {
+        start: "Define the exact next unit — 25m, one metric moved.",
+        mid: "Single-context flow. No branching.",
+        end: "Write a 2-bullet checkpoint.",
+      },
+      fun: {
+        start: "Pick a quest — tiny, novel, and winnable.",
+        mid: "Keep it playful: one tab, one track.",
+        end: "Claim your badge with a quick snapshot.",
+      },
+      meaningful: {
+        start: "Name why this matters (one line).",
+        mid: "Stay gentle; tiny progress is still progress.",
+        end: "Note one thing you’re grateful for.",
+      },
+    };
     const P = stems[personality] || stems.ENFJ;
+    const T = tone && toneStems[tone] ? toneStems[tone] : null;
 
     // Time of day flavor
     const todLine = tod === "morning" ? "Prime the day with one crisp win."
@@ -108,15 +132,16 @@ export default function NudgeBox() {
         ? "Great break. Queue the next intent before returning."
         : "Start a 25m focus — write your one-liner intent.";
 
-    // Personality section pick
-    const section = status.active ? P.mid : P.start;
+    // Personality or tone section pick
+    const base = T || P;
+    const section = status.active ? base.mid : base.start;
 
     return {
       title: status.active ? "You’re in the zone" : "Ready for a focused pass?",
       body: `${todLine} ${streakLine} ${section}`,
       cta: modeCTA,
     };
-  }, [status.active, status.mode, streak, points, personality]);
+  }, [status.active, status.mode, streak, points, personality, tone]);
 
   return (
     <div className="w-full max-w-md">
