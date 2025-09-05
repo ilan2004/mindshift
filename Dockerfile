@@ -22,8 +22,8 @@ RUN pip install --upgrade pip && pip install -r /app/requirements.txt
 # Copy backend code
 COPY backend/app /app/app
 
-# Expose the port Fly.io will route to
+# Expose the port
 EXPOSE 8080
 
-# Default start command (Gunicorn with Uvicorn worker)
+# Start server (Gunicorn + Uvicorn worker)
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-w", "2", "-b", "0.0.0.0:8080"]
