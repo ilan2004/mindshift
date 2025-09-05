@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import routes_history, routes_questions, routes_answers, routes_events
+import os
 
 # ---------- FASTAPI APP ----------
 app = FastAPI(
@@ -10,7 +11,9 @@ app = FastAPI(
 )
 
 # ---------- CORS ----------
-origins = [
+# Read allowed origins from env (comma-separated). Fallback to common localhost origins.
+_env_origins = os.getenv("ALLOWED_ORIGINS", "").strip()
+origins = [o.strip() for o in _env_origins.split(",") if o.strip()] or [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost",
@@ -28,6 +31,10 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {"message": "MindShift API with Groq is running 🚀"}
+
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok"}
 
 # ---------- ROUTES ----------
 # Personalized history-based questions
