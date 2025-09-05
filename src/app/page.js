@@ -1,103 +1,237 @@
-import Image from "next/image";
+"use client";
+
+import CharacterCard from "@/components/CharacterCard";
+import QuestBoard from "@/components/QuestBoard";
+import ProductivityGraph from "@/components/ProductivityGraph";
+import FocusSummaryModal from "@/components/FocusSummaryModal";
+import Badges from "@/components/Badges";
+import NudgeBox from "@/components/NudgeBox";
+import PeerStatusPanel from "@/components/PeerStatusPanel";
+import CommunityChallenges from "@/components/CommunityChallenges";
+import LeaderboardSection from "@/components/LeaderboardSection";
+import { useEffect, useMemo, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+function readMBTI() {
+  try { return (localStorage.getItem("mindshift_personality_type") || "").toUpperCase(); } catch { return ""; }
+}
+
+function mbtiToCluster(mbti) {
+  const t = (mbti || "").toUpperCase();
+  if (["ENFJ","ESFJ","ESTJ"].includes(t)) return "achievers";
+  if (["INTJ","INTP","ENTJ"].includes(t)) return "analysts";
+  if (["ENFP","ESFP","ESTP"].includes(t)) return "explorers";
+  if (["INFJ","INFP","ISFJ"].includes(t)) return "diplomats";
+  return "achievers"; // sensible default
+}
+
+function clusterTone(cluster) {
+  return cluster === "achievers" ? "social"
+    : cluster === "analysts" ? "logic"
+    : cluster === "explorers" ? "fun"
+    : "meaningful"; // diplomats
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [mbti, setMbti] = useState("");
+  useEffect(() => { setMbti(readMBTI()); }, []);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const cluster = useMemo(() => mbtiToCluster(mbti), [mbti]);
+  const tone = useMemo(() => clusterTone(cluster), [cluster]);
+
+  // Decide which components appear in hero side columns and which go to More For You
+  const heroLeft = useMemo(() => {
+    switch (cluster) {
+      case "analysts":
+        return (
+          <div className="w-full max-w-md">
+            <ProductivityGraph />
+          </div>
+        );
+      case "explorers":
+        return (
+          <div className="w-full max-w-md">
+            <QuestBoard />
+          </div>
+        );
+      case "diplomats":
+        return (
+          <div className="w-full max-w-md">
+            <PeerStatusPanel />
+          </div>
+        );
+      case "achievers":
+      default:
+        return (
+          <div className="w-full max-w-md">
+            <LeaderboardSection />
+          </div>
+        );
+    }
+  }, [cluster]);
+
+  const heroRight = useMemo(() => {
+    switch (cluster) {
+      case "analysts":
+        return (
+          <div className="w-full max-w-sm">
+            <LeaderboardSection />
+          </div>
+        );
+      case "explorers":
+        return (
+          <div className="w-full max-w-sm">
+            <CommunityChallenges />
+          </div>
+        );
+      case "diplomats":
+        return (
+          <div className="w-full max-w-sm">
+            <CommunityChallenges />
+          </div>
+        );
+      case "achievers":
+      default:
+        return (
+          <div className="w-full max-w-sm">
+            <PeerStatusPanel />
+          </div>
+        );
+    }
+  }, [cluster]);
+
+  // Determine which lower sections to hide because they already appear in hero
+  const used = useMemo(() => {
+    const set = new Set(["character", "nudge"]);
+    if (cluster === "analysts") { set.add("ProductivityGraph"); set.add("LeaderboardSection"); }
+    if (cluster === "explorers") { set.add("QuestBoard"); set.add("CommunityChallenges"); }
+    if (cluster === "diplomats") { set.add("PeerStatusPanel"); set.add("CommunityChallenges"); }
+    if (cluster === "achievers") { set.add("LeaderboardSection"); set.add("PeerStatusPanel"); }
+    return set;
+  }, [cluster]);
+
+  // Low-priority components per cluster to show in collapsed area
+  const moreItems = useMemo(() => {
+    switch (cluster) {
+      case "analysts":
+        return ["QuestBoard", "Badges"];
+      case "explorers":
+        return ["ProductivityGraph"]; // heavy stats hidden here
+      case "diplomats":
+        return ["LeaderboardSection", "ProductivityGraph"];
+      case "achievers":
+      default:
+        return ["QuestBoard", "Badges", "ProductivityGraph"]; // graphs/deep stats
+    }
+  }, [cluster]);
+
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  // In-view animations for section wrappers
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray(".reveal-on-scroll").forEach((el) => {
+        gsap.from(el, {
+          opacity: 0,
+          y: 24,
+          duration: 0.6,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      });
+    });
+    // Refresh to catch dynamic "More for you" content
+    ScrollTrigger.refresh();
+    return () => ctx.revert();
+  }, [moreOpen]);
+
+  return (
+    <section className="min-h-[70vh] flex flex-col items-center justify-start">
+      <div className="w-full px-4 md:px-6 flex flex-col items-center gap-8">
+        {/* Hero: 3-column with side components flanking Character (center fixed) */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-20 lg:gap-28 items-start">
+          {/* Left side */}
+          <div className="order-2 md:order-1 flex justify-center md:justify-start mt-12 md:mt-16 lg:mt-20 px-6 lg:px-8 md:-ml-4 lg:-ml-8 reveal-on-scroll">
+            {heroLeft}
+          </div>
+          {/* Center: Character always centered + Nudge with tone */}
+          <div className="order-1 md:order-2 flex flex-col items-center gap-3 reveal-on-scroll">
+            <CharacterCard />
+            <NudgeBox tone={tone} />
+          </div>
+          {/* Right side */}
+          <div className="order-3 md:order-3 flex justify-center md:justify-end mt-12 md:mt-16 lg:mt-20 px-6 lg:px-8 reveal-on-scroll">
+            {heroRight}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* Lower sections: hide duplicates shown in hero */}
+        {!used.has("ProductivityGraph") && (
+          <div className="w-full reveal-on-scroll">
+            <ProductivityGraph />
+          </div>
+        )}
+        {!used.has("LeaderboardSection") && (
+          <div className="w-full reveal-on-scroll">
+            <LeaderboardSection />
+          </div>
+        )}
+        {!used.has("QuestBoard") && (
+          <div className="w-full reveal-on-scroll">
+            <QuestBoard />
+          </div>
+        )}
+        {!used.has("Badges") && (
+          <div className="w-full reveal-on-scroll">
+            <Badges />
+          </div>
+        )}
+
+        {/* More for you (collapsed) */}
+        {moreItems.length > 0 && (
+          <div className="w-full max-w-6xl">
+            <button
+              type="button"
+              className="nav-pill nav-pill--neutral"
+              onClick={() => setMoreOpen((v) => !v)}
+              aria-expanded={moreOpen}
+            >
+              {moreOpen ? "Hide" : "More for you"}
+            </button>
+            {moreOpen && (
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {moreItems.includes("ProductivityGraph") && (
+                  <div className="w-full reveal-on-scroll">
+                    <ProductivityGraph />
+                  </div>
+                )}
+                {moreItems.includes("LeaderboardSection") && (
+                  <div className="w-full reveal-on-scroll">
+                    <LeaderboardSection />
+                  </div>
+                )}
+                {moreItems.includes("QuestBoard") && (
+                  <div className="w-full reveal-on-scroll">
+                    <QuestBoard />
+                  </div>
+                )}
+                {moreItems.includes("Badges") && (
+                  <div className="w-full reveal-on-scroll">
+                    <Badges />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <FocusSummaryModal />
+    </section>
   );
 }

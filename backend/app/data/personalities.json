@@ -1,0 +1,146 @@
+[
+  {
+    "trait": "ISFP - The Artist",
+    "core_psychology": "Gentle, creative, and sensitive. Thrives on self-expression, beauty, and living authentically in the present moment.",
+    "keywords": ["creative", "gentle", "sensitive", "expressive"],
+    "distraction_triggers": ["escapism into art or entertainment", "emotional overwhelm", "avoiding conflict", "lack of direction"],
+    "motivation_hooks": ["creative freedom", "personal authenticity", "helping others quietly", "beauty and aesthetics"],
+    "demotivation_hooks": ["criticism of their art or self", "rigid rules", "lack of inspiration", "feeling trapped"],
+    "dopamine_boosters": ["art-based streak tracking", "aesthetic rewards", "gentle encouragement quotes", "small wins tied to creative output"]
+  },
+  {
+    "trait": "ISTP - The Virtuoso",
+    "core_psychology": "Practical, adventurous, and hands-on. Thrives on problem-solving, building, and exploring through action rather than theory.",
+    "keywords": ["practical", "adventurous", "analytical", "independent"],
+    "distraction_triggers": ["impulsive adventures", "boredom with theory", "overindulgence in thrills", "inconsistency"],
+    "motivation_hooks": ["hands-on challenges", "autonomy", "new experiences", "visible results of effort"],
+    "demotivation_hooks": ["rigid structure", "forced theory without practice", "lack of freedom", "micromanagement"],
+    "dopamine_boosters": ["task-based challenges", "physical/interactive streak rewards", "exploration-themed progress", "micro-achievements from problem-solving"]
+  },
+   {
+    "trait": "ESFP - The Performer",
+    "core_psychology": "Playful, spontaneous, and fun-loving. Thrives on excitement, social interaction, and living fully in the present moment.",
+    "keywords": ["playful", "spontaneous", "sociable", "energetic"],
+    "distraction_triggers": ["social media loops", "FOMO", "overindulgence in fun", "avoiding serious tasks"],
+    "motivation_hooks": ["social engagement", "new experiences", "recognition of charm and energy", "freedom"],
+    "demotivation_hooks": ["criticism", "rigid rules", "monotony", "lack of attention"],
+    "dopamine_boosters": ["socially shareable streaks", "colorful rewards and badges", "fun challenges", "micro-rewards tied to small wins"]
+  },
+   {
+    "trait": "ESTP - The Dynamo",
+    "core_psychology": "Energetic, bold, and action-oriented. Thrives on excitement, quick decisions, and living in the moment.",
+    "keywords": ["energetic", "bold", "spontaneous", "practical"],
+    "distraction_triggers": ["thrill-seeking", "impulsive risks", "boredom", "overindulgence in fun activities"],
+    "motivation_hooks": ["adventure", "immediate rewards", "competition", "visible impact"],
+    "demotivation_hooks": ["routine and monotony", "lack of excitement", "delayed gratification", "strict control"],
+    "dopamine_boosters": ["gamified challenges", "instant streak rewards", "leaderboards", "adventure-themed progress tracking"]
+  },
+  {
+    "trait": "ESFJ - The Provider",
+    "core_psychology": "Warm, loyal, and people-oriented. Thrives on creating harmony, supporting communities, and maintaining close relationships.",
+    "keywords": ["supportive", "loyal", "organized", "sociable"],
+    "distraction_triggers": ["overcommitting to others", "social validation loops", "conflict stress", "neglecting personal priorities"],
+    "motivation_hooks": ["helping and nurturing others", "recognition and appreciation", "structured harmony", "sense of belonging"],
+    "demotivation_hooks": ["feeling unappreciated", "disharmony in group", "isolation", "being criticized harshly"],
+    "dopamine_boosters": ["peer recognition streaks", "community progress boards", "positive feedback loops", "rewards tied to group success"]
+  },
+   {
+    "trait": "ESTJ - The Executive",
+    "core_psychology": "Efficient, organized, and practical. Natural administrators who thrive on order, structure, and achieving results.",
+    "keywords": ["efficient", "organized", "leader", "structured"],
+    "distraction_triggers": ["micromanaging details", "rigid overcontrol", "impatience with delays", "workaholism"],
+    "motivation_hooks": ["clear goals", "visible results", "authority and responsibility", "recognition for effectiveness"],
+    "demotivation_hooks": ["lack of structure", "inefficiency in others", "slow or unclear progress", "being undermined"],
+    "dopamine_boosters": ["checklist completions", "performance dashboards", "rank-based streaks", "goal achievement rewards"]
+  },
+  {
+  "trait": "ISFJ - The Nurturer",
+  "core_psychology": "Gentle, caring, and highly responsible. Thrive on supporting others, protecting loved ones, and preserving harmony. Reliable and practical, guided by empathy and loyalty.",
+  "keywords": ["caring", "responsible", "empathetic", "loyal", "supportive"],
+  "distraction_triggers": ["people-pleasing", "overwork and self-neglect", "emotional escapism", "fear of conflict"],
+  "motivation_hooks": ["helping others", "duty and loyalty", "quiet recognition", "structured systems"],
+  "demotivation_hooks": ["neglect of others", "chaos", "conflict", "lack of acknowledgment"],
+  "dopamine_boosters": ["gentle reminders tied to care", "streaks as protection records", "inspirational nudges linking responsibility to loyalty", "orderly checklists"]
+},
+{
+  "trait": "ISTJ - The Duty Fulfiller",
+  "core_psychology": "Practical, structured, disciplined, and reliable. Thrive on duty, responsibility, and tradition. Dislike chaos and last-minute changes, and stick to rules. Seen as serious and dependable.",
+  "keywords": ["practical", "structured", "disciplined", "reliable", "responsible"],
+  "distraction_triggers": ["overwork", "rigidity", "detail traps", "avoidance under stress"],
+  "motivation_hooks": ["duty and responsibility", "clear structure", "security", "recognition of reliability"],
+  "demotivation_hooks": ["chaos", "lack of rules", "unnecessary change", "being seen as unreliable"],
+  "dopamine_boosters": ["reminders framed around responsibility", "streaks as records of reliability", "dashboard progress tracking", "predictable routines"]
+},
+{
+  "trait": "ENFP - The Inspirer",
+  "core_psychology": "High-energy, spontaneous, and deeply people-oriented. Thrive on exploring new experiences, ideas, and relationships. Optimistic and sees potential everywhere. Hates routine or anything limiting.",
+  "keywords": ["energetic", "spontaneous", "people-oriented", "optimistic", "curious"],
+  "distraction_triggers": ["shiny object syndrome", "social FOMO", "boredom escapes", "overcommitment"],
+  "motivation_hooks": ["novelty", "freedom", "inspiration", "community energy"],
+  "demotivation_hooks": ["rigid systems", "repetitive tasks", "lack of excitement", "overly structured routines"],
+  "dopamine_boosters": ["playful nudges", "gamified focus streaks as quests", "inspirational reminders", "community-driven challenges"]
+},
+ {
+    "trait": "ENFJ - The Protagonist",
+    "core_psychology": "Charismatic, inspiring, and people-focused. Natural leaders who thrive on guiding, motivating, and uplifting others.",
+    "keywords": ["charismatic", "leader", "inspiring", "supportive"],
+    "distraction_triggers": ["overcommitting", "social distractions", "burnout from giving too much", "conflict avoidance"],
+    "motivation_hooks": ["impact on others", "recognition", "shared vision", "harmony"],
+    "demotivation_hooks": ["lack of appreciation", "disharmony in group", "isolation", "being ignored"],
+    "dopamine_boosters": ["community leaderboards", "focus streaks as influence scores", "peer recognition", "mission-driven milestones"]
+  },
+  {
+    "trait": "INFJ - The Advocate",
+    "core_psychology": "Empathetic, visionary, and purpose-driven. Guided by strong values and a desire to create meaningful change.",
+    "keywords": ["empathetic", "visionary", "purpose-driven", "idealistic"],
+    "distraction_triggers": ["emotional overload", "people-pleasing", "escapism into fantasy", "isolation spirals"],
+    "motivation_hooks": ["purpose-driven goals", "authenticity", "helping others", "recognition of depth"],
+    "demotivation_hooks": ["feeling misunderstood", "lack of meaning", "constant conflict", "burnout from over-giving"],
+    "dopamine_boosters": ["purpose reminders", "inspirational quotes", "visual long-term vision boards", "progress tied to values"]
+  },
+  {
+    "trait": "INFP - The Mediator",
+    "core_psychology": "Gentle, imaginative, and deeply idealistic. Guided by values and creativity, they seek authenticity and meaning in everything.",
+    "keywords": ["idealistic", "creative", "authentic", "empathetic"],
+    "distraction_triggers": ["escapism", "fantasizing about perfect outcomes", "emotional overthinking", "unfinished creative projects"],
+    "motivation_hooks": ["personal meaning", "creative expression", "helping others", "recognition of authenticity"],
+    "demotivation_hooks": ["lack of inspiration", "feeling undervalued", "rigid structures", "emotional burnout"],
+    "dopamine_boosters": ["creative progress streaks", "gentle inspirational nudges", "small-step rewards", "sharing authentic creations"]
+  },
+  {
+    "trait": "ENTP - The Debater",
+    "core_psychology": "Energetic, innovative, and quick-witted. Thrives on debates, new ideas, and challenging the status quo.",
+    "keywords": ["innovative", "energetic", "debater", "spontaneous"],
+    "distraction_triggers": ["shiny object syndrome", "excessive debating", "boredom", "unfinished projects"],
+    "motivation_hooks": ["freedom", "recognition of cleverness", "novel challenges", "competition"],
+    "demotivation_hooks": ["rigid rules", "routine tasks", "lack of stimulation", "feeling trapped"],
+    "dopamine_boosters": ["creative challenges", "idea competitions", "gamified innovation streaks", "peer recognition rewards"]
+  },
+  {
+    "trait": "ENTJ - The Commander",
+    "core_psychology": "Decisive, assertive, and highly organized. Natural leaders who thrive on control, efficiency, and achieving big goals.",
+    "keywords": ["leader", "decisive", "organized", "competitive"],
+    "distraction_triggers": ["overworking", "micromanaging", "ego validation", "work as escape"],
+    "motivation_hooks": ["winning", "authority", "legacy", "measurable results"],
+    "demotivation_hooks": ["lack of control", "inefficiency", "slow progress", "being ignored or undervalued"],
+    "dopamine_boosters": ["leaderboards", "competitive streaks", "milestone achievements", "rivalry challenges"]
+  },
+  {
+    "trait": "INTP - The Thinker",
+    "core_psychology": "Curious, abstract, and independent. Loves exploring theories and patterns, thrives on understanding how things work.",
+    "keywords": ["curious", "abstract", "independent", "inventive"],
+    "distraction_triggers": ["information overload", "project-hopping", "daydreaming", "perfection of ideas"],
+    "motivation_hooks": ["novelty", "autonomy", "intellectual challenges", "recognition of genius"],
+    "demotivation_hooks": ["rigid rules", "forced routines", "lack of creative freedom", "feeling misunderstood"],
+    "dopamine_boosters": ["new discoveries", "idea challenges", "gamified experiments", "micro-wins for execution"]
+  },
+  {
+    "trait": "INTJ - The Mastermind",
+    "core_psychology": "Strategic, independent, future-focused, perfectionist. Thrives on creating efficient systems and long-term visions.",
+    "keywords": ["strategic", "visionary", "independent", "perfectionist"],
+    "distraction_triggers": ["over-planning", "endless research", "perfectionism delays", "social withdrawal"],
+    "motivation_hooks": ["long-term goals", "efficiency", "visible progress tracking", "exclusivity"],
+    "demotivation_hooks": ["lack of results", "wasted time", "micromanagement", "burnout from overthinking"],
+    "dopamine_boosters": ["progress dashboards", "milestone unlocks", "elite recognition badges", "future-focused quotes"]
+  }
+]

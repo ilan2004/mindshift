@@ -1,17 +1,33 @@
 {
   "manifest_version": 3,
   "name": "MindShift Focus",
-  "version": "0.1.0",
-  "description": "Blocks distraction sites with profile-based nudges.",
-  "permissions": ["storage", "tabs"],
+  "version": "0.2.0",
+  "description": "Block distraction sites during focus sessions with a timer.",
+  "permissions": [
+    "storage",
+    "alarms",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback",
+    "tabs"
+  ],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "background.js" },
   "action": { "default_popup": "popup.html", "default_title": "MindShift" },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "https://mindshifts.vercel.app/*",
+        "http://localhost:3000/*"
+      ],
       "js": ["content.js"],
       "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked.html"],
+      "matches": ["<all_urls>"]
     }
   ]
 }
