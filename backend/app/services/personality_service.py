@@ -23,7 +23,7 @@ def map_answers_to_traits(answers: Dict[str, str], flexibility: int = 3) -> List
     trait_scores = {p['trait']: 0 for p in PERSONALITY_DATA}
 
     for answer_text in answers.values():
-        normalized = answer_text.strip().lower()
+        normalized = str(answer_text or "").strip().lower()
         for trait_data in PERSONALITY_DATA:
             for keyword in trait_data.get("keywords", []):
                 if keyword.lower() in normalized:
