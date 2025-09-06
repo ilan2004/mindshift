@@ -58,7 +58,6 @@ function dispatchSessionCompleted(minutes) {
 }
 
 export default function FooterFocusBar() {
-  const [presets] = useState(DEFAULT_PRESETS);
   const [durationMin, setDurationMin] = useState(25);
   const [customMin, setCustomMin] = useState(25);
   const [status, setStatus] = useState({ active: false, mode: "idle", remainingMs: 0, domains: [] });
@@ -66,8 +65,7 @@ export default function FooterFocusBar() {
   const [quickDomain, setQuickDomain] = useState("");
   const [showQuickAddMobile, setShowQuickAddMobile] = useState(false);
   const [showMoreMobile, setShowMoreMobile] = useState(false);
-
-  // Token for per-user NextDNS subscription list
+  const [showEnablePrompt, setShowEnablePrompt] = useState(false);
   const [blToken, setBlToken] = useState("");
 
   const hasExtensionRef = useRef(false);
@@ -212,6 +210,11 @@ export default function FooterFocusBar() {
   };
 
   const onStart = async () => {
+    // If extension isn't present, prompt user to enable blocking options
+    if (!hasExtensionRef.current) {
+      setShowEnablePrompt(true);
+      return;
+    }
     const m = Number(customMin) || durationMin || 25;
     // Persist to Supabase
     try { await saveBlocklistDB(domains); } catch {}
@@ -244,6 +247,26 @@ export default function FooterFocusBar() {
       localStorage.setItem("mindshift_session_mode", "break");
       localStorage.removeItem("mindshift_session_stopped");
     } catch {}
+  };
+
+  // Helpers to build one-click subscribe links for blockers
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const filterListUrl = useMemo(() => (API_BASE && blToken ? `${API_BASE}/blocklist/${blToken}.filter` : ""), [API_BASE, blToken]);
+  const abpSubscribeHref = useMemo(() => (filterListUrl ? `abp:subscribe?location=${encodeURIComponent(filterListUrl)}&title=${encodeURIComponent("Mindshift Blocklist")}` : ""), [filterListUrl]);
+  const adguardSubscribeHref = useMemo(() => (filterListUrl ? `adguard:add_subscription?location=${encodeURIComponent(filterListUrl)}&title=${encodeURIComponent("Mindshift Blocklist")}` : ""), [filterListUrl]);
+  const extensionInstallHref = ""; // TODO: set to your Chrome/Edge/Firefox store listing when available
+
+  // Since the extension is not on the store yet, show an instructions modal on desktop
+  function isMobileUA() {
+    if (typeof navigator === "undefined") return false;
+    return /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+  }
+  const onEnableBlocking = () => {
+    if (isMobileUA()) {
+      try { window.location.href = "/mobile-setup"; } catch {}
+    } else {
+      setShowEnablePrompt(true);
+    }
   };
 
   const onAddDomain = async () => {
@@ -342,111 +365,153 @@ export default function FooterFocusBar() {
             boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
           }}
         >
-        {/* Desktop: All controls in one line */}
-        <div className="hidden md:flex items-center gap-3">
-          {/* Status */}
-          <div className="flex items-center gap-3">
-            <span className="nav-pill nav-pill--cyan">{statusLabel}</span>
-            <span className="font-mono text-sm tabular-nums">{formatMMSS(status.remainingMs)}</span>
-          </div>
-
-          {/* Presets */}
-          <div className="flex items-center gap-2">
-            {presets.map((m) => (
-              <button key={m}
-                type="button"
-                onClick={() => onPreset(m)}
-                className={`nav-pill ${m === durationMin ? "nav-pill--cyan" : ""}`}
-              >
-                {m}m
-              </button>
-            ))}
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min={1}
-                value={customMin}
-                onChange={(e) => setCustomMin(e.target.value)}
-                className="w-20 px-3 py-2 rounded-[999px] text-sm"
-                style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 3px 0 var(--color-green-900)" }}
-              />
-              <span className="text-sm text-neutral-600">min</span>
+          {/* If extension is not enabled, show only the single Enable button on desktop */}
+          {!hasExtensionRef.current ? (
+            <div className="hidden md:flex items-center gap-3">
+              <button type="button" className="nav-pill nav-pill--primary" onClick={onEnableBlocking}>Enable blocking</button>
             </div>
-          </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-3">
+              {/* Status */}
+              <div className="flex items-center gap-3">
+                <span className="nav-pill nav-pill--cyan">{statusLabel}</span>
+                <span className="font-mono text-sm tabular-nums">{formatMMSS(status.remainingMs)}</span>
+              </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={primaryAction.onClick} className={primaryClass}>
-              {primaryAction.label}
-            </button>
+              {/* Presets */}
+              <div className="flex items-center gap-2">
+                {DEFAULT_PRESETS.map((m) => (
+                  <button key={m}
+                    type="button"
+                    onClick={() => onPreset(m)}
+                    className={`nav-pill ${m === durationMin ? "nav-pill--cyan" : ""}`}
+                  >
+                    {m}m
+                  </button>
+                ))}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    value={customMin}
+                    onChange={(e) => setCustomMin(e.target.value)}
+                    className="w-20 px-3 py-2 rounded-[999px] text-sm"
+                    style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 3px 0 var(--color-green-900)" }}
+                  />
+                  <span className="text-sm text-neutral-600">min</span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={primaryAction.onClick} className={primaryClass}>
+                  {primaryAction.label}
+                </button>
+                <button type="button" onClick={onStop} className="nav-pill nav-pill--accent">Stop</button>
+                <button type="button" onClick={() => onStartBreak(5)} className="nav-pill nav-pill--cyan">Break 5m</button>
+              </div>
+            </div>
+          )}
+
+          {/* Mobile: Status & Actions */}
+          {!hasExtensionRef.current ? (
+            <div className="flex md:hidden items-center gap-2">
+              <button type="button" className="nav-pill nav-pill--primary" onClick={onEnableBlocking}>Enable blocking</button>
+            </div>
+          ) : (
+            <>
+              <div className="flex md:hidden items-center gap-2">
+                <span className="nav-pill nav-pill--cyan">{statusLabel}</span>
+                <span className="font-mono text-xs tabular-nums">{formatMMSS(status.remainingMs)}</span>
+              </div>
+              <div className="flex md:hidden flex-wrap items-center gap-1.5">
+                <button type="button" onClick={primaryAction.onClick} className={primaryClass}>
+                  {primaryAction.label}
+                </button>
+                <button
+                  type="button"
+                  className="nav-pill"
+                  onClick={() => setShowMoreMobile((v) => !v)}
+                  aria-expanded={showMoreMobile}
+                  aria-controls="more-actions-row"
+                >
+                  More
+                </button>
+                <button
+                  type="button"
+                  className="nav-pill"
+                  onClick={() => setShowQuickAddMobile((v) => !v)}
+                  aria-expanded={showQuickAddMobile}
+                  aria-controls="quick-add-row"
+                >
+                  + Domain
+                </button>
+              </div>
+            </>
+          )}
+
+        {/* Mobile-only extra actions row */}
+        {hasExtensionRef.current && (
+          <div
+            id="more-actions-row"
+            className={`${showMoreMobile ? "flex" : "hidden"} md:hidden basis-full justify-center items-center gap-2`}
+          >
             <button type="button" onClick={onStop} className="nav-pill nav-pill--accent">Stop</button>
             <button type="button" onClick={() => onStartBreak(5)} className="nav-pill nav-pill--cyan">Break 5m</button>
           </div>
-        </div>
+        )}
 
-        {/* Mobile: Status */}
-        <div className="flex md:hidden items-center gap-2">
-          <span className="nav-pill nav-pill--cyan">{statusLabel}</span>
-          <span className="font-mono text-xs tabular-nums">{formatMMSS(status.remainingMs)}</span>
-        </div>
-
-        {/* Mobile: Actions */}
-        <div className="flex md:hidden flex-wrap items-center gap-1.5">
-          <button type="button" onClick={primaryAction.onClick} className={primaryClass}>
-            {primaryAction.label}
-          </button>
-          <button
-            type="button"
-            className="nav-pill"
-            onClick={() => setShowMoreMobile((v) => !v)}
-            aria-expanded={showMoreMobile}
-            aria-controls="more-actions-row"
-          >
-            More
-          </button>
-          <button
-            type="button"
-            className="nav-pill"
-            onClick={() => setShowQuickAddMobile((v) => !v)}
-            aria-expanded={showQuickAddMobile}
-            aria-controls="quick-add-row"
-          >
-            + Domain
-          </button>
-        </div>
-
-        {/* Mobile-only extra actions row */}
-        <div
-          id="more-actions-row"
-          className={`${showMoreMobile ? "flex" : "hidden"} md:hidden basis-full justify-center items-center gap-2`}
-        >
-          <button type="button" onClick={onStop} className="nav-pill nav-pill--accent">Stop</button>
-          <button type="button" onClick={() => onStartBreak(5)} className="nav-pill nav-pill--cyan">Break 5m</button>
-        </div>
+        {/* No extra enable row on mobile; handled by single button */}
 
         {/* Quick add domain
             - Mobile: hidden until toggled via '+ Domain' to reduce stacking
             - Desktop: always visible centered on its own row */}
-        <div
-          id="quick-add-row"
-          className={`${showQuickAddMobile ? "flex" : "hidden"} md:flex basis-full justify-center items-center gap-2`}
-        >
-          <input
-            type="text"
-            placeholder="Add domain to block (e.g., twitter.com)"
-            value={quickDomain}
-            onChange={(e) => setQuickDomain(e.target.value)}
-            className="px-3 py-2 rounded-[999px] text-sm w-full max-w-[320px] md:max-w-[360px]"
-            style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)" }}
-          />
-          <button type="button" onClick={onAddDomain} className="nav-pill">+ Add</button>
-        </div>
+        {hasExtensionRef.current && (
+          <div
+            id="quick-add-row"
+            className={`${showQuickAddMobile ? "flex" : "hidden"} md:flex basis-full justify-center items-center gap-2`}
+          >
+            <input
+              type="text"
+              placeholder="Add domain to block (e.g., twitter.com)"
+              value={quickDomain}
+              onChange={(e) => setQuickDomain(e.target.value)}
+              className="px-3 py-2 rounded-[999px] text-sm w-full max-w-[320px] md:max-w-[360px]"
+              style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)" }}
+            />
+            <button type="button" onClick={onAddDomain} className="nav-pill">+ Add</button>
+          </div>
+        )}
         </div>
       </div>
 
       {/* Helper text when extension not detected */}
       {!hasExtensionRef.current && (
         <div className="mt-1 text-center text-[11px] text-neutral-600">Install/enable the MindShift extension to enforce blocks and run the timer in the background.</div>
+      )}
+
+      {/* Desktop instructions modal for enabling blocking */}
+      {showEnablePrompt && (
+        <div className="fixed inset-0 z-[96] flex items-center justify-center bg-black/30 p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-md rounded-2xl bg-white border p-4 shadow-lg">
+            <h3 className="text-lg font-semibold mb-2">Enable blocking in your browser</h3>
+            <ol className="list-decimal ml-5 space-y-1 text-sm text-neutral-700 mb-3">
+              <li>Open <span className="font-mono">chrome://extensions</span> (or your browser’s extensions page).</li>
+              <li>Turn on <b>Developer mode</b>.</li>
+              <li>Click <b>Load unpacked</b> and select the <span className="font-mono">extension/</span> folder from this project.</li>
+              <li>Refresh this page; the controls will appear when detected.</li>
+            </ol>
+            <div className="text-xs text-neutral-500 mb-3">Alternatively, subscribe via your ad blocker (browser-only blocking):</div>
+            <div className="flex flex-wrap gap-2 mb-3">
+              <a className={`nav-pill ${extensionInstallHref ? "" : "opacity-60 pointer-events-none"}`} href={extensionInstallHref || undefined} target="_blank" rel="noreferrer" onClick={() => setShowEnablePrompt(false)}>Install from store</a>
+              <a className={`nav-pill ${abpSubscribeHref ? "" : "opacity-60 pointer-events-none"}`} href={abpSubscribeHref || undefined} onClick={() => setShowEnablePrompt(false)}>Add to uBlock/ABP</a>
+              <a className={`nav-pill ${adguardSubscribeHref ? "" : "opacity-60 pointer-events-none"}`} href={adguardSubscribeHref || undefined} onClick={() => setShowEnablePrompt(false)}>Add to AdGuard</a>
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <button className="nav-pill" onClick={() => setShowEnablePrompt(false)}>Close</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
