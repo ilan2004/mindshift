@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { QRCode } from "qrcode.react";
+import QRCode from "react-qr-code";
 import {
   getOrCreateToken,
   fetchBlocklistJSON,
@@ -93,7 +93,7 @@ export default function MobileSetupPage() {
         {url && (
           <div className="mt-3 flex items-center gap-3">
             <a href={url} target="_blank" rel="noreferrer" title="Open subscription URL">
-              <QRCode value={url} size={128} bgColor="#ffffff" fgColor="#111111" includeMargin={false} />
+              <QRCode value={url} size={128} bgColor="#ffffff" fgColor="#111111" />
             </a>
             <div className="text-xs text-neutral-500">
               Scan or tap to open on your phone.
