@@ -127,6 +127,8 @@ export default function MobileSetupPage() {
           <div className="mt-2 text-xs text-emerald-700">We detected Android — the steps above are recommended.</div>
         )}
       </section>
+
+      <section className="mb-6">
         <h2 className="font-semibold mb-2">1) Your subscription URL</h2>
         <div className="flex items-center gap-2">
           <input
