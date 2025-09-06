@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchBlocklist, saveBlocklist as saveBlocklistDB, startSession as startSessionDB } from "../lib/focusStore";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { getOrCreateToken, fetchBlocklistJSON as fetchBLJson, addDomains as addBL } from "@/lib/blocklist";
 
 // Messaging keys
 const MSG_REQUEST = "mindshift:focus";
@@ -65,6 +66,9 @@ export default function FooterFocusBar() {
   const [quickDomain, setQuickDomain] = useState("");
   const [showQuickAddMobile, setShowQuickAddMobile] = useState(false);
   const [showMoreMobile, setShowMoreMobile] = useState(false);
+
+  // Token for per-user NextDNS subscription list
+  const [blToken, setBlToken] = useState("");
 
   const hasExtensionRef = useRef(false);
   const barRef = useRef(null);
@@ -155,6 +159,26 @@ export default function FooterFocusBar() {
       } catch {}
     })();
 
+    // Prepare per-user token and hydrate from backend blocklist (base + custom)
+    (async () => {
+      try {
+        const t = getOrCreateToken();
+        setBlToken(t);
+        const json = await fetchBLJson(t);
+        if (json && (Array.isArray(json.base) || Array.isArray(json.custom))) {
+          const set = new Set([...(json.base || []), ...(json.custom || [])]);
+          if (set.size) {
+            const merged = Array.from(set).sort();
+            setDomains((prev) => {
+              // merge with existing domains, prefer backend list as authoritative start
+              const mergedSet = new Set([...(merged || []), ...(prev || [])]);
+              return Array.from(mergedSet);
+            });
+          }
+        }
+      } catch {}
+    })();
+
     return () => window.removeEventListener("message", onMessage);
   }, [send]);
 
@@ -234,6 +258,8 @@ export default function FooterFocusBar() {
         setDomains(next);
         try { await saveBlocklistDB(next); } catch {}
         send("updateBlocklist", { domains: next });
+        // Also add to per-user NextDNS list (best-effort)
+        try { if (blToken) await addBL(blToken, host); } catch {}
       }
     } catch (_) {
       // If not a URL, treat as plain domain
@@ -243,6 +269,7 @@ export default function FooterFocusBar() {
         setDomains(next);
         try { await saveBlocklistDB(next); } catch {}
         send("updateBlocklist", { domains: next });
+        try { if (blToken) await addBL(blToken, host); } catch {}
       }
     }
     setQuickDomain("");
