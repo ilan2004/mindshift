@@ -162,6 +162,16 @@ export default function TestRunner({ mode = "general", onComplete }) {
   const containerRef = useRef(null);
   const questionRefs = useRef({});
 
+  function scrollToQuestion(qid) {
+    try {
+      const el = questionRefs.current[qid];
+      const container = containerRef.current;
+      if (el && container && typeof el.scrollIntoView === "function") {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    } catch {}
+  }
+
   // Scroll snapping active-state highlighting
   useEffect(() => {
     const el = containerRef.current;
@@ -185,7 +195,19 @@ export default function TestRunner({ mode = "general", onComplete }) {
   }, [page, pageItems.length]);
 
   const onPick = (qid, val) => {
-    setAnswers((a) => ({ ...a, [qid]: val }));
+    setAnswers((a) => {
+      const next = { ...a, [qid]: val };
+      // Determine next question within current page
+      const ids = pageItems.map((q) => q.id);
+      const idx = ids.indexOf(qid);
+      const isLastOnPage = idx >= 0 && idx === ids.length - 1;
+      if (!isLastOnPage) {
+        const nextId = ids[idx + 1];
+        // Slight delay to allow button press UI update, then scroll
+        setTimeout(() => scrollToQuestion(nextId), 50);
+      }
+      return next;
+    });
   };
 
   const onNext = async () => {
@@ -330,6 +352,7 @@ export default function TestRunner({ mode = "general", onComplete }) {
                   data-question
                   className="transition-colors duration-300"
                   style={{ scrollSnapAlign: "center" }}
+                  ref={(el) => { if (el) questionRefs.current[q.id] = el; }}
                 >
                   <div className="mb-4 text-center" style={{ fontFamily: "Tanker, sans-serif" }}>
                     <p className="text-2xl md:text-3xl leading-snug question-text">
