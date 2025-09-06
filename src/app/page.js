@@ -152,85 +152,104 @@ export default function Home() {
   }, [moreOpen]);
 
   return (
-    <section className="min-h-[70vh] flex flex-col items-center justify-start">
-      <div className="w-full px-4 md:px-6 flex flex-col items-center gap-8">
-        {/* Hero: 3-column with side components flanking Character (center fixed) */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-20 lg:gap-28 items-start">
-          {/* Left side */}
-          <div className="order-2 md:order-1 flex justify-center md:justify-start mt-12 md:mt-16 lg:mt-20 px-6 lg:px-8 md:-ml-4 lg:-ml-8 reveal-on-scroll">
+    <section className="min-h-screen w-full">
+      {/* Hero Section */}
+      <div className="w-full px-4 md:px-6 py-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          {/* Left Panel */}
+          <div className="reveal-on-scroll">
             {heroLeft}
           </div>
-          {/* Center: Character always centered + Nudge with tone */}
-          <div className="order-1 md:order-2 flex flex-col items-center gap-3 reveal-on-scroll">
+          
+          {/* Center Panel - Character Card */}
+          <div className="flex flex-col items-center gap-4 reveal-on-scroll">
             <CharacterCard />
             <NudgeBox tone={tone} />
           </div>
-          {/* Right side */}
-          <div className="order-3 md:order-3 flex justify-center md:justify-end mt-12 md:mt-16 lg:mt-20 px-6 lg:px-8 reveal-on-scroll">
+          
+          {/* Right Panel */}
+          <div className="reveal-on-scroll">
             {heroRight}
           </div>
         </div>
+      </div>
 
-        {/* Lower sections: hide duplicates shown in hero */}
-        {!used.has("ProductivityGraph") && (
-          <div className="w-full reveal-on-scroll">
-            <ProductivityGraph />
-          </div>
-        )}
-        {!used.has("LeaderboardSection") && (
-          <div className="w-full reveal-on-scroll">
-            <LeaderboardSection />
-          </div>
-        )}
-        {!used.has("QuestBoard") && (
-          <div className="w-full reveal-on-scroll">
-            <QuestBoard />
-          </div>
-        )}
-        {!used.has("Badges") && (
-          <div className="w-full reveal-on-scroll">
-            <Badges />
-          </div>
-        )}
-
-        {/* More for you (collapsed) */}
-        {moreItems.length > 0 && (
-          <div className="w-full max-w-6xl">
-            <button
-              type="button"
-              className="nav-pill nav-pill--neutral"
-              onClick={() => setMoreOpen((v) => !v)}
-              aria-expanded={moreOpen}
-            >
-              {moreOpen ? "Hide" : "More for you"}
-            </button>
-            {moreOpen && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                {moreItems.includes("ProductivityGraph") && (
-                  <div className="w-full reveal-on-scroll">
-                    <ProductivityGraph />
-                  </div>
-                )}
-                {moreItems.includes("LeaderboardSection") && (
-                  <div className="w-full reveal-on-scroll">
-                    <LeaderboardSection />
-                  </div>
-                )}
-                {moreItems.includes("QuestBoard") && (
-                  <div className="w-full reveal-on-scroll">
-                    <QuestBoard />
-                  </div>
-                )}
-                {moreItems.includes("Badges") && (
-                  <div className="w-full reveal-on-scroll">
-                    <Badges />
-                  </div>
-                )}
+      {/* Bento Grid Section */}
+      <div className="w-full px-4 md:px-6 py-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center" style={{ fontFamily: "Tanker, sans-serif" }}>
+            Your Dashboard
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Row 1 */}
+            {!used.has("ProductivityGraph") && (
+              <div className="reveal-on-scroll md:col-span-2">
+                <ProductivityGraph />
+              </div>
+            )}
+            
+            {!used.has("LeaderboardSection") && (
+              <div className="reveal-on-scroll">
+                <LeaderboardSection />
+              </div>
+            )}
+            
+            {/* Row 2 */}
+            {!used.has("QuestBoard") && (
+              <div className="reveal-on-scroll">
+                <QuestBoard />
+              </div>
+            )}
+            
+            {!used.has("Badges") && (
+              <div className="reveal-on-scroll md:col-span-2">
+                <Badges />
               </div>
             )}
           </div>
-        )}
+          
+          {/* More For You Section */}
+          {moreItems.length > 0 && (
+            <div className="mt-8">
+              <button
+                type="button"
+                className="nav-pill nav-pill--neutral mx-auto block"
+                onClick={() => setMoreOpen((v) => !v)}
+                aria-expanded={moreOpen}
+              >
+                {moreOpen ? "Show Less" : "More for You"}
+              </button>
+              
+              {moreOpen && (
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {moreItems.includes("ProductivityGraph") && (
+                    <div className="reveal-on-scroll">
+                      <ProductivityGraph />
+                    </div>
+                  )}
+                  {moreItems.includes("LeaderboardSection") && (
+                    <div className="reveal-on-scroll">
+                      <LeaderboardSection />
+                    </div>
+                  )}
+                  {moreItems.includes("QuestBoard") && (
+                    <div className="reveal-on-scroll">
+                      <QuestBoard />
+                    </div>
+                  )}
+                  {moreItems.includes("Badges") && (
+                    <div className="reveal-on-scroll">
+                      <Badges />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
+      
       <FocusSummaryModal />
     </section>
   );
