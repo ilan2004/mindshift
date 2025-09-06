@@ -56,50 +56,61 @@ export default function PeerStatusPanel({ userId = 1 }) {
 
   return (
     <div
-      className="rounded-xl border border-neutral-200/80 bg-white/70 backdrop-blur-sm p-6 shadow-sm"
-      style={{ 
-        backgroundColor: "var(--token-4c81cc5a-0ef3-499f-8b97-80de09631c0a, #ffff94)" 
+      className="rounded-xl p-3 md:p-4 w-full max-w-md mx-auto"
+      style={{
+        background: "var(--token-4c81cc5a-0ef3-499f-8b97-80de09631c0a, #ffff94)",
+        border: "2px solid var(--color-green-900)",
+        boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
       }}
     >
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-lg font-semibold text-neutral-800">Peer Status</h2>
-        <span className="text-sm text-neutral-600 font-medium">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
+        <h2 className="text-sm md:text-base font-semibold text-neutral-800" style={{ fontFamily: "Tanker, sans-serif" }}>
+          Peer Status
+        </h2>
+        <span className="text-xs md:text-sm text-neutral-600 font-medium">
           {activeCount}/{peers.length} active
         </span>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-8">
-          <span className="text-base text-neutral-600">Loading peers…</span>
+        <div className="flex items-center justify-center py-6 md:py-8">
+          <div className="animate-pulse text-sm md:text-base text-neutral-600">Loading peers…</div>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2 md:space-y-3">
           {peers.map((p) => (
             <div 
               key={p.id} 
-              className="flex items-center gap-4 p-4 rounded-lg border border-neutral-200/80 bg-white/60 hover:bg-white/80 transition-colors"
+              className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-xl transition-colors"
+              style={{ 
+                background: "var(--surface)", 
+                border: "2px solid var(--color-green-900)",
+                boxShadow: "0 2px 0 var(--color-green-900)"
+              }}
             >
-              <div className="h-10 w-10 rounded-full flex items-center justify-center bg-neutral-100 text-base font-medium shrink-0">
-                <span aria-hidden="true">{p.avatar || "👤"}</span>
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-sm md:text-base font-semibold flex-shrink-0" style={{ background: "var(--color-green-900)", color: "white" }}>
+                  {p.avatar || p.name.charAt(0).toUpperCase()}
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm md:text-base font-medium text-neutral-800 truncate">
+                      {p.name}
+                    </span>
+                    <div 
+                      className={`h-2 w-2 md:h-2.5 md:w-2.5 rounded-full ${p.presence.color} flex-shrink-0`}
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="text-xs md:text-sm text-neutral-600">
+                    {p.presence.label}
+                    {p.presence.label === "Focusing" ? ` • ${p.etaMin}m left` : ""}
+                  </div>
+                </div>
               </div>
               
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-base font-medium text-neutral-800 truncate">
-                    {p.name}
-                  </span>
-                  <div 
-                    className={`h-2.5 w-2.5 rounded-full ${p.presence.color} shrink-0`}
-                    aria-hidden="true"
-                  />
-                </div>
-                <div className="text-sm text-neutral-600">
-                  {p.presence.label}
-                  {p.presence.label === "Focusing" ? ` • ${p.etaMin}m left` : ""}
-                </div>
-              </div>
-              
-              <button className="nav-pill nav-pill--cyan text-xs px-3 py-1.5 font-medium whitespace-nowrap hover:opacity-80 transition-opacity shrink-0">
+              <button className="nav-pill nav-pill--cyan text-xs px-3 py-1.5 font-medium w-full sm:w-auto flex-shrink-0">
                 Nudge
               </button>
             </div>

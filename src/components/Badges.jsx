@@ -182,22 +182,37 @@ export default function Badges() {
 
   return (
     <>
-      <div className="w-full max-w-2xl mx-auto px-4 mt-2">
-        <div className="rounded-2xl border border-neutral-200/80 bg-white/70 backdrop-blur-sm p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold">Badges</h2>
-            <div className="text-xs text-neutral-600">{earnedCount}/{BADGES.length} earned</div>
+      <div className="w-full max-w-md mx-auto px-3 md:px-4 mt-2">
+        <div 
+          className="rounded-xl p-3 md:p-4"
+          style={{
+            background: "var(--surface)",
+            border: "2px solid var(--color-green-900)",
+            boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
+          }}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
+            <h2 className="text-sm md:text-base font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Badges</h2>
+            <div className="text-xs md:text-sm text-neutral-600 font-medium">{earnedCount}/{BADGES.length} earned</div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
             {list.map((b) => (
-              <div key={b.id} className={`rounded-xl border p-3 flex items-start gap-2 ${b.earned ? "bg-emerald-50 border-emerald-200" : "bg-white border-neutral-200"}`}>
-                <div className="text-xl" aria-hidden>{b.emoji}</div>
-                <div className="min-w-0">
-                  <div className="text-sm font-medium text-neutral-800">{b.title}</div>
-                  <div className="text-xs text-neutral-600">{b.desc}</div>
-                  {!b.earned ? (
-                    <div className="mt-1 text-[11px] text-neutral-500">Not earned yet</div>
-                  ) : null}
+              <div 
+                key={b.id} 
+                className={`rounded-xl p-3 flex items-start gap-2 md:gap-3 transition-colors ${b.earned ? "opacity-100" : "opacity-60"}`}
+                style={{
+                  background: b.earned ? "var(--color-green-900-10)" : "var(--surface)",
+                  border: `2px solid ${b.earned ? "var(--color-green-900)" : "var(--color-green-900-30)"}`,
+                  boxShadow: b.earned ? "0 2px 0 var(--color-green-900)" : "none"
+                }}
+              >
+                <div className="text-lg md:text-xl flex-shrink-0" aria-hidden>{b.emoji}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs md:text-sm font-semibold text-neutral-800">{b.title}</div>
+                  <div className="text-xs text-neutral-600 mt-0.5">{b.desc}</div>
+                  {!b.earned && (
+                    <div className="mt-1 text-xs text-neutral-500">Not earned yet</div>
+                  )}
                 </div>
               </div>
             ))}
@@ -234,27 +249,34 @@ export default function Badges() {
       </div>
 
       {/* Recently unlocked feed */}
-      <div className="w-full max-w-2xl mx-auto px-4 mt-3">
-        <div className="rounded-xl border border-neutral-200/70 bg-white/60 backdrop-blur-sm p-3">
+      <div className="w-full max-w-md mx-auto px-3 md:px-4 mt-3">
+        <div 
+          className="rounded-xl p-3"
+          style={{
+            background: "var(--surface)",
+            border: "2px solid var(--color-green-900)",
+            boxShadow: "0 2px 0 var(--color-green-900)"
+          }}
+        >
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-neutral-800">Recently unlocked</h3>
+            <h3 className="text-xs md:text-sm font-semibold text-neutral-800" style={{ fontFamily: "Tanker, sans-serif" }}>Recently unlocked</h3>
             <button
               type="button"
-              className="text-[11px] text-neutral-500 hover:underline"
+              className="nav-pill text-xs px-2 py-1"
               onClick={() => { writeRecent([]); setRecent([]); }}
             >
               Clear
             </button>
           </div>
           {recent.length === 0 ? (
-            <div className="text-xs text-neutral-500">No recent badges yet.</div>
+            <div className="text-xs text-neutral-500 text-center py-2">No recent badges yet.</div>
           ) : (
-            <ul className="flex flex-wrap gap-2">
-              {recent.slice(0, 8).map((r) => {
+            <ul className="flex flex-wrap gap-1.5">
+              {recent.slice(0, 6).map((r) => {
                 const meta = badgeById[r.badgeId];
                 const variant = meta?.variant || "green";
                 return (
-                  <li key={r.id} className={`nav-pill nav-pill--${variant}`} title={new Date(r.ts).toLocaleString()}>
+                  <li key={r.id} className={`nav-pill nav-pill--${variant} text-xs`} title={new Date(r.ts).toLocaleString()}>
                     <span className="mr-1" aria-hidden>{r.emoji}</span>
                     {r.title}
                   </li>

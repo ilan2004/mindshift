@@ -167,48 +167,72 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
   };
 
   return (
-    <div id="quest-board" className="w-full max-w-2xl mx-auto px-4 mt-6">
-      <div className="rounded-2xl border border-neutral-200/80 bg-white/70 backdrop-blur-sm p-4 shadow-sm">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Quest Board</h2>
-          <div className="text-sm text-neutral-600">{day}</div>
+    <div id="quest-board" className="w-full max-w-md mx-auto px-3 md:px-4 mt-6">
+      <div 
+        className="rounded-xl p-3 md:p-4"
+        style={{
+          background: "var(--surface)",
+          border: "2px solid var(--color-green-900)",
+          boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
+        }}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
+          <h2 className="text-sm md:text-base font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Quest Board</h2>
+          <div className="text-xs md:text-sm text-neutral-600 font-medium">{day}</div>
         </div>
 
         {/* Progress Bar */}
-        <div className="h-2 w-full bg-neutral-100 rounded-full overflow-hidden mb-4">
+        <div className="h-2 w-full rounded-full overflow-hidden mb-3" style={{ background: "var(--color-green-900-20)" }}>
           <div
-            className="h-full bg-emerald-500 transition-all"
-            style={{ width: `${progress}%` }}
+            className="h-full transition-all duration-300"
+            style={{ 
+              width: `${progress}%`,
+              background: "var(--color-green-900)"
+            }}
           />
         </div>
-        <div className="text-xs text-neutral-600 mb-2">{completedCount}/{allQuests.length} completed • {progress}%</div>
+        <div className="text-xs text-neutral-600 mb-3">{completedCount}/{allQuests.length} completed • {progress}%</div>
 
         {/* Add custom quest */}
-        <form onSubmit={addCustomQuest} className="flex flex-wrap items-end gap-2 mb-3">
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-xs text-neutral-600 mb-1">Quest title</label>
-            <input
-              type="text"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="e.g., Plan tomorrow in 5 minutes"
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
+        <form onSubmit={addCustomQuest} className="space-y-2 mb-4">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex-1">
+              <label className="block text-xs text-neutral-600 mb-1">Quest title</label>
+              <input
+                type="text"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="e.g., Plan tomorrow in 5 minutes"
+                className="w-full rounded-[999px] px-3 py-2 text-sm"
+                style={{ 
+                  background: "var(--surface)", 
+                  border: "2px solid var(--color-green-900)", 
+                  boxShadow: "0 2px 0 var(--color-green-900)" 
+                }}
+              />
+            </div>
+            <div className="w-full sm:w-24">
+              <label className="block text-xs text-neutral-600 mb-1">Points</label>
+              <input
+                type="number"
+                min={1}
+                max={1000}
+                step={1}
+                value={newPoints}
+                onChange={(e) => setNewPoints(e.target.value)}
+                className="w-full rounded-[999px] px-3 py-2 text-sm"
+                style={{ 
+                  background: "var(--surface)", 
+                  border: "2px solid var(--color-green-900)", 
+                  boxShadow: "0 2px 0 var(--color-green-900)" 
+                }}
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs text-neutral-600 mb-1">Points</label>
-            <input
-              type="number"
-              min={1}
-              max={1000}
-              step={1}
-              value={newPoints}
-              onChange={(e) => setNewPoints(e.target.value)}
-              className="w-24 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
+          <div className="flex gap-2">
+            <button type="submit" className="nav-pill nav-pill--cyan flex-1 sm:flex-none">Add Quest</button>
+            <button type="button" onClick={resetToday} className="nav-pill flex-1 sm:flex-none">Reset Today</button>
           </div>
-          <button type="submit" className="nav-pill nav-pill--cyan">Add</button>
-          <button type="button" onClick={resetToday} className="nav-pill">Reset Today</button>
         </form>
 
         {/* Quests List */}
@@ -218,25 +242,33 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
             return (
               <li
                 key={q.id}
-                className={`flex items-center justify-between gap-3 rounded-xl border p-3 transition-all duration-200 ease-out ${done ? "bg-emerald-50 border-emerald-200 translate-y-[-1px]" : "bg-white border-neutral-200"}`}
+                className="flex items-center justify-between gap-3 rounded-xl p-3 transition-all duration-200"
+                style={{
+                  background: done ? "var(--color-green-900-10)" : "var(--surface)",
+                  border: `2px solid ${done ? "var(--color-green-900)" : "var(--color-green-900-30)"}`,
+                  boxShadow: done ? "0 2px 0 var(--color-green-900)" : "none"
+                }}
               >
-                <label className="flex items-center gap-3 cursor-pointer select-none">
+                <label className="flex items-center gap-3 cursor-pointer select-none flex-1 min-w-0">
                   <input
                     type="checkbox"
-                    className="h-5 w-5 accent-emerald-600"
+                    className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0"
+                    style={{ accentColor: "var(--color-green-900)" }}
                     checked={done}
                     onChange={() => toggleQuest(q)}
                   />
-                  <span className={`text-sm transition-colors duration-200 ${done ? "line-through text-neutral-500" : "text-neutral-900"}`}>
+                  <span className={`text-xs md:text-sm transition-colors duration-200 ${done ? "line-through text-neutral-500" : "text-neutral-900"} truncate`}>
                     {q.title}
                   </span>
-                  <span className={`ml-1 inline-flex h-5 w-5 items-center justify-center text-emerald-600 transition-opacity duration-200 ${done ? "opacity-100" : "opacity-0"}`} aria-hidden>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-                      <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm14.28-2.03a.75.75 0 0 0-1.06-1.06l-5.47 5.47-2.19-2.19a.75.75 0 1 0-1.06 1.06l2.72 2.72c.293.293.767.293 1.06 0l6-6Z" clipRule="evenodd" />
-                    </svg>
-                  </span>
+                  {done && (
+                    <span className="text-emerald-600 flex-shrink-0" aria-hidden>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+                        <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm14.28-2.03a.75.75 0 0 0-1.06-1.06l-5.47 5.47-2.19-2.19a.75.75 0 1 0-1.06 1.06l2.72 2.72c.293.293.767.293 1.06 0l6-6Z" clipRule="evenodd" />
+                      </svg>
+                    </span>
+                  )}
                 </label>
-                <span className="nav-pill nav-pill--neutral">+{q.points}</span>
+                <span className="nav-pill nav-pill--neutral text-xs flex-shrink-0">+{q.points}</span>
               </li>
             );
           })}
