@@ -61,25 +61,37 @@ export default function ProductivityGraph({ maxMinutes = 120 }) {
   const peak = Math.max(1, ...data.map((d) => d.minutes));
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 mt-6">
-      <div className="rounded-2xl border border-neutral-200/80 bg-white/70 backdrop-blur-sm p-4 shadow-sm">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Productivity (7 days)</h2>
-          <div className="text-xs text-neutral-500">Max {maxMinutes}m cap</div>
+    <div className="w-full max-w-md mx-auto px-3 md:px-4 mt-6">
+      <div 
+        className="rounded-xl p-3 md:p-4"
+        style={{
+          background: "var(--surface)",
+          border: "2px solid var(--color-green-900)",
+          boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
+        }}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
+          <h2 className="text-sm md:text-base font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Productivity (7 days)</h2>
+          <div className="text-xs text-neutral-500 font-medium">Max {maxMinutes}m cap</div>
         </div>
 
-        <div className="h-40 flex items-end gap-3 px-2">
+        <div className="h-32 md:h-40 flex items-end gap-2 md:gap-3 px-1 md:px-2">
           {data.map((d) => {
-            const h = Math.max(4, Math.round((d.minutes / peak) * 100));
+            const h = Math.max(8, Math.round((d.minutes / peak) * 100));
             return (
-              <div key={d.key} className="flex-1 flex flex-col items-center gap-2">
-                <div className="relative w-6 sm:w-8 md:w-9 flex items-end justify-center" title={`${d.fullMinutes} min`}>
+              <div key={d.key} className="flex-1 flex flex-col items-center gap-1.5 md:gap-2">
+                <div className="relative w-5 md:w-8 flex items-end justify-center" title={`${d.fullMinutes} min`}>
                   <div
-                    className={`w-full rounded-lg transition-all duration-300 ${d.isToday ? "bg-emerald-600" : "bg-emerald-400"}`}
-                    style={{ height: `${h}%` }}
+                    className="w-full rounded-lg transition-all duration-300"
+                    style={{ 
+                      height: `${h}%`,
+                      background: d.isToday ? "var(--color-green-900)" : "var(--color-green-900-60)"
+                    }}
                   />
                 </div>
-                <div className={`text-xs ${d.isToday ? "text-emerald-700" : "text-neutral-600"}`}>{d.label}</div>
+                <div className={`text-xs font-medium ${d.isToday ? "font-semibold" : ""}`} style={{ color: d.isToday ? "var(--color-green-900)" : "var(--color-neutral-600)" }}>
+                  {d.label}
+                </div>
               </div>
             );
           })}
