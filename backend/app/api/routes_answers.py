@@ -8,6 +8,7 @@ from app.services.personality_service import (
     map_answers_to_mbti,
     map_answers_to_mbti_likert,
 )
+from app.services.question_service import STATIC_QUESTIONS
 
 router = APIRouter()
 
@@ -41,6 +42,7 @@ def submit_answers(data: AnswerRequest):
     except Exception:
         use_likert = False
 
+    axis_scores: Dict[str, int] = {}
     if use_likert:
         # Convert all to ints safely
         likert_payload: Dict[str, int] = {}
@@ -50,12 +52,49 @@ def submit_answers(data: AnswerRequest):
             except Exception:
                 continue
         mbti = map_answers_to_mbti_likert(likert_payload)
+
+        # Also compute axis totals for debugging/visibility in scores
+        E = I = S = N = T = F = J = P = 0
+        ei_e_indices = {0, 1, 2}
+        ei_i_indices = {3}
+        sn_s_indices = {4, 6}
+        sn_n_indices = {5, 7}
+        tf_t_indices = {8, 10}
+        tf_f_indices = {9, 11}
+        jp_j_indices = {12, 14}
+        jp_p_indices = {13, 15}
+        text_to_index = {q: i for i, q in enumerate(STATIC_QUESTIONS)}
+        for q_text, v in likert_payload.items():
+            if not (1 <= v <= 5):
+                continue
+            idx = text_to_index.get(q_text)
+            if idx is None:
+                continue
+            comp = 6 - v
+            if idx in ei_e_indices:
+                E += v; I += comp
+            elif idx in ei_i_indices:
+                I += v; E += comp
+            if idx in sn_s_indices:
+                S += v; N += comp
+            elif idx in sn_n_indices:
+                N += v; S += comp
+            if idx in tf_t_indices:
+                T += v; F += comp
+            elif idx in tf_f_indices:
+                F += v; T += comp
+            if idx in jp_j_indices:
+                J += v; P += comp
+            elif idx in jp_p_indices:
+                P += v; J += comp
+        axis_scores = {"E": E, "I": I, "S": S, "N": N, "T": T, "F": F, "J": J, "P": P}
     else:
         # Fallback to keyword heuristic
         mbti = map_answers_to_mbti(data.answers)
 
-    # Generate scores dict (simple scoring for demonstration)
-    scores = {trait: 100 for trait in traits}  # Assign max score to detected traits
+    # Generate scores dict: include placeholder trait scores and axis scores when available
+    scores = {trait: 100 for trait in traits}
+    scores.update(axis_scores)
 
     return ProfileResponse(
         user_id=data.user_id,
