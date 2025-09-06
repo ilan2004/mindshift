@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, Any
 from app.services.personality_service import (
     map_answers_to_traits,
     map_answers_to_mbti,
@@ -14,7 +14,7 @@ router = APIRouter()
 # ---------- Request & Response Schemas ----------
 class AnswerRequest(BaseModel):
     user_id: str
-    answers: Dict[str, str]   # {question: "Agree"/"Disagree"}
+    answers: Dict[str, Any]   # {question: 1..5 or free-text}
 
 class ProfileResponse(BaseModel):
     user_id: str
