@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import QRCode from "react-qr-code";
 import {
   getOrCreateToken,
@@ -16,6 +16,7 @@ export default function MobileSetupPage() {
   const [data, setData] = useState({ base: [], custom: [], count: 0 });
   const [input, setInput] = useState("");
   const [message, setMessage] = useState("");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const t = getOrCreateToken();
@@ -66,6 +67,25 @@ export default function MobileSetupPage() {
 
   const url = token ? subscriptionUrl(token) : "";
 
+  const isIOS = useMemo(() => {
+    if (typeof navigator === "undefined") return false;
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  }, []);
+  const isAndroid = useMemo(() => {
+    if (typeof navigator === "undefined") return false;
+    return /Android/i.test(navigator.userAgent);
+  }, []);
+
+  async function copyUrl() {
+    try {
+      await navigator.clipboard?.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (e) {
+      setMessage("Unable to copy. Long-press the URL to copy.");
+    }
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-3">Mobile Setup (DNS Blocking)</h1>
@@ -75,7 +95,38 @@ export default function MobileSetupPage() {
         as you add or remove sites below.
       </p>
 
+      {/* iOS Safari (browser-only) quick setup */}
       <section className="mb-6">
+        <h2 className="font-semibold mb-2">Safari on iOS (Browser‑only, easiest)</h2>
+        <ol className="list-decimal ml-5 space-y-1 text-sm">
+          <li>Install a Safari content blocker: AdGuard or 1Blocker from the App Store.</li>
+          <li>Open the app → Filters/Custom → Add filter list by URL, then paste your URL above.</li>
+          <li>Enable it in iOS: Settings → Safari → Extensions (Content Blockers) → toggle on.</li>
+        </ol>
+        <div className="mt-2 flex flex-wrap gap-2 text-sm">
+          <a className="px-3 py-2 border rounded" href="https://apps.apple.com/app/apple-store/id1047223162" target="_blank" rel="noreferrer">Get AdGuard</a>
+          <a className="px-3 py-2 border rounded" href="https://apps.apple.com/app/1blocker-ad-blocker-privacy/id1365531024" target="_blank" rel="noreferrer">Get 1Blocker</a>
+        </div>
+        {isIOS && (
+          <div className="mt-2 text-xs text-emerald-700">We detected iOS — the steps above are recommended.</div>
+        )}
+      </section>
+
+      {/* Android alternatives without Firefox */}
+      <section className="mb-6">
+        <h2 className="font-semibold mb-2">Android (without Firefox)</h2>
+        <ol className="list-decimal ml-5 space-y-1 text-sm">
+          <li>AdGuard for Android: open AdGuard → Filters → Custom → Add filter by URL (paste your URL above).</li>
+          <li>Samsung Internet: install AdGuard Content Blocker or Adblock Plus for Samsung Internet, then add a custom list by URL.</li>
+        </ol>
+        <div className="mt-2 flex flex-wrap gap-2 text-sm">
+          <a className="px-3 py-2 border rounded" href="https://adguard.com/en/adguard-android/overview.html" target="_blank" rel="noreferrer">Get AdGuard for Android</a>
+          <a className="px-3 py-2 border rounded" href="https://play.google.com/store/apps/details?id=com.samsung.android.sbrowser.contentBlocker" target="_blank" rel="noreferrer">Samsung Content Blocker</a>
+        </div>
+        {isAndroid && (
+          <div className="mt-2 text-xs text-emerald-700">We detected Android — the steps above are recommended.</div>
+        )}
+      </section>
         <h2 className="font-semibold mb-2">1) Your subscription URL</h2>
         <div className="flex items-center gap-2">
           <input
@@ -85,9 +136,9 @@ export default function MobileSetupPage() {
           />
           <button
             className="px-3 py-2 bg-emerald-600 text-white rounded"
-            onClick={() => navigator.clipboard?.writeText(url)}
+            onClick={copyUrl}
           >
-            Copy
+            {copied ? "Copied" : "Copy"}
           </button>
         </div>
         {url && (
