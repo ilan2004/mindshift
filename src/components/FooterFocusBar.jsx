@@ -114,8 +114,22 @@ export default function FooterFocusBar() {
       },
     });
 
+    // Fallback: plain window scroll listener to detect direction and toggle bar
+    let lastY = window.scrollY || 0;
+    const onScroll = () => {
+      if (prefersReducedMotion) return;
+      const y = window.scrollY || 0;
+      if (!armed && y > armAt) armed = true;
+      if (!armed) return;
+      const dir = y > lastY ? 1 : -1;
+      lastY = y;
+      if (dir === 1) yTo(105); else yTo(0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
       st.kill();
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
