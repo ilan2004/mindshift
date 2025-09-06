@@ -197,14 +197,12 @@ export default function TestRunner({ mode = "general", onComplete }) {
     } else {
       // Submit
       const user_id = getUserId();
-      // Convert map back to {question: value} using the matching text by id
+      // Convert map back to {question: numericValue}
       const payload = {};
       items.forEach((it) => {
         const val = answers[it.id];
         if (val != null) {
-          const label = SCALE_LABEL[val] || String(val);
-          // Include question text and human label so backend keyword matcher can work
-          payload[it.text] = `${it.text} — ${label}`;
+          payload[it.text] = val; // send 1..5 so backend can apply Likert scoring
         }
       });
       try {

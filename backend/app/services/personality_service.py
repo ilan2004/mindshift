@@ -1,6 +1,7 @@
 from typing import Dict, List
 import json
 from pathlib import Path
+from app.services.question_service import STATIC_QUESTIONS
 
 # Load personality JSON
 DATA_PATH = Path("app/data/personalities.json")
@@ -84,3 +85,75 @@ def map_answers_to_mbti(answers: Dict[str, str]) -> str:
         ("J" if J_P >= 0 else "P")
     )
     return mbti
+
+def map_answers_to_mbti_likert(answers: Dict[str, int]) -> str:
+    """
+    Compute MBTI from Likert-scale responses (1..5) keyed by the exact
+    question text from STATIC_QUESTIONS.
+
+    Scoring:
+    - For each axis (E/I, S/N, T/F, J/P) we add to both sides using a
+      complementary score (e.g., if E item is rated v, add v to E and (6-v) to I).
+    - Reverse-coded items are handled by swapping which side receives the direct score.
+    """
+    # Initialize axis totals
+    E = I = S = N = T = F = J = P = 0
+
+    # Index sets per axis (0-based indices in STATIC_QUESTIONS)
+    ei_e_indices = {0, 1, 2}  # E phrased
+    ei_i_indices = {3}        # I phrased (reverse of E)
+
+    sn_s_indices = {4, 6}     # S phrased
+    sn_n_indices = {5, 7}     # N phrased
+
+    tf_t_indices = {8, 10}    # T phrased
+    tf_f_indices = {9, 11}    # F phrased
+
+    jp_j_indices = {12, 14}   # J phrased
+    jp_p_indices = {13, 15}   # P phrased
+
+    # Build lookup from text -> index (exact match)
+    text_to_index = {q: i for i, q in enumerate(STATIC_QUESTIONS)}
+
+    for q_text, val in answers.items():
+        try:
+            v = int(val)
+        except (TypeError, ValueError):
+            continue
+        if v < 1 or v > 5:
+            continue
+        idx = text_to_index.get(q_text)
+        if idx is None:
+            # Unknown question text; skip
+            continue
+
+        comp = 6 - v  # complementary score
+
+        if idx in ei_e_indices:
+            E += v; I += comp
+        elif idx in ei_i_indices:
+            I += v; E += comp
+
+        if idx in sn_s_indices:
+            S += v; N += comp
+        elif idx in sn_n_indices:
+            N += v; S += comp
+
+        if idx in tf_t_indices:
+            T += v; F += comp
+        elif idx in tf_f_indices:
+            F += v; T += comp
+
+        if idx in jp_j_indices:
+            J += v; P += comp
+        elif idx in jp_p_indices:
+            P += v; J += comp
+
+    # Decide letters (tie goes to the first letter on each axis)
+    letters = (
+        ("E" if E >= I else "I") +
+        ("S" if S >= N else "N") +
+        ("T" if T >= F else "F") +
+        ("J" if J >= P else "P")
+    )
+    return letters

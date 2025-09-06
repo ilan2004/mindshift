@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { QRCode } from "qrcode.react";
 import {
   getOrCreateToken,
   fetchBlocklistJSON,
@@ -89,6 +90,16 @@ export default function MobileSetupPage() {
             Copy
           </button>
         </div>
+        {url && (
+          <div className="mt-3 flex items-center gap-3">
+            <a href={url} target="_blank" rel="noreferrer" title="Open subscription URL">
+              <QRCode value={url} size={128} bgColor="#ffffff" fgColor="#111111" includeMargin={false} />
+            </a>
+            <div className="text-xs text-neutral-500">
+              Scan or tap to open on your phone.
+            </div>
+          </div>
+        )}
         <p className="text-xs text-neutral-500 mt-2">
           Add this URL to your NextDNS profile as a custom filter list, or paste its
           contents into your Denylist.
