@@ -1,8 +1,8 @@
 const Badge = ({ rank }) => {
-  if (rank === 1) return <span className="inline-block w-6 h-6 bg-yellow-400 text-yellow-800 rounded-full flex items-center justify-center text-sm font-bold">🥇</span>;
-  if (rank === 2) return <span className="inline-block w-6 h-6 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">🥈</span>;
-  if (rank === 3) return <span className="inline-block w-6 h-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">🥉</span>;
-  return <span className="w-6 h-6 flex items-center justify-center text-sm text-gray-400">{rank}</span>;
+  if (rank === 1) return <span className="w-5 h-5 md:w-6 md:h-6 bg-yellow-400 text-yellow-800 rounded-full flex items-center justify-center text-xs md:text-sm font-bold">🥇</span>;
+  if (rank === 2) return <span className="w-5 h-5 md:w-6 md:h-6 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-xs md:text-sm font-bold">🥈</span>;
+  if (rank === 3) return <span className="w-5 h-5 md:w-6 md:h-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-xs md:text-sm font-bold">🥉</span>;
+  return <span className="w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-xs md:text-sm text-gray-400 font-medium">{rank}</span>;
 };
 
 export default function LeaderboardTable({ rows = [], type = 'points' }) {
@@ -33,28 +33,30 @@ export default function LeaderboardTable({ rows = [], type = 'points' }) {
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full text-sm text-left">
+    <div className="overflow-hidden">
+      <table className="w-full text-xs md:text-sm">
         <thead>
-          <tr className="border-b">
-            <th className="py-3 px-4">Rank</th>
-            <th className="py-3 px-4">User</th>
-            <th className="py-3 px-4 text-right">{getColumnHeader()}</th>
+          <tr className="border-b border-gray-200">
+            <th className="py-2 px-2 md:px-3 text-left font-medium text-gray-600">Rank</th>
+            <th className="py-2 px-2 md:px-3 text-left font-medium text-gray-600">User</th>
+            <th className="py-2 px-2 md:px-3 text-right font-medium text-gray-600">{getColumnHeader()}</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((user, index) => (
-            <tr key={user.id} className="border-b hover:bg-neutral-50">
-              <td className="py-3 px-4">
+            <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+              <td className="py-2.5 px-2 md:px-3">
                 <Badge rank={index + 1} />
               </td>
-              <td className="py-3 px-4 flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-lg">
-                  {user.avatar || user.name.charAt(0)}
+              <td className="py-2.5 px-2 md:px-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold flex-shrink-0" style={{ background: "var(--color-green-900)", color: "white" }}>
+                    {user.avatar || user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="font-medium truncate">{user.name}</span>
                 </div>
-                <span>{user.name}</span>
               </td>
-              <td className="py-3 px-4 text-right font-medium">
+              <td className="py-2.5 px-2 md:px-3 text-right font-semibold">
                 {getValue(user)}
               </td>
             </tr>

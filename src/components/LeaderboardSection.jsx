@@ -95,16 +95,16 @@ export default function LeaderboardSection() {
 
   return (
     <div
-      className="rounded-xl p-3 w-full"
+      className="rounded-xl p-3 md:p-4 w-full max-w-md mx-auto"
       style={{
         background: "var(--token-3cf441d7-edfe-47fb-95dc-1899b0597681, #f9f8f4)",
         border: "2px solid var(--color-green-900)",
         boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
       }}
     >
-      <div className="flex items-center justify-between gap-3 mb-3">
-        <h3 className="text-sm font-semibold text-neutral-800">Leaderboard</h3>
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
+        <h3 className="text-sm md:text-base font-semibold text-neutral-800" style={{ fontFamily: "Tanker, sans-serif" }}>Leaderboard</h3>
+        <div className="flex items-center gap-1.5 flex-wrap">
           {visibleTabs.map((k) => {
             const opt = k === "points" ? { key: "points", label: "Points" }
               : k === "streak" ? { key: "streak", label: "Streak" }
@@ -113,7 +113,7 @@ export default function LeaderboardSection() {
             return (
               <button
                 key={opt.key}
-                className={`nav-pill ${type === opt.key ? "nav-pill--cyan" : "nav-pill--neutral"} text-[11px] px-2 py-1`}
+                className={`nav-pill ${type === opt.key ? "nav-pill--cyan" : "nav-pill--neutral"} text-xs px-2.5 py-1.5 flex-1 sm:flex-none min-w-0`}
                 onClick={() => setType(opt.key)}
               >
                 {opt.label}
