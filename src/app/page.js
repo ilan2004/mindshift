@@ -12,6 +12,7 @@ import LeaderboardSection from "@/components/LeaderboardSection";
 import { useEffect, useMemo, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { buildBento, styleFor } from "./buildBento";
 
 function readMBTI() {
   try { return (localStorage.getItem("mindshift_personality_type") || "").toUpperCase(); } catch { return ""; }
@@ -151,7 +152,13 @@ export default function Home() {
     return () => ctx.revert();
   }, [moreOpen]);
 
+  const bentoItems = useMemo(() => {
+    const exclude = Array.from(used).filter((id) => id !== "character" && id !== "nudge");
+    return buildBento(cluster, tone, exclude, 8);
+  }, [cluster, tone, used]);
+
   return (
+    <>
     <section className="min-h-[70vh] flex flex-col items-center justify-start">
       <div className="w-full px-4 md:px-6 flex flex-col items-center gap-8">
         {/* Hero: 3-column with side components flanking Character (center fixed) */}
@@ -172,26 +179,15 @@ export default function Home() {
         </div>
 
         {/* Lower sections: hide duplicates shown in hero */}
-        {!used.has("ProductivityGraph") && (
-          <div className="w-full reveal-on-scroll">
-            <ProductivityGraph />
+        <div className="w-full reveal-on-scroll">
+          <div className="bento-grid">
+            {bentoItems.map((item) => (
+              <div key={item.id} className="bento-card" style={styleFor(item)}>
+                {item.el}
+              </div>
+            ))}
           </div>
-        )}
-        {!used.has("LeaderboardSection") && (
-          <div className="w-full reveal-on-scroll">
-            <LeaderboardSection />
-          </div>
-        )}
-        {!used.has("QuestBoard") && (
-          <div className="w-full reveal-on-scroll">
-            <QuestBoard />
-          </div>
-        )}
-        {!used.has("Badges") && (
-          <div className="w-full reveal-on-scroll">
-            <Badges />
-          </div>
-        )}
+        </div>
 
         {/* More for you (collapsed) */}
         {moreItems.length > 0 && (
@@ -233,5 +229,20 @@ export default function Home() {
       </div>
       <FocusSummaryModal />
     </section>
+    <style jsx global>{`
+      .bento-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0.5rem; grid-auto-flow: dense; }
+      .bento-card { grid-column: span var(--c-base, 12); grid-row: span var(--r-base, 1); padding: 0; border: 0; background: transparent; box-shadow: none; margin: 0; }
+      .bento-card > * { margin-top: 0; margin-bottom: 0; }
+      .bento-card:hover { transform: none; box-shadow: none; }
+      @media (min-width: 768px) {
+        .bento-card { grid-column: span var(--c-md, var(--c-base, 12)); grid-row: span var(--r-md, var(--r-base, 1)); }
+      }
+      /* Masonry-style on large screens to eliminate vertical gaps */
+      @media (min-width: 1024px) {
+        .bento-grid { display: block; column-count: 2; column-gap: 1rem; }
+        .bento-card { display: inline-block; width: 100%; break-inside: avoid; margin: 0 0 0.75rem; }
+      }
+    `}</style>
+  </>
   );
 }
