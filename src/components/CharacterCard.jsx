@@ -489,7 +489,7 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
           </div>
         )}
       </div>
-      {type ? <div className="text-sm text-neutral-600">{type}</div> : null}
+      {type ? <div className="font-tanker text-sm text-white">{type}</div> : null}
       {(() => {
         const info = PERSONALITY_INFO[type] || {
           description: "Focused mode tailored to your style.",
@@ -501,11 +501,18 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
         return (
           <div className="w-full max-w-md px-4">
             <div
-              className="rounded-xl border border-neutral-200/80 bg-white/70 backdrop-blur-sm p-3 shadow-sm"
-              style={{ boxShadow: "0 4px 0 var(--color-green-900-20)" }}
+              className="rounded-xl p-3 md:p-4"
+              style={{
+                background: "var(--surface)",
+                border: "2px solid var(--color-green-900)",
+                boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
+              }}
             >
-              <p className="text-sm text-neutral-800 text-center">{info.description}</p>
-              <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <h2 className="text-sm md:text-base font-semibold font-tanker">Personality Profile</h2>
+              </div>
+              <p className="text-sm text-neutral-800 mb-3">{info.description}</p>
+              <ul className="grid gap-2 sm:grid-cols-2">
                 {info.tips.slice(0, 2).map((t, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs text-neutral-600">
                     <span
