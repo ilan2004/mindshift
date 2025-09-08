@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -31,6 +31,7 @@ import mbtiThemes, {
 } from "@/lib/mbtiThemes";
 
 function readMBTI() {
+  if (typeof window === 'undefined') return "";
   try { return (localStorage.getItem("mindshift_personality_type") || "").toUpperCase(); } catch { return ""; }
 }
 
@@ -80,9 +81,11 @@ export default function Home() {
     try { return d.toLocaleDateString("en-CA"); } catch { return new Date().toISOString().slice(0,10); }
   }
   function readSessions() {
+    if (typeof window === 'undefined') return [];
     try { const raw = localStorage.getItem("mindshift_focus_sessions"); const arr = raw? JSON.parse(raw) : []; return Array.isArray(arr)? arr : []; } catch { return []; }
   }
   function writeSessions(list) {
+    if (typeof window === 'undefined') return;
     try { localStorage.setItem("mindshift_focus_sessions", JSON.stringify(list)); } catch {}
   }
   function logRecent(evt) {
@@ -94,7 +97,7 @@ export default function Home() {
       localStorage.setItem("mindshift_recent_events", JSON.stringify(next));
     } catch {}
   }
-  function computeTodayMinutes() {
+  const computeTodayMinutes = useCallback(() => {
     const sessions = readSessions();
     const k = dayKey();
     let total = 0; const now = Date.now();
@@ -106,18 +109,23 @@ export default function Home() {
       if (end && start) total += Math.max(0, Math.round((Math.min(end, now) - start)/60000));
     }
     return total;
-  }
-  function readStreak() { try { return Number(localStorage.getItem("mindshift_streak"))||0; } catch { return 0; } }
-  function getActive() {
+  }, []);
+  
+  const readStreak = useCallback(() => { 
+    if (typeof window === 'undefined') return 0;
+    try { return Number(localStorage.getItem("mindshift_streak"))||0; } catch { return 0; } 
+  }, []);
+  
+  const getActive = useCallback(() => {
     const sessions = readSessions();
     const now = Date.now();
     return sessions.find(s => (s.status||"active") === "active" && (s.ends_at||s.endsAt||0) > now);
-  }
-  function refreshToday() {
+  }, []);
+  const refreshToday = useCallback(() => {
     setTodayMinutes(computeTodayMinutes());
     setStreakDays(readStreak());
     setHasActive(!!getActive());
-  }
+  }, [computeTodayMinutes, readStreak, getActive]); // Include the local functions
 
   // Listen for template start events and create a local active session
   useEffect(() => {
@@ -206,7 +214,7 @@ export default function Home() {
       window.removeEventListener("mindshift:blocker:quiz", onQuiz);
       window.removeEventListener("mindshift:focus:break_request", onBreakReq);
     };
-  }, []);
+  }, [refreshToday]);
 
   const handleProfileDone = () => {
     setShowProfile(false);
@@ -271,7 +279,7 @@ export default function Home() {
           </div>
         );
     }
-  }, [cluster]);
+  }, [cluster, mbti]);
 
   const heroRight = useMemo(() => {
     switch (cluster) {
@@ -301,7 +309,7 @@ export default function Home() {
           </div>
         );
     }
-  }, [cluster]);
+  }, [cluster, mbti]);
 
   // Determine which lower sections to hide because they already appear in hero
   const used = useMemo(() => {
