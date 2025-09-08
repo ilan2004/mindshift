@@ -105,8 +105,8 @@ export default function FooterFocusBar() {
         if (!armed) return;
 
         if (self.direction === 1) {
-          // Scrolling down -> hide (reduced travel to 105%)
-          yTo(105);
+          // Scrolling down -> hide completely
+          yTo(150);
         } else {
           // Scrolling up -> show
           yTo(0);
@@ -127,7 +127,7 @@ export default function FooterFocusBar() {
       if (!armed) return;
       const dir = y > lastY ? 1 : -1;
       lastY = y;
-      if (dir === 1) yTo(105); else yTo(0);
+      if (dir === 1) yTo(150); else yTo(0);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
 

@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
+import { getCharacterDialogue } from "@/lib/characterDialogue";
+import { themeUtils } from "@/lib/mbtiThemes";
 
 // No localStorage. Graph uses mock data only.
 
@@ -40,7 +42,37 @@ function mockSessions() {
   return days.map((d, i) => ({ date: d.key, minutes: pattern[i % pattern.length] }));
 }
 
-export default function ProductivityGraph({ maxMinutes = 120 }) {
+export default function ProductivityGraph({ maxMinutes = 120, personalityType = null }) {
+  // Get personality type from localStorage or props
+  const mbti = personalityType || (() => {
+    try { return localStorage.getItem("mindshift_personality_type") || ""; } catch { return ""; }
+  })();
+  
+  // Personality-specific messaging
+  const personalityContext = useMemo(() => {
+    if (!mbti) return { title: "Productivity (7 days)", subtitle: "Track your focus patterns" };
+    
+    const messages = {
+      INTJ: { title: "Strategic Progress", subtitle: "Building systematic focus habits" },
+      INTP: { title: "Analysis Patterns", subtitle: "Exploring your productivity rhythms" },
+      ENTJ: { title: "Leadership Metrics", subtitle: "Driving consistent performance" },
+      ENTP: { title: "Innovation Tracker", subtitle: "Balancing focus with creativity" },
+      INFJ: { title: "Mindful Progress", subtitle: "Aligning actions with purpose" },
+      INFP: { title: "Authentic Journey", subtitle: "Growing at your own pace" },
+      ENFJ: { title: "Inspiring Growth", subtitle: "Leading by example" },
+      ENFP: { title: "Enthusiastic Momentum", subtitle: "Riding the waves of inspiration" },
+      ISTJ: { title: "Steady Progress", subtitle: "Building reliable habits" },
+      ISFJ: { title: "Caring Consistency", subtitle: "Supporting your wellbeing" },
+      ESTJ: { title: "Achievement Tracker", subtitle: "Meeting your commitments" },
+      ESFJ: { title: "Collaborative Growth", subtitle: "Succeeding together" },
+      ISTP: { title: "Practical Results", subtitle: "Efficient focus sessions" },
+      ISFP: { title: "Personal Rhythm", subtitle: "Finding your flow" },
+      ESTP: { title: "Dynamic Progress", subtitle: "Adapting and achieving" },
+      ESFP: { title: "Energetic Journey", subtitle: "Celebrating every step" }
+    };
+    
+    return messages[mbti.toUpperCase()] || { title: "Productivity (7 days)", subtitle: "Track your focus patterns" };
+  }, [mbti]);
 
   const data = useMemo(() => {
     const days = getLastNDays(7);
@@ -71,8 +103,19 @@ export default function ProductivityGraph({ maxMinutes = 120 }) {
         }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
-          <h2 className="text-sm md:text-base font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Productivity (7 days)</h2>
-          <div className="text-xs text-neutral-500 font-medium">Max {maxMinutes}m cap</div>
+          <div>
+            <h2 className="text-sm md:text-base font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>
+              {personalityContext.title}
+            </h2>
+            {mbti && (
+              <div className="text-xs text-neutral-600 mt-0.5">
+                {personalityContext.subtitle}
+              </div>
+            )}
+          </div>
+          <div className="text-xs text-neutral-500 font-medium">
+            {mbti && <span className="text-green font-medium">{mbti} • </span>}Max {maxMinutes}m cap
+          </div>
         </div>
 
         <div className="h-28 md:h-36 flex items-end gap-2 px-1">

@@ -1,19 +1,33 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Original components
 import CharacterCard from "@/components/CharacterCard";
 import QuestBoard from "@/components/QuestBoard";
 import ProductivityGraph from "@/components/ProductivityGraph";
 import FocusSummaryModal from "@/components/FocusSummaryModal";
 import Badges from "@/components/Badges";
-import NudgeBox from "@/components/NudgeBox";
 import PeerStatusPanel from "@/components/PeerStatusPanel";
 import CommunityChallenges from "@/components/CommunityChallenges";
 import LeaderboardSection from "@/components/LeaderboardSection";
 import PersonalityProfile from "@/components/PersonalityProfile";
-import { useEffect, useMemo, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { buildBento, styleFor } from "./buildBento";
+
+// Phase 1 personality intelligence components - to be integrated
+import { PersonalityProgressOverview } from "@/components/PersonalityProgress";
+import CustomSessionScheduler from "@/components/CustomSessionScheduler";
+import SmartTemplateGrid from "@/components/SmartTemplateGrid";
+import { getCharacterDialogue } from "@/lib/characterDialogue";
+
+// MBTI Theme System
+import mbtiThemes, { 
+  initializeThemeSystem, 
+  getCurrentPersonalityTheme, 
+  themeUtils 
+} from "@/lib/mbtiThemes";
 
 function readMBTI() {
   try { return (localStorage.getItem("mindshift_personality_type") || "").toUpperCase(); } catch { return ""; }
@@ -41,8 +55,15 @@ export default function Home() {
   const [todayMinutes, setTodayMinutes] = useState(0);
   const [streakDays, setStreakDays] = useState(0);
   const [hasActive, setHasActive] = useState(false);
-  const [quizGate, setQuizGate] = useState({ open: false, url: "", items: [] });
+  const [quizGate, setQuizGate] = useState({ open: false, url: "", items: [], loading: false, metadata: null, error: null });
   const [breakConfirm, setBreakConfirm] = useState(false);
+  const [theme, setTheme] = useState(null);
+
+  // Initialize theme system
+  useEffect(() => {
+    initializeThemeSystem();
+    setTheme(getCurrentPersonalityTheme());
+  }, []);
 
   useEffect(() => { 
     const currentMbti = readMBTI();
@@ -115,16 +136,57 @@ export default function Home() {
       const list = readSessions();
       list.unshift(sess);
       writeSessions(list);
+      
+      console.log('🚀 Session started:', sess);
+      
+      // Log the session start
       logRecent({ kind: "session_start", title: `Started ${sess.type}`, meta: `${duration}m` });
+      
+      // Show user feedback
+      if (sess.attachment_url) {
+        logRecent({ 
+          kind: "content_attached", 
+          title: `Content-gated session active`, 
+          meta: `${duration}m with quiz protection` 
+        });
+        console.log('🔒 Content-gated session with URL:', sess.attachment_url);
+      }
+      
       try { window.dispatchEvent(new Event("mindshift:session:started")); } catch {}
       refreshToday();
     };
     const onComplete = () => { logRecent({ kind: "session_done", title: "Session completed", meta: dayKey() }); refreshToday(); };
     const onBadge = () => { logRecent({ kind: "badge", title: "Badge unlocked", meta: "Congrats" }); };
-    const onQuiz = (e) => {
+    const onQuiz = async (e) => {
       const url = (e && e.detail && e.detail.url) || "";
-      const items = makeQuizStub(url);
-      setQuizGate({ open: true, url, items });
+      
+      // Show loading state
+      setQuizGate({ open: true, url, items: [], loading: true });
+      
+      if (url.trim()) {
+        try {
+          const quizResult = await generateContentQuiz(url);
+          setQuizGate({ 
+            open: true, 
+            url, 
+            items: quizResult.questions,
+            loading: false,
+            metadata: quizResult.metadata,
+            error: quizResult.success ? null : quizResult.error
+          });
+        } catch (error) {
+          setQuizGate({ 
+            open: true, 
+            url, 
+            items: makeQuizStub(url),
+            loading: false,
+            error: 'Failed to generate content-based quiz'
+          });
+        }
+      } else {
+        // No URL provided, use generic questions
+        setQuizGate({ open: true, url, items: makeQuizStub(url), loading: false });
+      }
     };
     const onBreakReq = () => setBreakConfirm(true);
     window.addEventListener("mindshift:focus:start_template", onStart);
@@ -152,32 +214,58 @@ export default function Home() {
   const cluster = useMemo(() => mbtiToCluster(mbti), [mbti]);
   const tone = useMemo(() => clusterTone(cluster), [cluster]);
 
+  // Toggle theme mode function for navbar
+  const toggleThemeMode = () => {
+    themeUtils.toggleTheme();
+    setTheme(getCurrentPersonalityTheme());
+  };
+
+  // Handle template selection and start
+  const handleStartFocus = (template) => {
+    try {
+      const payload = { 
+        template: template.id, 
+        duration: template.duration,
+        startedAt: Date.now() 
+      };
+      localStorage.setItem("mindshift_last_template", JSON.stringify(payload));
+      window.dispatchEvent(new CustomEvent("mindshift:focus:start_template", { detail: payload }));
+    } catch {}
+  };
+  
+  // Test content quiz functionality
+  const testContentQuiz = (url) => {
+    try {
+      window.dispatchEvent(new CustomEvent("mindshift:blocker:quiz", { detail: { url } }));
+    } catch {}
+  };
+
   // Decide which components appear in hero side columns and which go to More For You
   const heroLeft = useMemo(() => {
     switch (cluster) {
       case "analysts":
         return (
           <div className="w-full max-w-md">
-            <ProductivityGraph />
+            <ProductivityGraph personalityType={mbti} />
           </div>
         );
       case "explorers":
         return (
           <div className="w-full max-w-md">
-            <QuestBoard />
+            <QuestBoard personalityType={mbti} />
           </div>
         );
       case "diplomats":
         return (
           <div className="w-full max-w-md">
-            <PeerStatusPanel />
+            <PeerStatusPanel personalityType={mbti} />
           </div>
         );
       case "achievers":
       default:
         return (
           <div className="w-full max-w-md">
-            <LeaderboardSection />
+            <LeaderboardSection personalityType={mbti} />
           </div>
         );
     }
@@ -188,26 +276,26 @@ export default function Home() {
       case "analysts":
         return (
           <div className="w-full max-w-sm">
-            <LeaderboardSection />
+            <LeaderboardSection personalityType={mbti} />
           </div>
         );
       case "explorers":
         return (
           <div className="w-full max-w-sm">
-            <CommunityChallenges />
+            <CommunityChallenges personalityType={mbti} />
           </div>
         );
       case "diplomats":
         return (
           <div className="w-full max-w-sm">
-            <CommunityChallenges />
+            <CommunityChallenges personalityType={mbti} />
           </div>
         );
       case "achievers":
       default:
         return (
           <div className="w-full max-w-sm">
-            <PeerStatusPanel />
+            <PeerStatusPanel personalityType={mbti} />
           </div>
         );
     }
@@ -263,153 +351,217 @@ export default function Home() {
     return () => ctx.revert();
   }, [moreOpen]);
 
-  const bentoItems = useMemo(() => {
-    const exclude = Array.from(used).filter((id) => id !== "character" && id !== "nudge");
-    return buildBento(cluster, tone, exclude, 8);
-  }, [cluster, tone, used]);
+  // Apply personality-based semantic color overrides via CSS custom properties
+  useEffect(() => {
+    if (!mbti) {
+      // Reset to default theme
+      document.documentElement.style.setProperty('--bg-default', 'var(--color-mint-500)');
+      document.documentElement.style.setProperty('--accent', 'var(--color-pink-500)');
+      document.documentElement.style.setProperty('--muted', 'var(--color-teal-300)');
+      return;
+    }
+    
+    // Personality-specific theme using your existing color palette
+    const personalityThemes = {
+      INTJ: { bg: '--color-purple-400', accent: '--color-purple-400', muted: '--color-purple-400' },
+      INTP: { bg: '--color-cyan-200', accent: '--color-cyan-200', muted: '--color-cyan-200' },
+      ENTJ: { bg: '--color-orange-500', accent: '--color-orange-500', muted: '--color-orange-500' },
+      ENTP: { bg: '--color-pink-500', accent: '--color-pink-500', muted: '--color-pink-500' },
+      INFJ: { bg: '--color-blue-400', accent: '--color-blue-400', muted: '--color-blue-400' },
+      INFP: { bg: '--color-pink-200', accent: '--color-pink-200', muted: '--color-pink-200' },
+      ENFJ: { bg: '--color-teal-300', accent: '--color-teal-300', muted: '--color-teal-300' },
+      ENFP: { bg: '--color-amber-400', accent: '--color-amber-400', muted: '--color-amber-400' },
+      ISTJ: { bg: '--color-blue-400', accent: '--color-blue-400', muted: '--color-blue-400' },
+      ISFJ: { bg: '--color-pink-200', accent: '--color-pink-200', muted: '--color-pink-200' },
+      ESTJ: { bg: '--color-orange-500', accent: '--color-orange-500', muted: '--color-orange-500' },
+      ESFJ: { bg: '--color-pink-500', accent: '--color-pink-500', muted: '--color-pink-500' },
+      ISTP: { bg: '--color-teal-300', accent: '--color-teal-300', muted: '--color-teal-300' },
+      ISFP: { bg: '--color-lilac-300', accent: '--color-lilac-300', muted: '--color-lilac-300' },
+      ESTP: { bg: '--color-amber-400', accent: '--color-amber-400', muted: '--color-amber-400' },
+      ESFP: { bg: '--color-yellow-200', accent: '--color-yellow-200', muted: '--color-yellow-200' }
+    };
+    
+    const theme = personalityThemes[mbti.toUpperCase()];
+    if (theme) {
+      document.documentElement.style.setProperty('--bg-default', `var(${theme.bg})`);
+      document.documentElement.style.setProperty('--accent', `var(${theme.accent})`);
+      document.documentElement.style.setProperty('--muted', `var(${theme.muted})`);
+    }
+  }, [mbti]);
 
   return (
     <>
     {showProfile && <PersonalityProfile cluster={cluster} onDone={handleProfileDone} />}
-    <section className="min-h-[70vh] flex flex-col items-center justify-start">
-      <div className="w-full px-4 md:px-6 flex flex-col items-center gap-8">
-        {/* Hero: 3-column with side components flanking Character (center fixed) */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-20 lg:gap-28 items-start">
-          {/* Left side */}
-          <div className="order-2 md:order-1 flex justify-center md:justify-start mt-12 md:mt-16 lg:mt-20 px-6 lg:px-8 md:-ml-4 lg:-ml-8 reveal-on-scroll">
+    <section className="min-h-screen bg-mint">
+      <div className="w-full px-4 md:px-6 py-6 flex flex-col items-center gap-8">
+        
+        {/* HERO: 3-Column Layout with CharacterCard Centerpiece */}
+        <div className="w-full max-w-8xl grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
+          
+          {/* Left Panel - Personality-specific component */}
+          <div className="w-full flex justify-center md:justify-end mt-16">
             {heroLeft}
           </div>
-          {/* Center: Character always centered + Nudge with tone */}
-          <div className="order-1 md:order-2 flex flex-col items-center gap-3 reveal-on-scroll">
-            <CharacterCard />
+          
+          {/* Center: CharacterCard (The Star) */}
+          <div className="w-full flex justify-center">
+            <div className="reveal-on-scroll">
+              <CharacterCard personalityType={mbti} />
+            </div>
           </div>
-          {/* Right side */}
-          <div className="order-3 md:order-3 flex justify-center md:justify-end mt-12 md:mt-16 lg:mt-20 px-6 lg:px-8 reveal-on-scroll">
+          
+          {/* Right Panel - Personality-specific component */}
+          <div className="w-full flex justify-center md:justify-start mt-16">
             {heroRight}
           </div>
+          
         </div>
-
+        
         {/* Today strip */}
-        <div className="w-full max-w-6xl reveal-on-scroll">
-          <div className="rounded-xl p-3 md:p-4 flex items-center justify-between gap-3 flex-wrap" style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}>
-            <div className="flex items-center gap-3">
-              <div className="text-sm font-semibold text-neutral-800">Today</div>
-              <div className="nav-pill">{todayMinutes}m focused</div>
-              <div className="nav-pill">Streak {streakDays}d</div>
-              {hasActive && <div className="nav-pill nav-pill--cyan">Active session</div>}
-            </div>
-            <div>
-              <button
-                className="nav-pill nav-pill--primary"
-                onClick={() => {
-                  try {
-                    const detail = { template: "work_sprint", duration: 25 };
-                    window.dispatchEvent(new CustomEvent("mindshift:focus:start_template", { detail }));
-                  } catch {}
-                }}
-              >
-                {hasActive ? "Continue" : "Start focus"}
-              </button>
+          <div className="w-full max-w-4xl reveal-on-scroll">
+          <div className="text-center mb-3">
+            <div className="font-tanker text-2xl text-green tracking-widest">TODAY</div>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-neutral-700">
+            <span className="nav-pill">{todayMinutes}m focused</span>
+            <span className="nav-pill">{streakDays} day streak</span>
+            {hasActive && <span className="nav-pill nav-pill--primary">Session Active</span>}
+          </div>
+          {/* Subtle personality progress overview */}
+          <div className="mt-4 rounded-xl" style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}>
+            <div className="p-3">
+              <PersonalityProgressOverview personalityType={mbti} compact />
             </div>
           </div>
         </div>
-
-        {/* Templates (quick start) */}
-        <div className="w-full max-w-6xl reveal-on-scroll">
-          <div className="rounded-xl p-4" style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}>
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-tanker tracking-widest text-green text-2xl" style={{ lineHeight: 1 }}>Quick Start Templates</h2>
-              <div className="text-xs text-neutral-600">Pick a mode to jump in</div>
+        
+        {/* Templates Grid - Enhanced with Smart Personality-Aware Templates */}
+        <div className="w-full max-w-4xl reveal-on-scroll">
+          <div 
+            className="rounded-xl p-4"
+            style={{
+              background: "var(--surface)",
+              border: "2px solid var(--color-green-900)",
+              boxShadow: "0 2px 0 var(--color-green-900)"
+            }}
+          >
+            <div className="text-center mb-4">
+              <div className="font-tanker text-xl text-green tracking-widest">TEMPLATES</div>
             </div>
-            <TemplatesGrid />
+            <SmartTemplateGrid 
+              onTemplateSelect={handleStartFocus}
+              personalityType={mbti}
+              className="grid grid-cols-1 md:grid-cols-3 gap-3"
+              cardStyle="rounded-xl p-3"
+              usePersonalityColors
+            />
           </div>
         </div>
-
-        {/* Recent feed */}
-        <div className="w-full max-w-6xl reveal-on-scroll">
+        
+        {/* Custom Session Scheduler */}
+        <CustomSessionScheduler personalityType={mbti} />
+        
+        {/* Recent Activity */}
+        <div className="w-full max-w-4xl reveal-on-scroll">
           <RecentFeed />
         </div>
-
-        {/* Lower sections: hide duplicates shown in hero */}
-        <div className="w-full reveal-on-scroll">
-          <div className="bento-grid">
-            {bentoItems.map((item) => (
-              <div key={item.id} className="bento-card" style={styleFor(item)}>
-                {item.el}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* More for you (collapsed) */}
-        {moreItems.length > 0 && (
-          <div className="w-full max-w-6xl">
-            <button
-              type="button"
-              className="nav-pill nav-pill--neutral"
-              onClick={() => setMoreOpen((v) => !v)}
-              aria-expanded={moreOpen}
+        
+        {/* More For You - Collapsible lower-priority components */}
+        <div className="w-full max-w-4xl reveal-on-scroll">
+          <div className="text-center mb-4">
+            <button 
+              className="font-tanker text-xl text-green tracking-widest hover:text-green/80 transition-colors"
+              onClick={() => setMoreOpen(!moreOpen)}
             >
-              {moreOpen ? "Hide" : "More for you"}
+              MORE FOR YOU {moreOpen ? '▲' : '▼'}
             </button>
-            {moreOpen && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                {moreItems.includes("ProductivityGraph") && (
-                  <div className="w-full reveal-on-scroll">
-                    <ProductivityGraph />
-                  </div>
-                )}
-                {moreItems.includes("LeaderboardSection") && (
-                  <div className="w-full reveal-on-scroll">
-                    <LeaderboardSection />
-                  </div>
-                )}
-                {moreItems.includes("QuestBoard") && (
-                  <div className="w-full reveal-on-scroll">
-                    <QuestBoard />
-                  </div>
-                )}
-                {moreItems.includes("Badges") && (
-                  <div className="w-full reveal-on-scroll">
-                    <Badges />
-                  </div>
-                )}
-              </div>
-            )}
           </div>
-        )}
+          {moreOpen && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 reveal-on-scroll">
+              {moreItems.includes("ProductivityGraph") && !used.has("ProductivityGraph") && (
+                <div className="card">
+                  <ProductivityGraph personalityType={mbti} />
+                </div>
+              )}
+              {moreItems.includes("QuestBoard") && !used.has("QuestBoard") && (
+                <div className="card">
+                  <QuestBoard personalityType={mbti} />
+                </div>
+              )}
+              {moreItems.includes("LeaderboardSection") && !used.has("LeaderboardSection") && (
+                <div className="card">
+                  <LeaderboardSection personalityType={mbti} />
+                </div>
+              )}
+              {moreItems.includes("Badges") && (
+                <div className="card">
+                  <Badges />
+                </div>
+              )}
+              {!used.has("CommunityChallenges") && (
+                <div className="card">
+                  <CommunityChallenges personalityType={mbti} />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        
       </div>
-      <FocusSummaryModal />
+      
       {/* Modals */}
-      {quizGate.open && <QuizGateModal items={quizGate.items} url={quizGate.url} onClose={()=>setQuizGate({ open:false, url:"", items:[] })} />}
+      <FocusSummaryModal />
+      {quizGate.open && <QuizGateModal 
+        items={quizGate.items} 
+        url={quizGate.url} 
+        loading={quizGate.loading}
+        metadata={quizGate.metadata}
+        error={quizGate.error}
+        onClose={()=>setQuizGate({ open:false, url:"", items:[], loading:false, metadata:null, error:null })} 
+      />}
       {breakConfirm && <BreakConfirmModal cluster={cluster} onClose={()=>setBreakConfirm(false)} />}
     </section>
-    <style jsx global>{`
-      .bento-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0.5rem; grid-auto-flow: dense; }
-      .bento-card { grid-column: span var(--c-base, 12); grid-row: span var(--r-base, 1); padding: 0; border: 0; background: transparent; box-shadow: none; margin: 0; }
-      .bento-card > * { margin-top: 0; margin-bottom: 0; }
-      .bento-card:hover { transform: none; box-shadow: none; }
-      @media (min-width: 768px) {
-        .bento-card { grid-column: span var(--c-md, var(--c-base, 12)); grid-row: span var(--r-md, var(--r-base, 1)); }
-      }
-      /* Masonry-style on large screens to eliminate vertical gaps */
-      @media (min-width: 1024px) {
-        .bento-grid { display: block; column-count: 2; column-gap: 1rem; }
-        .bento-card { display: inline-block; width: 100%; break-inside: avoid; margin: 0 0 0.75rem; }
-      }
-    `}</style>
-  </>
+    </>
   );
 }
 
 function TemplatesGrid() {
   const [readingUrl, setReadingUrl] = useState("");
+  const [urlStatus, setUrlStatus] = useState({ valid: null, type: null });
+
+  const validateUrl = (url) => {
+    if (!url.trim()) {
+      setUrlStatus({ valid: null, type: null });
+      return;
+    }
+    
+    const isYouTube = /(?:youtube\.com|youtu\.be)/i.test(url);
+    const isPDF = /\.pdf$/i.test(url) || /pdf/i.test(url);
+    
+    if (isYouTube || isPDF) {
+      setUrlStatus({ valid: true, type: isYouTube ? 'youtube' : 'pdf' });
+    } else {
+      setUrlStatus({ valid: false, type: null });
+    }
+  };
+  
+  const handleUrlChange = (e) => {
+    const newUrl = e.target.value;
+    setReadingUrl(newUrl);
+    validateUrl(newUrl);
+  };
 
   const startTemplate = (template, extra = {}) => {
     try {
       const payload = { template, ...extra, startedAt: Date.now() };
       localStorage.setItem("mindshift_last_template", JSON.stringify(payload));
       window.dispatchEvent(new CustomEvent("mindshift:focus:start_template", { detail: payload }));
+    } catch {}
+  };
+  
+  const testContentQuiz = (url) => {
+    try {
+      window.dispatchEvent(new CustomEvent("mindshift:blocker:quiz", { detail: { url } }));
     } catch {}
   };
 
@@ -429,15 +581,47 @@ function TemplatesGrid() {
         <div className="text-sm font-semibold text-neutral-800">Deep Reading</div>
         <div className="text-xs text-neutral-700">45 min immersive reading · optional source</div>
         <div className="mt-2">
-          <input
-            value={readingUrl}
-            onChange={(e) => setReadingUrl(e.target.value)}
-            placeholder="Paste YouTube or PDF URL (optional)"
-            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-xs bg-white"
-          />
+          <div className="relative">
+            <input
+              value={readingUrl}
+              onChange={handleUrlChange}
+              placeholder="Paste YouTube or PDF URL (optional)"
+              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-xs bg-white pr-10"
+              style={{
+                borderColor: urlStatus.valid === false ? 'var(--color-pink-500)' : 
+                           urlStatus.valid === true ? 'var(--color-green-900)' : 'var(--color-neutral-300)'
+              }}
+            />
+            {urlStatus.valid === true && (
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-600">
+                {urlStatus.type === 'youtube' ? '📺' : '📄'}
+              </div>
+            )}
+            {urlStatus.valid === false && (
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-500">⚠️</div>
+            )}
+          </div>
+          {urlStatus.valid === false && (
+            <div className="text-xs text-red-600 mt-1">Please provide a valid YouTube or PDF URL</div>
+          )}
+          {urlStatus.valid === true && (
+            <div className="text-xs text-green-700 mt-1">
+              ✓ {urlStatus.type === 'youtube' ? 'YouTube video' : 'PDF document'} detected - Quiz questions will be generated from content
+            </div>
+          )}
         </div>
-        <div className="mt-2">
-          <button className="nav-pill" onClick={() => startTemplate("deep_reading", { duration: 45, url: readingUrl.trim() })}>Start 45m</button>
+        <div className="mt-2 flex gap-2">
+          <button className="nav-pill flex-1" onClick={() => startTemplate("deep_reading", { duration: 45, url: readingUrl.trim() })}>Start 45m</button>
+          {readingUrl.trim() && (
+            <button 
+              className="nav-pill" 
+              style={{ background: 'var(--color-blue-400)', color: 'var(--color-green-900)' }}
+              onClick={() => testContentQuiz(readingUrl.trim())}
+              title="Preview content-based quiz questions"
+            >
+              🧠 Quiz
+            </button>
+          )}
         </div>
       </div>
 
@@ -489,20 +673,60 @@ function RecentFeed() {
   );
 }
 
+async function generateContentQuiz(url) {
+  console.log('🔍 Starting content quiz generation for:', url);
+  
+  try {
+    const { ContentParser } = await import('@/lib/contentParser');
+    console.log('📚 Content parser loaded, analyzing content...');
+    
+    const result = await ContentParser.generateQuiz(url, { count: 3 });
+    console.log('✅ Quiz generation result:', result);
+    
+    if (result.success) {
+      console.log('🎯 Successfully generated', result.questions.length, 'questions from content');
+      return {
+        questions: result.questions,
+        metadata: result.metadata,
+        success: true
+      };
+    } else {
+      console.log('⚠️ Content parsing failed, using fallback questions:', result.error);
+      return {
+        questions: result.questions, // Fallback questions
+        error: result.error,
+        success: false
+      };
+    }
+  } catch (error) {
+    console.error('❌ Error in generateContentQuiz:', error);
+    return {
+      questions: [
+        { q: "What is your primary focus goal?", choices: ["Deep learning", "Quick browsing", "Entertainment", "Multitasking"], a: 0 },
+        { q: "How committed are you to this session?", choices: ["Fully focused", "Partially focused", "Just checking", "Distracted"], a: 0 }
+      ],
+      error: error.message,
+      success: false
+    };
+  }
+}
+
 function makeQuizStub(url) {
-  // Very simple placeholder MCQs; backend can replace with real questions later
+  // Fallback questions for immediate use
   return [
     { q: "What is your goal right now?", choices: ["Deep work", "Browsing", "Gaming"], a: 0 },
     { q: "How long is your current session?", choices: ["25m", "5h", "All day"], a: 0 },
   ];
 }
 
-function QuizGateModal({ items, url, onClose }) {
+function QuizGateModal({ items, url, loading, metadata, error, onClose }) {
   const [idx, setIdx] = useState(0);
   const [correct, setCorrect] = useState(0);
-  const cur = items[idx];
+  const cur = items && items.length > 0 ? items[idx] : null;
   const safeHost = (() => { try { return url ? new URL(url).host : "the site"; } catch { return "the site"; } })();
+  
   const answer = (i) => {
+    if (!cur) return;
     const ok = i === cur.a;
     const nextIdx = idx + 1;
     setCorrect(ok ? correct + 1 : correct);
@@ -517,20 +741,95 @@ function QuizGateModal({ items, url, onClose }) {
       setIdx(nextIdx);
     }
   };
+  
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.5)" }}>
       <div className="rounded-xl max-w-md w-full p-4" style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 4px 0 var(--color-green-900)" }}>
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="font-tanker text-2xl tracking-widest text-green" style={{ lineHeight: 1 }}>Quick Focus Check</h3>
+          <h3 className="font-tanker text-2xl tracking-widest text-green" style={{ lineHeight: 1 }}>
+            Content Focus Gate
+          </h3>
           <button className="nav-pill" onClick={onClose}>Close</button>
         </div>
-        <div className="text-sm text-neutral-800">{cur.q}</div>
-        <div className="mt-3 flex flex-col gap-2">
-          {cur.choices.map((c,i) => (
-            <button key={i} className="nav-pill" onClick={()=>answer(i)}>{c}</button>
-          ))}
-        </div>
-        <div className="mt-3 text-xs text-neutral-600">Answer 1 question right to unlock {safeHost} for 2 minutes.</div>
+        
+        {/* Content metadata display */}
+        {metadata && (
+          <div className="mb-3 p-2 rounded-lg" style={{ background: "var(--color-green-900-20)" }}>
+            <div className="text-xs text-neutral-600 mb-1">
+              {metadata.type === 'youtube' ? '📺 YouTube Video' : '📄 PDF Document'}
+            </div>
+            <div className="text-sm font-medium text-neutral-800 truncate">
+              {metadata.title}
+            </div>
+          </div>
+        )}
+        
+        {/* Loading state */}
+        {loading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <div className="animate-spin h-8 w-8 border-4 border-green-900 border-t-transparent rounded-full mx-auto mb-3"></div>
+              <div className="text-sm text-neutral-600">Analyzing content...</div>
+              <div className="text-xs text-neutral-500 mt-1">Generating personalized questions</div>
+            </div>
+          </div>
+        )}
+        
+        {/* Error state */}
+        {error && !loading && (
+          <div className="mb-3 p-3 rounded-lg" style={{ background: "var(--color-orange-500-20)", border: "1px solid var(--color-orange-500-40)" }}>
+            <div className="text-sm text-orange-800 font-medium mb-1">⚠️ Content Analysis Failed</div>
+            <div className="text-xs text-orange-700">{error}</div>
+            <div className="text-xs text-orange-600 mt-1">Using generic focus questions instead.</div>
+          </div>
+        )}
+        
+        {/* Quiz content */}
+        {!loading && cur && (
+          <>
+            <div className="text-sm text-neutral-800 mb-1">
+              Question {idx + 1} of {items.length}
+            </div>
+            <div className="text-sm font-medium text-neutral-900 mb-3">{cur.q}</div>
+            <div className="flex flex-col gap-2">
+              {cur.choices.map((c,i) => (
+                <button 
+                  key={i} 
+                  className="nav-pill text-left" 
+                  onClick={()=>answer(i)}
+                  style={{ textAlign: 'left', whiteSpace: 'normal', padding: '8px 12px' }}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+            <div className="mt-3 text-xs text-neutral-600">
+              {metadata ? 
+                `Answer correctly to unlock ${safeHost} for 2 minutes during your Deep Reading session.` :
+                `Answer 1 question right to unlock ${safeHost} for 2 minutes.`
+              }
+            </div>
+            
+            {/* Progress indicator */}
+            <div className="mt-2 flex gap-1">
+              {items.map((_, i) => (
+                <div 
+                  key={i} 
+                  className="h-1 flex-1 rounded"
+                  style={{ 
+                    background: i <= idx ? 'var(--color-green-900)' : 'var(--color-green-900-20)' 
+                  }}
+                />
+              ))}
+            </div>
+          </>
+        )}
+        
+        {!loading && !cur && (
+          <div className="text-center py-4">
+            <div className="text-sm text-neutral-600">No questions available</div>
+          </div>
+        )}
       </div>
     </div>
   );

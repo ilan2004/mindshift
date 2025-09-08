@@ -272,12 +272,12 @@ const PersonalityMetricCard = ({ personalityType, title, value, subtitle, catego
 };
 
 // Main progress overview component
-const PersonalityProgressOverview = ({ personalityType }) => {
+const PersonalityProgressOverview = ({ personalityType, compact = false }) => {
   const progress = getProgressData();
   const personality = personalityType || getPersonalityType();
   
   // Get personality-specific progress framing
-  const framings = getProgressFraming(personality, progress);
+  const framings = getProgressFraming(personality, progress) || {};
   
   // Personality-specific goal setting
   const getPersonalityGoals = (personality) => {
@@ -313,6 +313,47 @@ const PersonalityProgressOverview = ({ personalityType }) => {
   const goals = getPersonalityGoals(personality);
   const todayMinutes = progress.totalMinutes; // Simplified for demo
   
+  // Compact version for home page
+  if (compact) {
+    return (
+      <div className="space-y-3">
+        {/* Today's Progress with Personality Goal */}
+        <div className="flex justify-between items-center">
+          <h3 className="text-sm font-semibold" style={{ fontFamily: "Tanker, sans-serif", color: 'var(--color-green-900)' }}>
+            Today's Focus Progress
+          </h3>
+          <div className="text-xs text-neutral-600">
+            {todayMinutes}/{goals.daily} min goal
+          </div>
+        </div>
+        
+        {/* Progress bar using your design system */}
+        <div className="h-2 w-full rounded-full overflow-hidden" style={{ background: "var(--color-green-900-20)" }}>
+          <div
+            className="h-full transition-all duration-300"
+            style={{ 
+              width: `${Math.min(100, (todayMinutes / goals.daily) * 100)}%`,
+              background: getPersonalityAccentColor(personality) || "var(--color-green-900)"
+            }}
+          />
+        </div>
+        
+        {/* Personality-specific encouragement */}
+        <div className="text-xs text-neutral-600">
+          {getPersonalityEncouragement(personality, todayMinutes, goals.daily)}
+        </div>
+        
+        {/* Quick stats */}
+        <div className="flex justify-between text-xs text-neutral-500">
+          <span>{progress.streak} day streak</span>
+          <span>{progress.totalHours}h total</span>
+          <span>{progress.completedSessions} sessions</span>
+        </div>
+      </div>
+    );
+  }
+  
+  // Full version (original)
   return (
     <div className="space-y-6">
       {/* Personality-Specific Progress Cards */}
@@ -455,6 +496,32 @@ function getPersonalityEncouragement(personality, current, goal) {
   };
   
   return earlyProgressMessages[personality.toUpperCase()] || "Great start! Keep building momentum.";
+}
+
+// Helper function for personality accent colors
+function getPersonalityAccentColor(personalityType) {
+  if (!personalityType) return 'var(--color-green-900)';
+  
+  const colors = {
+    INTJ: 'var(--color-purple-400)',
+    INTP: 'var(--color-cyan-200)', 
+    ENTJ: 'var(--color-orange-500)',
+    ENTP: 'var(--color-pink-500)',
+    INFJ: 'var(--color-blue-400)',
+    INFP: 'var(--color-pink-200)',
+    ENFJ: 'var(--color-teal-300)', 
+    ENFP: 'var(--color-amber-400)',
+    ISTJ: 'var(--color-blue-400)',
+    ISFJ: 'var(--color-pink-200)',
+    ESTJ: 'var(--color-orange-500)',
+    ESFJ: 'var(--color-pink-500)', 
+    ISTP: 'var(--color-teal-300)',
+    ISFP: 'var(--color-lilac-300)',
+    ESTP: 'var(--color-amber-400)',
+    ESFP: 'var(--color-yellow-200)'
+  };
+  
+  return colors[personalityType.toUpperCase()] || 'var(--color-green-900)';
 }
 
 // Weekly progress chart component
