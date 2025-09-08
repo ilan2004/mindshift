@@ -319,7 +319,7 @@ export default function ProfilePage() {
                 <p className="text-sm font-medium text-orange-800">⚠️ Logout Warning</p>
                 <p className="text-xs text-orange-700 mt-1">
                   Logging out will clear all your local data including focus sessions, badges, and settings. 
-                  Make sure you've synced any important data to your account.
+                  Make sure you&apos;ve synced any important data to your account.
                 </p>
               </div>
               <button
