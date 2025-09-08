@@ -65,7 +65,13 @@ export default function AuthOverlay({
 
   const handleAuth = async (e) => {
     e.preventDefault();
-    if (!supabase) return;
+    console.log('Button clicked!', { isSignUp, email, password, username, gender });
+    
+    if (!supabase) {
+      console.error('Supabase client is null! Check environment variables.');
+      setError('Authentication service not available. Check configuration.');
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -194,15 +200,23 @@ export default function AuthOverlay({
             <div className="flex gap-3 justify-center">
               <button
                 type="button"
-                onClick={() => setIsSignUp(false)}
+                onClick={() => {
+                  console.log('Sign In button clicked');
+                  setIsSignUp(false);
+                }}
                 className={`px-4 py-2 rounded-[999px] ${!isSignUp ? "nav-pill nav-pill--primary" : "nav-pill"}`}
+                style={{ pointerEvents: 'auto', cursor: 'pointer', zIndex: 1000 }}
               >
                 Sign In
               </button>
               <button
                 type="button"
-                onClick={() => setIsSignUp(true)}
+                onClick={() => {
+                  console.log('Sign Up button clicked');
+                  setIsSignUp(true);
+                }}
                 className={`px-4 py-2 rounded-[999px] ${isSignUp ? "nav-pill nav-pill--primary" : "nav-pill"}`}
+                style={{ pointerEvents: 'auto', cursor: 'pointer', zIndex: 1000 }}
               >
                 Sign Up
               </button>
