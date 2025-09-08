@@ -20,12 +20,16 @@ _env_origins = os.getenv("ALLOWED_ORIGINS", "").strip()
 origins = [o.strip().rstrip('/') for o in _env_origins.split(",") if o.strip()] or [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
     "http://localhost",
     "https://localhost",
 ]
 # Optional regex to allow wildcard domains (e.g., Vercel previews):
 # Example: ^https://.*\.vercel\.app$
-origin_regex = os.getenv("ALLOWED_ORIGIN_REGEX", "").strip() or None
+origin_regex = os.getenv("ALLOWED_ORIGIN_REGEX", "").strip() or r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 
 app.add_middleware(
     CORSMiddleware,

@@ -95,11 +95,11 @@ export default function ProductivityGraph({ maxMinutes = 120, personalityType = 
   return (
     <div className="w-full max-w-md mx-auto px-2 md:px-3 mt-4">
       <div 
-        className="rounded-xl p-2.5 md:p-3"
+        className="rounded-xl p-2.5 md:p-3 backdrop-blur-sm"
         style={{
-          background: "var(--surface)",
+          background: "rgba(249, 248, 244, 0.85)", // Semi-transparent cream
           border: "2px solid var(--color-green-900)",
-          boxShadow: "0 2px 0 var(--color-green-900)",
+          boxShadow: "0 4px 20px rgba(3, 89, 77, 0.15)",
         }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">

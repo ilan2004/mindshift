@@ -78,12 +78,41 @@ def map_answers_to_mbti(answers: Dict[str, str]) -> str:
         if any(k in t for k in ["flexible", "spontaneous", "explore", "adapt", "open-ended"]):
             J_P -= 1
 
-    mbti = (
-        ("I" if I_E >= 0 else "E") +
-        ("N" if N_S >= 0 else "S") +
-        ("T" if T_F >= 0 else "F") +
-        ("J" if J_P >= 0 else "P")
-    )
+    # Improved tie-breaking with random selection to avoid bias
+    import random
+    
+    # Use threshold-based decisions with better defaults
+    threshold = 1  # Need at least 1 point difference to declare winner
+    
+    if abs(I_E) >= threshold:
+        ei_letter = "I" if I_E > 0 else "E"
+    else:
+        # Tie or close - random selection
+        ei_letter = random.choice(["E", "I"])
+    
+    if abs(N_S) >= threshold:
+        sn_letter = "N" if N_S > 0 else "S"
+    else:
+        # Tie or close - random selection
+        sn_letter = random.choice(["S", "N"])
+        
+    if abs(T_F) >= threshold:
+        tf_letter = "T" if T_F > 0 else "F"
+    else:
+        # Tie or close - random selection
+        tf_letter = random.choice(["T", "F"])
+        
+    if abs(J_P) >= threshold:
+        jp_letter = "J" if J_P > 0 else "P"
+    else:
+        # Tie or close - random selection
+        jp_letter = random.choice(["J", "P"])
+    
+    mbti = ei_letter + sn_letter + tf_letter + jp_letter
+    
+    # Debug logging
+    print(f"DEBUG: Keyword MBTI - I_E:{I_E} N_S:{N_S} T_F:{T_F} J_P:{J_P} -> {mbti}")
+    
     return mbti
 
 def map_answers_to_mbti_likert(answers: Dict[str, int]) -> str:
@@ -149,11 +178,46 @@ def map_answers_to_mbti_likert(answers: Dict[str, int]) -> str:
         elif idx in jp_p_indices:
             P += v; J += comp
 
-    # Decide letters (tie goes to the first letter on each axis)
-    letters = (
-        ("E" if E >= I else "I") +
-        ("S" if S >= N else "N") +
-        ("T" if T >= F else "F") +
-        ("J" if J >= P else "P")
-    )
+    # Improved tie-breaking logic with thresholds and fallback randomization
+    import random
+    
+    # Use a small threshold to avoid ties - only declare winner if difference >= 2
+    threshold = 2
+    
+    # Calculate differences
+    ei_diff = abs(E - I)
+    sn_diff = abs(S - N) 
+    tf_diff = abs(T - F)
+    jp_diff = abs(J - P)
+    
+    # Determine each axis with better logic
+    if ei_diff >= threshold:
+        ei_letter = "E" if E > I else "I"
+    else:
+        # Close scores - use slight bias toward introversion (more common in developer/knowledge workers)
+        ei_letter = "I" if I >= E else "E"
+    
+    if sn_diff >= threshold:
+        sn_letter = "S" if S > N else "N"
+    else:
+        # Close scores - slight bias toward intuition
+        sn_letter = "N" if N >= S else "S"
+        
+    if tf_diff >= threshold:
+        tf_letter = "T" if T > F else "F"
+    else:
+        # Close scores - use random selection to avoid bias
+        tf_letter = random.choice(["T", "F"])
+        
+    if jp_diff >= threshold:
+        jp_letter = "J" if J > P else "P"
+    else:
+        # Close scores - slight bias toward perceiving (more flexible)
+        jp_letter = "P" if P >= J else "J"
+    
+    letters = ei_letter + sn_letter + tf_letter + jp_letter
+    
+    # Debug logging to help troubleshoot
+    print(f"DEBUG: MBTI Calculation - E:{E} I:{I} S:{S} N:{N} T:{T} F:{F} J:{J} P:{P} -> {letters}")
+    
     return letters

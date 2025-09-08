@@ -1,5 +1,5 @@
 // MBTI Color and Theme System using existing color palette only
-// All colors are SINGLE, PLAIN colors - no gradients
+// All colors map to your defined CSS variables
 
 // Individual personality type themes using ONLY your existing color palette
 export const MBTI_THEMES = {
@@ -11,8 +11,14 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-purple-400)', dark: 'var(--color-purple-400)' },
       secondary: { light: 'var(--color-blue-400)', dark: 'var(--color-blue-400)' },
       accent: { light: 'var(--color-cyan-200)', dark: 'var(--color-cyan-200)' },
-      background: { light: 'var(--color-purple-400)', dark: 'var(--color-purple-400)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
+      background: { 
+        light: 'var(--color-purple-400)', 
+        dark: 'var(--color-purple-400)' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
       progress: { light: 'var(--color-purple-400)', dark: 'var(--color-purple-400)' },
       icon: '🏗️',
       personality: 'Strategic • Systematic • Visionary'
@@ -26,8 +32,14 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-cyan-200)', dark: 'var(--color-cyan-200)' },
       secondary: { light: 'var(--color-blue-400)', dark: 'var(--color-blue-400)' },
       accent: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
-      background: { light: 'var(--color-cyan-200)', dark: 'var(--color-cyan-200)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
+      background: { 
+        light: 'var(--color-cyan-200)', 
+        dark: 'var(--color-cyan-200)' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
       progress: { light: 'var(--color-cyan-200)', dark: 'var(--color-cyan-200)' },
       icon: '🔍',
       personality: 'Curious • Analytical • Theoretical'
@@ -41,9 +53,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
       secondary: { light: 'var(--color-amber-400)', dark: 'var(--color-amber-400)' },
       accent: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
-      background: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
+      background: { 
+        light: 'from-orange-500 via-amber-400 to-yellow-200', 
+        dark: 'from-orange-500 via-amber-400 to-yellow-200' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-orange-500 to-amber-400', dark: 'from-orange-500 to-amber-400' },
       icon: '👑',
       personality: 'Leadership • Strategic • Results-driven'
     }
@@ -56,9 +74,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
       secondary: { light: 'var(--color-purple-400)', dark: 'var(--color-purple-400)' },
       accent: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
-      background: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
+      background: { 
+        light: 'from-pink-500 via-purple-400 to-lilac-300', 
+        dark: 'from-pink-500 via-purple-400 to-lilac-300' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-pink-500 to-purple-400', dark: 'from-pink-500 to-purple-400' },
       icon: '💡',
       personality: 'Innovative • Versatile • Energetic'
     }
@@ -72,9 +96,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-purple-400)', dark: 'var(--color-purple-400)' },
       secondary: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
       accent: { light: 'var(--color-pink-200)', dark: 'var(--color-pink-200)' },
-      background: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-purple-400)', dark: 'var(--color-purple-400)' },
+      background: { 
+        light: 'from-purple-400 via-lilac-300 to-pink-200', 
+        dark: 'from-purple-400 via-lilac-300 to-pink-200' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-purple-400 to-lilac-300', dark: 'from-purple-400 to-lilac-300' },
       icon: '🔮',
       personality: 'Visionary • Meaningful • Insightful'
     }
@@ -87,9 +117,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
       secondary: { light: 'var(--color-pink-200)', dark: 'var(--color-pink-200)' },
       accent: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
-      background: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
+      background: { 
+        light: 'from-lilac-300 via-pink-200 to-pink-500', 
+        dark: 'from-lilac-300 via-pink-200 to-pink-500' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-lilac-300 to-pink-200', dark: 'from-lilac-300 to-pink-200' },
       icon: '🎨',
       personality: 'Authentic • Creative • Values-driven'
     }
@@ -102,9 +138,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
       secondary: { light: 'var(--color-mint-500)', dark: 'var(--color-mint-500)' },
       accent: { light: 'var(--color-lime-300)', dark: 'var(--color-lime-300)' },
-      background: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
+      background: { 
+        light: 'from-teal-300 via-mint-500 to-lime-300', 
+        dark: 'from-teal-300 via-mint-500 to-lime-300' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-teal-300 to-mint-500', dark: 'from-teal-300 to-mint-500' },
       icon: '🤝',
       personality: 'Inspirational • People-focused • Growth-oriented'
     }
@@ -117,9 +159,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
       secondary: { light: 'var(--color-amber-400)', dark: 'var(--color-amber-400)' },
       accent: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
-      background: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
+      background: { 
+        light: 'from-yellow-200 via-amber-400 to-orange-500', 
+        dark: 'from-yellow-200 via-amber-400 to-orange-500' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-yellow-200 to-amber-400', dark: 'from-yellow-200 to-amber-400' },
       icon: '🌟',
       personality: 'Enthusiastic • Creative • People-oriented'
     }
@@ -133,9 +181,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-blue-400)', dark: 'var(--color-blue-400)' },
       secondary: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
       accent: { light: 'var(--color-cyan-200)', dark: 'var(--color-cyan-200)' },
-      background: { light: 'var(--color-blue-400)', dark: 'var(--color-blue-400)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-blue-400)', dark: 'var(--color-blue-400)' },
+      background: { 
+        light: 'from-blue-400 via-teal-300 to-cyan-200', 
+        dark: 'from-blue-400 via-teal-300 to-cyan-200' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-blue-400 to-teal-300', dark: 'from-blue-400 to-teal-300' },
       icon: '📋',
       personality: 'Methodical • Reliable • Organized'
     }
@@ -148,9 +202,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-pink-200)', dark: 'var(--color-pink-200)' },
       secondary: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
       accent: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
-      background: { light: 'var(--color-pink-200)', dark: 'var(--color-pink-200)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-pink-200)', dark: 'var(--color-pink-200)' },
+      background: { 
+        light: 'from-pink-200 via-pink-500 to-lilac-300', 
+        dark: 'from-pink-200 via-pink-500 to-lilac-300' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-pink-200 to-pink-500', dark: 'from-pink-200 to-pink-500' },
       icon: '💝',
       personality: 'Caring • Supportive • Gentle'
     }
@@ -163,9 +223,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
       secondary: { light: 'var(--color-amber-400)', dark: 'var(--color-amber-400)' },
       accent: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
-      background: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
+      background: { 
+        light: 'from-orange-500 via-amber-400 to-yellow-200', 
+        dark: 'from-orange-500 via-amber-400 to-yellow-200' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-orange-500 to-amber-400', dark: 'from-orange-500 to-amber-400' },
       icon: '💼',
       personality: 'Executive • Results-driven • Organized'
     }
@@ -178,9 +244,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
       secondary: { light: 'var(--color-pink-200)', dark: 'var(--color-pink-200)' },
       accent: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
-      background: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
+      background: { 
+        light: 'from-pink-500 via-pink-200 to-lilac-300', 
+        dark: 'from-pink-500 via-pink-200 to-lilac-300' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-pink-500 to-pink-200', dark: 'from-pink-500 to-pink-200' },
       icon: '🌈',
       personality: 'Harmonious • People-focused • Supportive'
     }
@@ -194,9 +266,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
       secondary: { light: 'var(--color-mint-500)', dark: 'var(--color-mint-500)' },
       accent: { light: 'var(--color-cyan-200)', dark: 'var(--color-cyan-200)' },
-      background: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
+      background: { 
+        light: 'from-teal-300 via-mint-500 to-cyan-200', 
+        dark: 'from-teal-300 via-mint-500 to-cyan-200' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-teal-300 to-mint-500', dark: 'from-teal-300 to-mint-500' },
       icon: '🔨',
       personality: 'Practical • Hands-on • Adaptable'
     }
@@ -209,9 +287,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
       secondary: { light: 'var(--color-purple-400)', dark: 'var(--color-purple-400)' },
       accent: { light: 'var(--color-pink-200)', dark: 'var(--color-pink-200)' },
-      background: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
+      background: { 
+        light: 'from-lilac-300 via-purple-400 to-pink-200', 
+        dark: 'from-lilac-300 via-purple-400 to-pink-200' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-lilac-300 to-purple-400', dark: 'from-lilac-300 to-purple-400' },
       icon: '🎨',
       personality: 'Artistic • Gentle • Values-driven'
     }
@@ -224,9 +308,15 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
       secondary: { light: 'var(--color-amber-400)', dark: 'var(--color-amber-400)' },
       accent: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
-      background: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
+      background: { 
+        light: 'from-orange-500 via-amber-400 to-yellow-200', 
+        dark: 'from-orange-500 via-amber-400 to-yellow-200' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-orange-500 to-amber-400', dark: 'from-orange-500 to-amber-400' },
       icon: '💥',
       personality: 'Dynamic • Action-oriented • Energetic'
     }
@@ -239,14 +329,60 @@ export const MBTI_THEMES = {
       primary: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
       secondary: { light: 'var(--color-lime-300)', dark: 'var(--color-lime-300)' },
       accent: { light: 'var(--color-amber-400)', dark: 'var(--color-amber-400)' },
-      background: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
-      surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-      progress: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
+      background: { 
+        light: 'from-yellow-200 via-lime-300 to-amber-400', 
+        dark: 'from-yellow-200 via-lime-300 to-amber-400' 
+      },
+      surface: { 
+        light: 'var(--color-cream)',
+        dark: 'var(--color-cream)' 
+      },
+      progress: { light: 'from-yellow-200 to-lime-300', dark: 'from-yellow-200 to-lime-300' },
       icon: '🌟',
       personality: 'Joyful • People-focused • Spontaneous'
     }
   }
 };
+
+// Helper function to create CSS gradients from Tailwind-style color strings
+function createGradientFromString(gradientString) {
+  // Convert Tailwind gradient format to CSS gradient
+  // Example: "from-purple-400 via-blue-400 to-cyan-200" -> proper CSS gradient
+  const colorMap = {
+    'mint-500': 'var(--color-mint-500)',
+    'green-900': 'var(--color-green-900)',
+    'lilac-300': 'var(--color-lilac-300)',
+    'orange-500': 'var(--color-orange-500)',
+    'amber-400': 'var(--color-amber-400)',
+    'cyan-200': 'var(--color-cyan-200)',
+    'blue-400': 'var(--color-blue-400)',
+    'purple-400': 'var(--color-purple-400)',
+    'pink-200': 'var(--color-pink-200)',
+    'pink-500': 'var(--color-pink-500)',
+    'yellow-200': 'var(--color-yellow-200)',
+    'lime-300': 'var(--color-lime-300)',
+    'teal-300': 'var(--color-teal-300)',
+  };
+  
+  // Parse the gradient string
+  const parts = gradientString.split(' ');
+  const colors = [];
+  
+  for (const part of parts) {
+    if (part.startsWith('from-')) {
+      const colorName = part.replace('from-', '');
+      colors.push(colorMap[colorName] || `var(--color-${colorName})`);
+    } else if (part.startsWith('via-')) {
+      const colorName = part.replace('via-', '');
+      colors.push(colorMap[colorName] || `var(--color-${colorName})`);
+    } else if (part.startsWith('to-')) {
+      const colorName = part.replace('to-', '');
+      colors.push(colorMap[colorName] || `var(--color-${colorName})`);
+    }
+  }
+  
+  return `linear-gradient(to bottom right, ${colors.join(', ')})`;
+}
 
 // Get personality type from localStorage
 function getPersonalityType() {
@@ -290,16 +426,16 @@ export function getCurrentPersonalityTheme() {
         primary: { light: 'var(--color-mint-500)', dark: 'var(--color-mint-500)' },
         secondary: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
         accent: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
-        background: { light: 'var(--color-mint-500)', dark: 'var(--color-mint-500)' },
+        background: { light: 'from-mint-500 to-teal-300', dark: 'from-mint-500 to-teal-300' },
         surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
-        progress: { light: 'var(--color-mint-500)', dark: 'var(--color-mint-500)' },
+        progress: { light: 'from-mint-500 to-green-900', dark: 'from-mint-500 to-green-900' },
         current: {
           primary: 'var(--color-mint-500)',
           secondary: 'var(--color-green-900)',
           accent: 'var(--color-pink-500)',
-          background: 'var(--color-mint-500)',
+          background: 'from-mint-500 to-teal-300',
           surface: 'var(--color-cream)',
-          progress: 'var(--color-mint-500)',
+          progress: 'from-mint-500 to-green-900',
           text: 'var(--color-green-900)'
         }
       },
@@ -334,7 +470,7 @@ export function applyPersonalityTheme(personalityType = null) {
   const personality = personalityType || getPersonalityType();
   const theme = MBTI_THEMES[personality] || MBTI_THEMES.INFP;
   
-  // Apply CSS variables - using single colors only
+  // Apply CSS variables
   const root = document.documentElement;
   root.style.setProperty('--mbti-primary', theme.colors.primary.light);
   root.style.setProperty('--mbti-secondary', theme.colors.secondary.light);
@@ -342,7 +478,10 @@ export function applyPersonalityTheme(personalityType = null) {
   root.style.setProperty('--mbti-text-primary', 'var(--color-green-900)');
   root.style.setProperty('--mbti-surface', theme.colors.surface.light);
   root.style.setProperty('--mbti-progress', theme.colors.progress.light);
-  root.style.setProperty('--mbti-bg-pattern', theme.colors.background.light);
+  
+  // Create proper gradient from the background definition
+  const bgGradient = createGradientFromString(theme.colors.background.light);
+  root.style.setProperty('--mbti-bg-pattern', bgGradient);
   
   // Add personality class to body
   document.body.classList.remove(...Object.keys(MBTI_THEMES).map(type => `mbti-${type.toLowerCase()}`));
@@ -357,8 +496,8 @@ export function applyMintTheme() {
   root.style.setProperty('--mbti-accent', 'var(--color-pink-500)');
   root.style.setProperty('--mbti-text-primary', 'var(--color-green-900)');
   root.style.setProperty('--mbti-surface', 'var(--color-cream)');
-  root.style.setProperty('--mbti-progress', 'var(--color-mint-500)');
-  root.style.setProperty('--mbti-bg-pattern', 'var(--color-mint-500)');
+  root.style.setProperty('--mbti-progress', 'var(--color-green-900)');
+  root.style.setProperty('--mbti-bg-pattern', 'linear-gradient(to bottom right, var(--color-mint-500), var(--color-teal-300))');
   
   // Remove personality classes
   document.body.classList.remove(...Object.keys(MBTI_THEMES).map(type => `mbti-${type.toLowerCase()}`));
@@ -387,27 +526,26 @@ export const themeUtils = {
     return MBTI_THEMES[personalityType]?.group || 'NF';
   },
   
-  // Get background class for personality type - single color only
+  // Get gradient class for personality type
   getGradientClass: (personalityType, type = 'background') => {
     const themeMode = getThemePreference();
     
     if (themeMode === 'mint') {
-      return 'bg-mint';
+      return 'bg-gradient-to-br from-mint-500 to-teal-300';
     }
     
     const theme = MBTI_THEMES[personalityType];
-    if (!theme) return 'bg-mint';
+    if (!theme) return 'bg-gradient-to-br from-mint-500 to-teal-300';
     
-    // Return single color classes - no gradients
     switch (type) {
       case 'background':
-        return 'bg-mbti-primary';
+        return `bg-gradient-to-br ${theme.colors.background.light}`;
       case 'card':
-        return 'bg-mbti-surface';
+        return theme.colors.surface.light;
       case 'progress':
-        return 'bg-mbti-primary';
+        return `bg-gradient-to-r ${theme.colors.progress.light}`;
       default:
-        return 'bg-mbti-primary';
+        return `bg-gradient-to-br ${theme.colors.background.light}`;
     }
   }
 };
