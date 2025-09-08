@@ -23,7 +23,7 @@ export default function ContractTracker({ onSelect }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilters, setStatusFilters] = useState(new Set(["active"]));
-  const [typeFilters, setTypeFilters] = useState(new Set(["money", "peer", "streak"]));
+  const [typeFilters, setTypeFilters] = useState(new Set(["money", "peer", "message", "streak"]));
 
   const load = async () => {
     setLoading(true);
@@ -93,7 +93,7 @@ export default function ContractTracker({ onSelect }) {
   }, [stakes, search, statusFilters, typeFilters]);
 
   const grouped = useMemo(() => {
-    const order = ["money", "peer", "streak"];
+    const order = ["money", "peer", "message", "streak"];
     const byType = Object.fromEntries(order.map((t) => [t, []]));
     for (const s of filtered) {
       (byType[s.type] || (byType[s.type] = [])).push(s);
@@ -112,6 +112,34 @@ export default function ContractTracker({ onSelect }) {
   }, [filtered]);
 
   const chip = (label, active) => `nav-pill ${active ? "nav-pill--cyan" : ""}`;
+
+  const StatusSeal = ({ status }) => {
+    const txt = (status || "").toUpperCase();
+    const color = status === "active" ? "var(--color-green-900)" : status === "succeeded" ? "#0a7d35" : status === "failed" ? "#b91c1c" : "#6b7280";
+    return (
+      <span
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: 8,
+          right: 8,
+          rotate: "-12deg",
+          border: `2px solid ${color}`,
+          color,
+          padding: "2px 8px",
+          borderRadius: 6,
+          fontWeight: 800,
+          fontSize: 10,
+          letterSpacing: 1,
+          boxShadow: `0 0 0 2px ${color} inset, 0 1px 0 rgba(0,0,0,0.05)`,
+          opacity: 0.9,
+          background: "transparent",
+        }}
+      >
+        {txt}
+      </span>
+    );
+  };
 
   // Reflect filters to URL (without navigation)
   useEffect(() => {
@@ -180,7 +208,7 @@ export default function ContractTracker({ onSelect }) {
         ))}
         <span className="mx-2" />
         <span className="text-xs text-neutral-600">Type:</span>
-        {["money","peer","streak"].map(tp=> (
+        {["money","peer","message","streak"].map(tp=> (
           <button key={tp} className={chip(tp, typeFilters.has(tp))}
             onClick={()=>{
               const next = new Set(typeFilters);
@@ -195,22 +223,25 @@ export default function ContractTracker({ onSelect }) {
         <div className="text-sm text-neutral-600">No stakes yet. Create one above.</div>
       ) : (
         <div className="space-y-6">
-          {["money","peer","streak"].map((tp) => (
+          {["money","peer","message","streak"].map((tp) => (
             grouped[tp] && grouped[tp].length > 0 ? (
               <div key={tp}>
                 <div className="text-sm font-semibold text-neutral-700 mb-2 capitalize">{tp}</div>
                 <div className="space-y-3">
                   {grouped[tp].map((s) => (
-                    <div key={s.id} className="rounded-xl border border-neutral-200 bg-white p-3 flex items-start justify-between gap-3 cursor-pointer hover:shadow-sm"
+                    <div key={s.id} className="rounded-xl p-3 flex items-start justify-between gap-3 cursor-pointer relative"
+                      style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}
                       onClick={()=> onSelect && onSelect(s)}>
+                      <StatusSeal status={s.status} />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={statusClass(s.status)}>{s.status}</span>
                           <span className="nav-pill">{s.type || "stake"}</span>
                           {s.pinned ? <span className="nav-pill nav-pill--green">Pinned</span> : null}
-                          {s.amount ? <span className="nav-pill">${s.amount}</span> : null}
+                          {s.amount ? <span className="nav-pill">₹{s.amount}</span> : null}
                           {s.points ? <span className="nav-pill">{s.points} pts</span> : null}
                           {s.peer ? <span className="nav-pill">{s.peer}</span> : null}
+                          {s.phone ? <span className="nav-pill">{s.channel || "sms"}</span> : null}
                           {s.dueAt ? <span className="nav-pill">Due {new Date(s.dueAt).toLocaleDateString()}</span> : null}
                           {s.dueAt ? <span className="nav-pill">{formatLeft(s.dueAt)}</span> : null}
                           {riskBadge(s)}
@@ -222,13 +253,7 @@ export default function ContractTracker({ onSelect }) {
                           Created {new Date(s.createdAt).toLocaleString()}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 flex-wrap justify-end" onClick={(e)=>e.stopPropagation()}>
-                        <button className="nav-pill" onClick={() => togglePin(s.id, !s.pinned)}>{s.pinned?"Unpin":"Pin"}</button>
-                        <button className="nav-pill" onClick={() => setStatus(s.id, "succeeded")}>Mark Succeeded</button>
-                        <button className="nav-pill nav-pill--red" onClick={() => setStatus(s.id, "failed")}>Mark Failed</button>
-                        <button className="nav-pill" onClick={() => setStatus(s.id, "cancelled")}>Cancel</button>
-                        <button className="nav-pill" onClick={() => remove(s.id)}>Delete</button>
-                      </div>
+                      {/* Row actions moved to the Detail Drawer for a cleaner list */}
                     </div>
                   ))}
                 </div>

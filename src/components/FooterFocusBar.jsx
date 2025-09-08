@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { fetchBlocklist, saveBlocklist as saveBlocklistDB, startSession as startSessionDB } from "../lib/focusStore";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -58,6 +59,7 @@ function dispatchSessionCompleted(minutes) {
 }
 
 export default function FooterFocusBar() {
+  const [mounted, setMounted] = useState(false);
   const [durationMin, setDurationMin] = useState(25);
   const [customMin, setCustomMin] = useState(25);
   const [status, setStatus] = useState({ active: false, mode: "idle", remainingMs: 0, domains: [] });
@@ -70,6 +72,8 @@ export default function FooterFocusBar() {
 
   const hasExtensionRef = useRef(false);
   const barRef = useRef(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   // Show/hide the footer bar on scroll direction using GSAP ScrollTrigger
   useEffect(() => {
@@ -370,13 +374,15 @@ export default function FooterFocusBar() {
 
   return (
     <div ref={barRef} className="fixed left-0 right-0 bottom-4 md:bottom-10 z-40 pointer-events-none">
-      <div className="mx-auto max-w-6xl px-3 md:px-6">
+      <div className="mx-auto max-w-6xl px-3 md:px-6 flex justify-center">
         <div
-          className="pointer-events-auto rounded-[999px] px-3 md:px-8 py-2.5 md:py-4.5 flex flex-wrap items-center gap-1.5 md:gap-3 justify-center"
+          className="pointer-events-auto rounded-[999px] px-3 md:px-8 py-2.5 md:py-4.5 flex flex-wrap items-center gap-1.5 md:gap-3 justify-center mx-auto"
           style={{
             background: "var(--surface)",
             border: "2px solid var(--color-green-900)",
             boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
+            width: "fit-content",
+            maxWidth: "100%",
           }}
         >
           {/* If extension is not enabled, show only the single Enable button on desktop */}
@@ -505,9 +511,9 @@ export default function FooterFocusBar() {
       )}
 
       {/* Desktop instructions modal for enabling blocking */}
-      {showEnablePrompt && (
-        <div className="fixed inset-0 z-[96] flex items-center justify-center bg-black/30 p-4" role="dialog" aria-modal="true">
-          <div className="w-full max-w-md rounded-2xl bg-white border p-4 shadow-lg">
+      {showEnablePrompt && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-md rounded-2xl bg-white border p-4 shadow-lg" style={{ borderColor: "var(--color-green-900)", boxShadow: "0 6px 0 var(--color-green-900)" }}>
             <h3 className="text-lg font-semibold mb-2">Enable blocking in your browser</h3>
             <ol className="list-decimal ml-5 space-y-1 text-sm text-neutral-700 mb-3">
               <li>Open <span className="font-mono">chrome://extensions</span> (or your browser’s extensions page).</li>
@@ -525,8 +531,8 @@ export default function FooterFocusBar() {
               <button className="nav-pill" onClick={() => setShowEnablePrompt(false)}>Close</button>
             </div>
           </div>
-        </div>
-      )}
+        </div>, document.body)
+      }
     </div>
   );
 }

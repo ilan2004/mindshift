@@ -61,13 +61,13 @@ export default function ProductivityGraph({ maxMinutes = 120 }) {
   const peak = Math.max(1, ...data.map((d) => d.minutes));
 
   return (
-    <div className="w-full max-w-md mx-auto px-3 md:px-4 mt-6">
+    <div className="w-full max-w-md mx-auto px-2 md:px-3 mt-4">
       <div 
-        className="rounded-xl p-3 md:p-4"
+        className="rounded-xl p-2.5 md:p-3"
         style={{
           background: "var(--surface)",
           border: "2px solid var(--color-green-900)",
-          boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
+          boxShadow: "0 2px 0 var(--color-green-900)",
         }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
@@ -75,12 +75,12 @@ export default function ProductivityGraph({ maxMinutes = 120 }) {
           <div className="text-xs text-neutral-500 font-medium">Max {maxMinutes}m cap</div>
         </div>
 
-        <div className="h-32 md:h-40 flex items-end gap-2 md:gap-3 px-1 md:px-2">
+        <div className="h-28 md:h-36 flex items-end gap-2 px-1">
           {data.map((d) => {
             const h = Math.max(8, Math.round((d.minutes / peak) * 100));
             return (
               <div key={d.key} className="flex-1 flex flex-col items-center gap-1.5 md:gap-2">
-                <div className="relative w-5 md:w-8 flex items-end justify-center" title={`${d.fullMinutes} min`}>
+                <div className="relative w-4 md:w-6 flex items-end justify-center" title={`${d.fullMinutes} min`}>
                   <div
                     className="w-full rounded-lg transition-all duration-300"
                     style={{ 

@@ -167,13 +167,13 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
   };
 
   return (
-    <div id="quest-board" className="w-full max-w-md mx-auto px-3 md:px-4 mt-6">
+    <div id="quest-board" className="w-full max-w-md mx-auto px-2 md:px-3 mt-4">
       <div 
-        className="rounded-xl p-3 md:p-4"
+        className="rounded-xl p-2.5 md:p-3"
         style={{
           background: "var(--surface)",
           border: "2px solid var(--color-green-900)",
-          boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
+          boxShadow: "0 2px 0 var(--color-green-900)",
         }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
@@ -182,7 +182,7 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
         </div>
 
         {/* Progress Bar */}
-        <div className="h-2 w-full rounded-full overflow-hidden mb-3" style={{ background: "var(--color-green-900-20)" }}>
+        <div className="h-1.5 w-full rounded-full overflow-hidden mb-2" style={{ background: "var(--color-green-900-20)" }}>
           <div
             className="h-full transition-all duration-300"
             style={{ 
@@ -194,7 +194,7 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
         <div className="text-xs text-neutral-600 mb-3">{completedCount}/{allQuests.length} completed • {progress}%</div>
 
         {/* Add custom quest */}
-        <form onSubmit={addCustomQuest} className="space-y-2 mb-4">
+        <form onSubmit={addCustomQuest} className="space-y-2 mb-3">
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1">
               <label className="block text-xs text-neutral-600 mb-1">Quest title</label>
@@ -203,7 +203,7 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="e.g., Plan tomorrow in 5 minutes"
-                className="w-full rounded-[999px] px-3 py-2 text-sm"
+                className="w-full rounded-[999px] px-2.5 py-1.5 text-sm"
                 style={{ 
                   background: "var(--surface)", 
                   border: "2px solid var(--color-green-900)", 
@@ -220,7 +220,7 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
                 step={1}
                 value={newPoints}
                 onChange={(e) => setNewPoints(e.target.value)}
-                className="w-full rounded-[999px] px-3 py-2 text-sm"
+                className="w-full rounded-[999px] px-2.5 py-1.5 text-sm"
                 style={{ 
                   background: "var(--surface)", 
                   border: "2px solid var(--color-green-900)", 
@@ -242,7 +242,7 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
             return (
               <li
                 key={q.id}
-                className="flex items-center justify-between gap-3 rounded-xl p-3 transition-all duration-200"
+                className="flex items-center justify-between gap-3 rounded-xl p-2.5 transition-all duration-200"
                 style={{
                   background: done ? "var(--color-green-900-10)" : "var(--surface)",
                   border: `2px solid ${done ? "var(--color-green-900)" : "var(--color-green-900-30)"}`,
@@ -252,7 +252,7 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
                 <label className="flex items-center gap-3 cursor-pointer select-none flex-1 min-w-0">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0"
+                    className="h-4 w-4 flex-shrink-0"
                     style={{ accentColor: "var(--color-green-900)" }}
                     checked={done}
                     onChange={() => toggleQuest(q)}

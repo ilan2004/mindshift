@@ -86,23 +86,23 @@ export default function CommunityChallenges() {
 
   return (
     <div
-      className="rounded-xl border border-neutral-200/80 bg-white/70 backdrop-blur-sm p-4 shadow-sm overflow-hidden"
+      className="rounded-xl border border-neutral-200/80 bg-white/70 backdrop-blur-sm p-3 shadow-sm overflow-hidden"
       style={{ backgroundColor: "var(--token-3cf441d7-edfe-47fb-95dc-1899b0597681, #f9f8f4)" }}
     >
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold">Community Challenges</h2>
+        <h2 className="text-sm md:text-base font-semibold">Community Challenges</h2>
         <span className="text-xs text-neutral-600">{sorted.length} available</span>
       </div>
       <ul className="grid gap-3 w-full">
         {sorted.map((c) => (
           <li
             key={c.id}
-            className="p-3 rounded-lg border border-neutral-200 w-full overflow-hidden"
+            className="p-2.5 rounded-lg border border-neutral-200 w-full overflow-hidden"
             style={{ backgroundColor: "var(--token-3cf441d7-edfe-47fb-95dc-1899b0597681, #f9f8f4)" }}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1 overflow-hidden">
-                <div className="text-sm font-medium truncate w-full">{c.title}</div>
+                <div className="text-[13px] font-medium truncate w-full">{c.title}</div>
                 <div className="text-xs text-neutral-600 truncate w-full">{c.desc}</div>
                 <div className="text-[11px] text-neutral-500 mt-1 truncate w-full">
                   {c.participants} joined · Reward {c.rewardPts} pts · {timeLeft(c.endsAt)}
@@ -110,9 +110,9 @@ export default function CommunityChallenges() {
               </div>
               <div className="flex-shrink-0 ml-2">
                 {c.joined ? (
-                  <button className="nav-pill nav-pill--neutral text-xs whitespace-nowrap" onClick={() => leave(c.id)}>Leave</button>
+                  <button className="nav-pill nav-pill--neutral text-xs px-2.5 py-1 whitespace-nowrap" onClick={() => leave(c.id)}>Leave</button>
                 ) : (
-                  <button className="nav-pill nav-pill--cyan text-xs whitespace-nowrap" onClick={() => join(c.id)}>Join</button>
+                  <button className="nav-pill nav-pill--cyan text-xs px-2.5 py-1 whitespace-nowrap" onClick={() => join(c.id)}>Join</button>
                 )}
               </div>
             </div>

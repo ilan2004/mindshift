@@ -182,31 +182,31 @@ export default function Badges() {
 
   return (
     <>
-      <div className="w-full max-w-md mx-auto px-3 md:px-4 mt-2">
+      <div className="w-full max-w-md mx-auto px-2 md:px-3 mt-2">
         <div 
-          className="rounded-xl p-3 md:p-4"
+          className="rounded-xl p-2.5 md:p-3"
           style={{
             background: "var(--surface)",
             border: "2px solid var(--color-green-900)",
-            boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
+            boxShadow: "0 2px 0 var(--color-green-900)",
           }}
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
             <h2 className="text-sm md:text-base font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Badges</h2>
             <div className="text-xs md:text-sm text-neutral-600 font-medium">{earnedCount}/{BADGES.length} earned</div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {list.map((b) => (
               <div 
                 key={b.id} 
-                className={`rounded-xl p-3 flex items-start gap-2 md:gap-3 transition-colors ${b.earned ? "opacity-100" : "opacity-60"}`}
+                className={`rounded-xl p-2.5 flex items-start gap-2 md:gap-2.5 transition-colors ${b.earned ? "opacity-100" : "opacity-60"}`}
                 style={{
                   background: b.earned ? "var(--color-green-900-10)" : "var(--surface)",
                   border: `2px solid ${b.earned ? "var(--color-green-900)" : "var(--color-green-900-30)"}`,
                   boxShadow: b.earned ? "0 2px 0 var(--color-green-900)" : "none"
                 }}
               >
-                <div className="text-lg md:text-xl flex-shrink-0" aria-hidden>{b.emoji}</div>
+                <div className="text-base md:text-lg flex-shrink-0" aria-hidden>{b.emoji}</div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs md:text-sm font-semibold text-neutral-800">{b.title}</div>
                   <div className="text-xs text-neutral-600 mt-0.5">{b.desc}</div>
@@ -249,9 +249,9 @@ export default function Badges() {
       </div>
 
       {/* Recently unlocked feed */}
-      <div className="w-full max-w-md mx-auto px-3 md:px-4 mt-3">
+      <div className="w-full max-w-md mx-auto px-2 md:px-3 mt-3">
         <div 
-          className="rounded-xl p-3"
+          className="rounded-xl p-2.5"
           style={{
             background: "var(--surface)",
             border: "2px solid var(--color-green-900)",
@@ -271,7 +271,7 @@ export default function Badges() {
           {recent.length === 0 ? (
             <div className="text-xs text-neutral-500 text-center py-2">No recent badges yet.</div>
           ) : (
-            <ul className="flex flex-wrap gap-1.5">
+            <ul className="flex flex-wrap gap-1">
               {recent.slice(0, 6).map((r) => {
                 const meta = badgeById[r.badgeId];
                 const variant = meta?.variant || "green";
