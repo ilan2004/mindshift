@@ -58,10 +58,10 @@ export function postHistory({ user_id, history }) {
 
 // GET /questions/
 export async function getQuestions(user_id) {
-  const authHeaders = await getAuthHeaders();
+  // Public endpoint: do not send Authorization header to avoid CORS preflight
   const url = new URL("/questions/", API_BASE);
   url.searchParams.set("user_id", user_id);
-  return fetch(url.toString(), { headers: authHeaders }).then(async (res) => {
+  return fetch(url.toString()).then(async (res) => {
     if (!res.ok) throw new Error(`Backend GET /questions failed ${res.status}`);
     return res.json();
   });
@@ -69,34 +69,35 @@ export async function getQuestions(user_id) {
 
 // GET /questions/ with CSV themes
 export async function getQuestionsWithThemes(user_id, themesCSV) {
-  const authHeaders = await getAuthHeaders();
+  // Public endpoint: do not send Authorization header to avoid CORS preflight
   const url = new URL("/questions/", API_BASE);
   url.searchParams.set("user_id", user_id);
   if (themesCSV) url.searchParams.set("themes", themesCSV);
-  return fetch(url.toString(), { headers: authHeaders }).then(async (res) => {
+  return fetch(url.toString()).then(async (res) => {
     if (!res.ok) throw new Error(`Backend GET /questions failed ${res.status}`);
     return res.json();
   });
 }
 
-// POST /questions/
-export function postQuestions({ user_id, themes, mbti_hint }) {
-  return request("/questions/", { method: "POST", body: { user_id, themes, mbti_hint } });
-}
-
 // GET /questions/ (simplified API): returns [{question, options}] -> normalize to {questions: string[]}
 export async function getGeneralQuestions(user_id) {
-  // user_id not used by backend now, but kept for API parity
-  const authHeaders = await getAuthHeaders();
+  // Public endpoint: do not send Authorization header to avoid CORS preflight
   const url = new URL("/questions/", API_BASE);
   if (user_id) url.searchParams.set("user_id", user_id);
-  const res = await fetch(url.toString(), { headers: authHeaders });
+  const res = await fetch(url.toString());
   if (!res.ok) throw new Error(`Backend GET /questions failed ${res.status}`);
   const data = await res.json(); // expected: Array<{question: string, options: string[]}> or Array<string>
   const list = Array.isArray(data)
-    ? data.map((it) => (it && typeof it === "object" ? String(it.question || "") : String(it || ""))).filter(Boolean)
+    ? data
+        .map((it) => (it && typeof it === "object" ? String(it.question || "") : String(it || "")))
+        .filter(Boolean)
     : [];
   return { questions: list };
+}
+
+// POST /questions/
+export function postQuestions({ user_id, themes, mbti_hint }) {
+  return request("/questions/", { method: "POST", body: { user_id, themes, mbti_hint } });
 }
 
 // POST /answers/

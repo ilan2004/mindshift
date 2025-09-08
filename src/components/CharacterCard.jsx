@@ -451,39 +451,6 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      {/* Counters above title (Points / Streak) */}
-      <div className="flex items-center gap-2 flex-wrap justify-center">
-        <span className="nav-pill nav-pill--neutral" title="Total Points">Points: {points}</span>
-        <span className="nav-pill nav-pill--green flex items-center gap-1.5" title="Daily Streak">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-4 w-4 text-amber-500"
-            aria-hidden
-          >
-            <path d="M12.001 2c.65 2.93-.61 4.89-2.02 6.33C8.49 9.85 7.5 11 8 12.75c.35 1.2 1.45 2.16 2.75 2.23 1.77.1 2.91-1.04 3.4-2.23.76-1.81.15-3.61-.54-4.74.83.52 1.67 1.22 2.36 2.2 1.07 1.52 1.62 3.67.87 5.73-1.03 2.84-3.86 4.56-6.84 4.56-3.72 0-7-2.67-7-6.5 0-3.5 2.4-5.6 4.22-7.22C9.44 5.49 10.61 4.48 12.001 2z" />
-          </svg>
-          <span>Streak: {streak}</span>
-        </span>
-        <span className="nav-pill nav-pill--cyan" title="Level based on points">Level {levelInfo.level}</span>
-      </div>
-      {/* Level progress bar with personality enhancement */}
-      <div className="w-full max-w-md px-4 -mt-1">
-        <div className="text-[11px] text-neutral-600 mb-1 text-center">
-          {levelInfo.nextThreshold > 0 ? `${points - levelInfo.prevThreshold} / ${levelInfo.nextThreshold - levelInfo.prevThreshold} to next level` : `Max level`}
-          {type && <span className="text-green font-medium ml-1">({type} Journey)</span>}
-        </div>
-        <div className="h-2 w-full bg-neutral-100 rounded-full overflow-hidden">
-          <div 
-            className="h-full transition-all" 
-            style={{ 
-              width: `${levelInfo.progressPct}%`,
-              backgroundColor: type ? getPersonalityColor(type) : 'var(--color-green-900)'
-            }} 
-          />
-        </div>
-      </div>
       <div className="flex items-center gap-2">
         <h1 className="font-tanker text-5xl leading-none text-center">{heading}</h1>
         <button

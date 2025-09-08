@@ -1,14 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import gsap from "gsap";
+import { getSupabaseClient } from "../lib/supabase";
 
 export default function SlideMenu({ isOpen, onClose }) {
+  const router = useRouter();
   const menuRef = useRef(null);
   const overlayRef = useRef(null);
   const timeline = useRef(null);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     // Create timeline for menu animations
@@ -66,6 +70,31 @@ export default function SlideMenu({ isOpen, onClose }) {
     { href: "/profile", label: "Profile" },
   ];
 
+  // Logout handler
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
+      
+      // Clear all localStorage data
+      try {
+        localStorage.clear();
+      } catch (e) {
+        console.warn('Could not clear localStorage:', e);
+      }
+      
+      // Close menu and redirect to home page
+      onClose();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      setLoggingOut(false);
+    }
+  };
+
   return (
     <>
       {/* Overlay */}
@@ -114,6 +143,27 @@ export default function SlideMenu({ isOpen, onClose }) {
               {item.label}
             </Link>
           ))}
+          
+          {/* Logout Button */}
+          <div className="mt-4 pt-4 border-t-2" style={{ borderColor: "var(--color-green-900-20)" }}>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className={`menu-item nav-pill nav-pill--accent w-full text-center text-lg ${loggingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {loggingOut ? (
+                <>
+                  <span className="animate-spin mr-2">⏳</span>
+                  Logging out...
+                </>
+              ) : (
+                <>
+                  🚪 Sign Out
+                </>
+              )}
+            </button>
+          </div>
         </nav>
 
         {/* Footer */}

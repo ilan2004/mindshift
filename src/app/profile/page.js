@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Badges from "@/components/Badges";
 import ProductivityGraph from "@/components/ProductivityGraph";
+import { getSupabaseClient } from "@/lib/supabase";
 
 // Utilities: read/write localStorage with guards
 function lsGet(key, def = "") {
@@ -56,19 +58,21 @@ function genId() {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [bio, setBio] = useState("");
   const [notifSession, setNotifSession] = useState(false);
   const [notifWeekly, setNotifWeekly] = useState(false);
   const [friends, setFriends] = useState([]); // [{id,name}]
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const totalMinutes = useMemo(() => computeTotalFocusMinutes(), []);
   const streak = useMemo(() => readStreak(), []);
 
   // Scrollspy setup
   const [activeId, setActiveId] = useState("overview");
-  const sectionIds = ["overview", "personality", "profile", "progress", "badges", "community", "notifications"];
+  const sectionIds = ["overview", "personality", "profile", "progress", "badges", "community", "notifications", "account"];
   const observersRef = useRef([]);
 
   useEffect(() => {
@@ -129,6 +133,30 @@ export default function ProfilePage() {
     lsSetJSON(KEY_FRIENDS, next);
   };
 
+  // Logout handler
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
+      
+      // Clear all localStorage data
+      try {
+        localStorage.clear();
+      } catch (e) {
+        console.warn('Could not clear localStorage:', e);
+      }
+      
+      // Redirect to home page (this will show the auth overlay)
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      setLoggingOut(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full">
       <div className="w-full max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -167,10 +195,19 @@ export default function ProfilePage() {
                   <span className="text-2xl">👤</span>
                 )}
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <h1 id="overview-h" className="h2 text-green font-tanker truncate">{name || "Your Name"}</h1>
                 <p className="text-sm text-neutral-600 truncate">{bio || "Tell something about yourself"}</p>
               </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="nav-pill nav-pill--accent"
+                title="Sign out of your account"
+              >
+                {loggingOut ? "Logging out..." : "Logout"}
+              </button>
             </div>
             <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
               <MetricCard label="Total focus" value={`${totalMinutes}m`} />
@@ -272,6 +309,38 @@ export default function ProfilePage() {
               />
             </div>
           </section>
+
+          {/* Account Management */}
+          <section id="account" aria-labelledby="account-h" className="rounded-xl p-4"
+            style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}>
+            <h2 id="account-h" className="h3 font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Account</h2>
+            <div className="mt-3 space-y-3">
+              <div className="rounded-xl p-3" style={{ background: "var(--color-yellow-200)", border: "2px solid var(--color-orange-500)" }}>
+                <p className="text-sm font-medium text-orange-800">⚠️ Logout Warning</p>
+                <p className="text-xs text-orange-700 mt-1">
+                  Logging out will clear all your local data including focus sessions, badges, and settings. 
+                  Make sure you've synced any important data to your account.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className={`nav-pill nav-pill--accent ${loggingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {loggingOut ? (
+                  <>
+                    <span className="animate-spin mr-2">⏳</span>
+                    Logging out...
+                  </>
+                ) : (
+                  <>
+                    🚪 Sign Out
+                  </>
+                )}
+              </button>
+            </div>
+          </section>
         </main>
       </div>
 
@@ -292,6 +361,7 @@ function titleForSection(id) {
     case "badges": return "Badges";
     case "community": return "Friends";
     case "notifications": return "Notifications";
+    case "account": return "Account";
     default: return id;
   }
 }

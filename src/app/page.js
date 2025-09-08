@@ -21,6 +21,7 @@ import { PersonalityProgressOverview } from "@/components/PersonalityProgress";
 import CustomSessionScheduler from "@/components/CustomSessionScheduler";
 import SmartTemplateGrid from "@/components/SmartTemplateGrid";
 import { getCharacterDialogue } from "@/lib/characterDialogue";
+import { useTheme } from "@/contexts/ThemeContext";
 
 // MBTI Theme System
 import mbtiThemes, { 
@@ -58,6 +59,7 @@ export default function Home() {
   const [quizGate, setQuizGate] = useState({ open: false, url: "", items: [], loading: false, metadata: null, error: null });
   const [breakConfirm, setBreakConfirm] = useState(false);
   const [theme, setTheme] = useState(null);
+  const { theme: contextTheme, getCSSVariables, getGradientClass } = useTheme();
 
   // Initialize theme system
   useEffect(() => {
@@ -392,7 +394,10 @@ export default function Home() {
   return (
     <>
     {showProfile && <PersonalityProfile cluster={cluster} onDone={handleProfileDone} />}
-    <section className="min-h-screen bg-mint">
+    <section 
+      className="w-full"
+      style={getCSSVariables()}
+    >
       <div className="w-full px-4 md:px-6 py-6 flex flex-col items-center gap-8">
         
         {/* HERO: 3-Column Layout with CharacterCard Centerpiece */}

@@ -29,6 +29,16 @@
   --surface: var(--color-cream);
   --accent: var(--color-pink-500);
   --muted: var(--color-teal-300);
+  
+  /* MBTI Theme Variables (will be overridden by personality themes) */
+  --mbti-primary: var(--color-mint-500);
+  --mbti-secondary: var(--color-green-900);
+  --mbti-accent: var(--color-pink-500);
+  --mbti-text-primary: var(--color-green-900);
+  --mbti-text-secondary: var(--color-teal-300);
+  --mbti-bg-pattern: var(--color-mint-500);
+  --mbti-surface: var(--color-cream);
+  --mbti-progress: var(--color-green-900);
 }
 
 /* Base */
@@ -38,10 +48,11 @@ html, body {
 }
 body {
   font-family: var(--font-sans);
-  color: var(--text-default);
-  background: var(--bg-default);
+  color: var(--mbti-text-primary, var(--text-default));
+  background: var(--mbti-bg-pattern, var(--bg-default));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* Typography helpers */
@@ -55,11 +66,20 @@ body {
 .font-tanker { font-family: var(--font-tanker), var(--font-sans); }
 
 /* Color utilities */
-.text-green { color: var(--color-green-900); }
-.text-accent { color: var(--accent); }
-.bg-mint { background-color: var(--color-mint-500); }
-.bg-surface { background-color: var(--surface); }
-.border-green { border-color: var(--color-green-900); }
+.text-green { color: var(--mbti-text-primary, var(--color-green-900)); }
+.text-accent { color: var(--mbti-accent, var(--accent)); }
+.bg-mint { background-color: var(--mbti-primary, var(--color-mint-500)); }
+.bg-surface { background-color: var(--mbti-surface, var(--surface)); }
+.border-green { border-color: var(--mbti-primary, var(--color-green-900)); }
+
+/* MBTI Theme-aware utilities */
+.bg-mbti-primary { background-color: var(--mbti-primary); }
+.bg-mbti-secondary { background-color: var(--mbti-secondary); }
+.bg-mbti-accent { background-color: var(--mbti-accent); }
+.text-mbti-primary { color: var(--mbti-text-primary); }
+.text-mbti-secondary { color: var(--mbti-text-secondary); }
+.border-mbti-primary { border-color: var(--mbti-primary); }
+.bg-mbti-surface { background-color: var(--mbti-surface); }
 
 /* Buttons */
 .btn {
