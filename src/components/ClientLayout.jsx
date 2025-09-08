@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import Loader from "./Loader";
-import IntroOverlay from "./IntroOverlay";
+import AuthOverlay from "./AuthOverlay";
+import { getSupabaseClient } from "../lib/supabase";
 import TestRunner from "./TestRunner";
 import FinalReveal from "./FinalReveal";
 import GreetingReveal from "./GreetingReveal";
@@ -9,6 +10,28 @@ import GreetingReveal from "./GreetingReveal";
 export default function ClientLayout({ children }) {
   const [stage, setStage] = useState("greeting"); // greeting | introForm | testRunner | finalReveal | app
   const [userMeta, setUserMeta] = useState({ username: "", gender: "", mode: "general" });
+
+  // On mount, if authenticated and profile says test_completed, skip intro/test
+  useEffect(() => {
+    const sb = getSupabaseClient();
+    if (!sb) return;
+    (async () => {
+      try {
+        const { data: sessionData } = await sb.auth.getSession();
+        const uid = sessionData?.session?.user?.id;
+        if (!uid) return;
+        const { data: profile } = await sb.from("profiles").select("test_completed, username, gender").eq("id", uid).single();
+        if (profile?.test_completed) {
+          setUserMeta({
+            username: profile?.username || "",
+            gender: (profile?.gender === "female" ? "female" : profile?.gender === "male" ? "male" : ""),
+            mode: "general",
+          });
+          setStage("app");
+        }
+      } catch {}
+    })();
+  }, []);
 
   const handleLoaderComplete = () => {
     setStage("introForm");
@@ -59,7 +82,7 @@ export default function ClientLayout({ children }) {
         <GreetingReveal onComplete={() => setStage("introForm")} />
       )}
       {stage === "introForm" && (
-        <IntroOverlay onStartTest={startTest} />
+        <AuthOverlay onStartTest={startTest} />
       )}
       {stage === "testRunner" && (
         <TestRunner mode={userMeta.mode} onComplete={handleTestComplete} />

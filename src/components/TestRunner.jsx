@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { getGeneralQuestions, getQuestions, postAnswers, postHistory } from "../lib/backend";
 import { getUserId } from "../lib/backend";
+import { getSupabaseClient } from "../lib/supabase";
 
 const PAGE_SIZE = 6;
 const SCALE = [1, 2, 3, 4, 5];
@@ -233,6 +234,20 @@ export default function TestRunner({ mode = "general", onComplete }) {
         try {
           if (mbti) localStorage.setItem("mindshift_personality_type", mbti);
           localStorage.setItem("ms_intro_complete", "1");
+          // Persist completion to Supabase profile if available (non-blocking)
+          try {
+            const sb = getSupabaseClient();
+            if (sb) {
+              const { data: sessionData } = await sb.auth.getSession();
+              const uid = sessionData?.session?.user?.id;
+              if (uid) {
+                await sb
+                  .from("profiles")
+                  .update({ test_completed: true, last_result_mbti: mbti || null })
+                  .eq("id", uid);
+              }
+            }
+          } catch {}
         } catch {}
         onComplete?.();
       } catch (e) {

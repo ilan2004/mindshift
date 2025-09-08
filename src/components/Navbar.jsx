@@ -1,81 +1,55 @@
 "use client";
-import Link from "next/link";
+
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import SlideMenu from "./SlideMenu";
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(true);
-
-  // Close menu on route change/hash change or resize up to md
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // Close menu on route change/hash change
   useEffect(() => {
-    const close = () => setOpen(false);
+    const close = () => setIsMenuOpen(false);
     window.addEventListener("hashchange", close);
     window.addEventListener("popstate", close);
-    const handleResize = () => {
-      // Tailwind md breakpoint is 768px by default
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (!mobile) setOpen(false);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("hashchange", close);
       window.removeEventListener("popstate", close);
-      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   return (
-    <header className="border-b">
-      <nav className="mx-auto max-w-6xl px-4 md:px-6 py-3">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/"
-            className="font-tanker font-semibold text-4xl md:text-5xl leading-none tracking-widest"
-            aria-label="Go to Home"
-          >
-            MindShift
-          </Link>
-          {/* Desktop counters + actions */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link href="/dashboard" className="nav-pill nav-pill--cyan">Dashboard</Link>
-            <Link href="/leaderboard" className="nav-pill nav-pill--cyan">Leaderboard</Link>
-            <Link href="/game" className="nav-pill nav-pill--cyan">Game</Link>
-            <Link href="/stake" className="nav-pill nav-pill--cyan">Stake</Link>
+    <header className="sticky top-0 z-30 w-full bg-mint border-b-2 border-green">
+      <nav className="max-w-7xl mx-auto px-4 py-4 md:px-6">
+        <div className="flex items-center">
+          {/* Logo aligned left */}
+          <div className="flex-1">
+            <Link
+              href="/"
+              className="font-tanker font-semibold text-4xl md:text-5xl leading-none tracking-widest"
+              aria-label="Go to Home"
+            >
+              MindShift
+            </Link>
           </div>
-          {/* Mobile hamburger (never rendered on desktop) */}
-          {isMobile && (
+
+          {/* Menu button aligned right */}
+          <div className="flex-none ml-4">
             <button
               type="button"
-              className="nav-pill inline-flex"
-              aria-controls="mobile-nav"
-              aria-expanded={open}
-              onClick={() => setOpen((v) => !v)}
+              className="nav-pill nav-pill--cyan"
+              aria-controls="menu"
+              aria-expanded={isMenuOpen}
+              onClick={() => setIsMenuOpen(true)}
             >
-              {open ? "Close" : "Menu"}
+              Menu
             </button>
-          )}
-        </div>
-        {/* Mobile sheet */}
-        <div
-          id="mobile-nav"
-          className={`md:hidden overflow-hidden transition-[max-height,opacity] duration-200 ease-out ${open ? "max-h-48 opacity-100" : "max-h-0 opacity-0"}`}
-        >
-          <div className="pt-3 pb-2 flex flex-col gap-2">
-            <Link href="/dashboard" className="nav-pill nav-pill--cyan w-full text-center" onClick={() => setOpen(false)}>
-              Dashboard
-            </Link>
-            <Link href="/leaderboard" className="nav-pill nav-pill--cyan w-full text-center" onClick={() => setOpen(false)}>
-              Leaderboard
-            </Link>
-            <Link href="/game" className="nav-pill nav-pill--cyan w-full text-center" onClick={() => setOpen(false)}>
-              Game
-            </Link>
-            <Link href="/stake" className="nav-pill nav-pill--cyan w-full text-center" onClick={() => setOpen(false)}>
-              Stake
-            </Link>
           </div>
+
+          {/* Slide Menu */}
+          <SlideMenu 
+            isOpen={isMenuOpen} 
+            onClose={() => setIsMenuOpen(false)} 
+          />
         </div>
       </nav>
     </header>

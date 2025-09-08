@@ -1,5 +1,7 @@
 // src/lib/backend.js
 
+import { getSupabaseClient } from './supabase';
+
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 if (!API_BASE) {
@@ -19,10 +21,27 @@ export function getUserId() {
   return id;
 }
 
+// Get auth headers for authenticated requests
+async function getAuthHeaders() {
+  const supabase = getSupabaseClient();
+  if (!supabase) return {};
+  
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.access_token) return {};
+  
+  return {
+    "Authorization": `Bearer ${session.access_token}`
+  };
+}
+
 async function request(path, { method = "GET", body } = {}) {
+  const authHeaders = await getAuthHeaders();
   const res = await fetch(`${API_BASE}${path}`, {
     method,
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      ...authHeaders
+    },
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) {
@@ -38,21 +57,23 @@ export function postHistory({ user_id, history }) {
 }
 
 // GET /questions/
-export function getQuestions(user_id) {
+export async function getQuestions(user_id) {
+  const authHeaders = await getAuthHeaders();
   const url = new URL("/questions/", API_BASE);
   url.searchParams.set("user_id", user_id);
-  return fetch(url.toString()).then(async (res) => {
+  return fetch(url.toString(), { headers: authHeaders }).then(async (res) => {
     if (!res.ok) throw new Error(`Backend GET /questions failed ${res.status}`);
     return res.json();
   });
 }
 
 // GET /questions/ with CSV themes
-export function getQuestionsWithThemes(user_id, themesCSV) {
+export async function getQuestionsWithThemes(user_id, themesCSV) {
+  const authHeaders = await getAuthHeaders();
   const url = new URL("/questions/", API_BASE);
   url.searchParams.set("user_id", user_id);
   if (themesCSV) url.searchParams.set("themes", themesCSV);
-  return fetch(url.toString()).then(async (res) => {
+  return fetch(url.toString(), { headers: authHeaders }).then(async (res) => {
     if (!res.ok) throw new Error(`Backend GET /questions failed ${res.status}`);
     return res.json();
   });
@@ -66,9 +87,10 @@ export function postQuestions({ user_id, themes, mbti_hint }) {
 // GET /questions/ (simplified API): returns [{question, options}] -> normalize to {questions: string[]}
 export async function getGeneralQuestions(user_id) {
   // user_id not used by backend now, but kept for API parity
+  const authHeaders = await getAuthHeaders();
   const url = new URL("/questions/", API_BASE);
   if (user_id) url.searchParams.set("user_id", user_id);
-  const res = await fetch(url.toString());
+  const res = await fetch(url.toString(), { headers: authHeaders });
   if (!res.ok) throw new Error(`Backend GET /questions failed ${res.status}`);
   const data = await res.json(); // expected: Array<{question: string, options: string[]}> or Array<string>
   const list = Array.isArray(data)

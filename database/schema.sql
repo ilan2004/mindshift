@@ -1,5 +1,36 @@
 -- Initial schema (stub). Adapt for Supabase/Postgres.
 
+-- Supabase Auth integration
+create table if not exists profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  username text not null,
+  gender text check (gender in ('male', 'female')),
+  email text,
+  personality_type text,
+  test_completed boolean default false,
+  last_result_mbti text,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
+-- Enable RLS (Row Level Security)
+alter table profiles enable row level security;
+
+-- Create policies for profiles
+create policy "Users can view own profile" on profiles
+  for select using (auth.uid() = id);
+
+create policy "Users can update own profile" on profiles
+  for update using (auth.uid() = id);
+
+-- Drop the existing restrictive policy
+DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
+
+-- Create a more permissive policy for signup
+CREATE POLICY "Users can insert own profile" ON profiles
+  FOR INSERT WITH CHECK (true);
+
+-- Legacy users table (keeping for backward compatibility)
 create table if not exists users (
   id uuid primary key default gen_random_uuid(),
   name text not null,
