@@ -25,5 +25,5 @@ COPY backend/app /app/app
 # Expose the port
 EXPOSE 8080
 
-# Start server (Gunicorn + Uvicorn worker)
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-w", "2", "-b", "0.0.0.0:8080"]
+# Start server (Uvicorn directly - simpler for smaller apps)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "2"]
