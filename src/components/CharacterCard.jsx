@@ -10,6 +10,7 @@ import {
   getGeneralQuestions,
   postAnswers,
 } from "@/lib/backend";
+import { getCharacterDialogue } from "@/lib/characterDialogue";
 
 // Asset path resolver imported from src/lib/assets
 
@@ -44,6 +45,29 @@ function normalizeType(type) {
   return String(type).trim().toUpperCase();
 }
 
+// Personality-specific colors using only your existing CSS variables
+function getPersonalityColor(type) {
+  const colors = {
+    INTJ: 'var(--color-purple-400)',
+    INTP: 'var(--color-cyan-200)', 
+    ENTJ: 'var(--color-orange-500)',
+    ENTP: 'var(--color-pink-500)',
+    INFJ: 'var(--color-blue-400)',
+    INFP: 'var(--color-pink-200)',
+    ENFJ: 'var(--color-teal-300)',
+    ENFP: 'var(--color-amber-400)',
+    ISTJ: 'var(--color-blue-400)',
+    ISFJ: 'var(--color-pink-200)',
+    ESTJ: 'var(--color-orange-500)',
+    ESFJ: 'var(--color-pink-500)',
+    ISTP: 'var(--color-teal-300)',
+    ISFP: 'var(--color-lilac-300)',
+    ESTP: 'var(--color-amber-400)',
+    ESFP: 'var(--color-yellow-200)'
+  };
+  return colors[type.toUpperCase()] || 'var(--color-green-900)';
+}
+
 // Messaging keys (align with FooterFocusBar and extension)
 const MSG_REQUEST = "mindshift:focus";
 const MSG_RESPONSE = "mindshift:focus:status";
@@ -68,6 +92,30 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
 
   // Session status for ring progress
   const [status, setStatus] = useState({ active: false, mode: "idle", remainingMs: 0 });
+  
+  // Personality dialogue system  
+  const [dialogue, setDialogue] = useState({ greeting: "", motivation: "" });
+  useEffect(() => {
+    if (!type) return;
+    try {
+      const streak = Number(localStorage.getItem("mindshift_streak")) || 0;
+      const totalMinutes = Number(localStorage.getItem("mindshift_total_focus_time")) || 0;
+      const achievements = JSON.parse(localStorage.getItem("mindshift_achievements") || "[]");
+      
+      const dialogue = getCharacterDialogue(type, {
+        streak,
+        totalMinutes,
+        achievements,
+        hasActiveSession: status.active
+      });
+      
+      setDialogue(dialogue);
+    } catch {
+      // Fallback to basic dialogue
+      const dialogue = getCharacterDialogue(type, {});
+      setDialogue(dialogue);
+    }
+  }, [type, status.active]); // Re-run when session status changes
   const totalMsRef = useRef(0);
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -420,13 +468,20 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
         </span>
         <span className="nav-pill nav-pill--cyan" title="Level based on points">Level {levelInfo.level}</span>
       </div>
-      {/* Level progress bar */}
+      {/* Level progress bar with personality enhancement */}
       <div className="w-full max-w-md px-4 -mt-1">
         <div className="text-[11px] text-neutral-600 mb-1 text-center">
           {levelInfo.nextThreshold > 0 ? `${points - levelInfo.prevThreshold} / ${levelInfo.nextThreshold - levelInfo.prevThreshold} to next level` : `Max level`}
+          {type && <span className="text-green font-medium ml-1">({type} Journey)</span>}
         </div>
         <div className="h-2 w-full bg-neutral-100 rounded-full overflow-hidden">
-          <div className="h-full bg-emerald-500 transition-all" style={{ width: `${levelInfo.progressPct}%` }} />
+          <div 
+            className="h-full transition-all" 
+            style={{ 
+              width: `${levelInfo.progressPct}%`,
+              backgroundColor: type ? getPersonalityColor(type) : 'var(--color-green-900)'
+            }} 
+          />
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -489,7 +544,22 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
           </div>
         )}
       </div>
-      {type ? <div className="font-tanker text-sm text-white">{type}</div> : null}
+      {type ? (
+        <div className="text-center space-y-2">
+          <div className="font-tanker text-sm text-white">{type}</div>
+          {/* Personality Dialogue */}
+          {dialogue.greeting && (
+            <div className="max-w-xs mx-auto px-3 py-2 rounded-lg bg-white/90 text-green text-sm font-medium text-center backdrop-blur-sm border border-green/20">
+              {dialogue.greeting}
+            </div>
+          )}
+          {dialogue.motivation && (
+            <div className="max-w-xs mx-auto px-3 py-2 rounded-lg bg-green/90 text-white text-sm font-medium text-center backdrop-blur-sm">
+              {dialogue.motivation}
+            </div>
+          )}
+        </div>
+      ) : null}
           
       {/* Internal test modal disabled by new intro flow */}
       {false && showTest && (

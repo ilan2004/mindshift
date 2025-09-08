@@ -2,8 +2,99 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-// Default quests for the day (MVP). Later, drive from backend/user settings.
-const DEFAULT_QUESTS = [
+// MBTI-specific quest variations
+const PERSONALITY_QUESTS = {
+  // Analysts (NT) - Strategy and systems
+  INTJ: [
+    { id: "strategic_planning", title: "Map out your long-term goal strategy (10m)", points: 12 },
+    { id: "optimize_system", title: "Identify and fix one inefficiency in your workflow", points: 10 },
+    { id: "deep_learning", title: "Study a complex concept for 45m uninterrupted", points: 15 },
+  ],
+  INTP: [
+    { id: "explore_concept", title: "Dive deep into a fascinating new idea for 30m", points: 12 },
+    { id: "connect_patterns", title: "Find connections between 3 different concepts", points: 10 },
+    { id: "analyze_problem", title: "Break down a complex problem into components", points: 8 },
+  ],
+  ENTJ: [
+    { id: "lead_initiative", title: "Take charge of organizing one project task", points: 15 },
+    { id: "efficiency_audit", title: "Streamline a process to save time tomorrow", points: 12 },
+    { id: "goal_milestone", title: "Achieve a concrete milestone toward your goal", points: 10 },
+  ],
+  ENTP: [
+    { id: "brainstorm_session", title: "Generate 10 creative solutions to a challenge", points: 10 },
+    { id: "network_connect", title: "Have a meaningful conversation with someone new", points: 8 },
+    { id: "prototype_idea", title: "Turn one idea into a quick prototype or draft", points: 12 },
+  ],
+  
+  // Diplomats (NF) - People and potential
+  INFJ: [
+    { id: "vision_clarity", title: "Write about your long-term vision for 15m", points: 10 },
+    { id: "meaningful_help", title: "Offer genuine help to someone who needs it", points: 12 },
+    { id: "reflection_time", title: "Reflect on personal growth for 20m in solitude", points: 8 },
+  ],
+  INFP: [
+    { id: "authentic_create", title: "Create something that expresses your true self", points: 15 },
+    { id: "value_action", title: "Take one action aligned with your core values", points: 10 },
+    { id: "inspire_moment", title: "Find and capture one moment of inspiration", points: 5 },
+  ],
+  ENFJ: [
+    { id: "team_support", title: "Help a teammate overcome a challenge", points: 12 },
+    { id: "group_harmony", title: "Facilitate positive energy in a group setting", points: 10 },
+    { id: "mentor_someone", title: "Share knowledge to help someone grow", points: 15 },
+  ],
+  ENFP: [
+    { id: "spark_enthusiasm", title: "Share excitement about an idea with others", points: 8 },
+    { id: "explore_possibility", title: "Explore a new possibility for 25m", points: 10 },
+    { id: "authentic_connect", title: "Have a deep, authentic conversation", points: 12 },
+  ],
+  
+  // Sentinels (SJ) - Structure and reliability
+  ISTJ: [
+    { id: "organize_space", title: "Organize your workspace for maximum efficiency", points: 10 },
+    { id: "complete_task", title: "Finish a task you've been putting off", points: 12 },
+    { id: "plan_tomorrow", title: "Plan tomorrow's schedule in detail", points: 8 },
+  ],
+  ISFJ: [
+    { id: "care_action", title: "Do something thoughtful for someone you care about", points: 12 },
+    { id: "maintain_routine", title: "Stick to your healthy routine for the whole day", points: 10 },
+    { id: "prepare_others", title: "Prepare something that will help others succeed", points: 15 },
+  ],
+  ESTJ: [
+    { id: "lead_progress", title: "Drive progress on a team goal or project", points: 15 },
+    { id: "optimize_process", title: "Make a process more efficient and organized", points: 12 },
+    { id: "achieve_target", title: "Hit a specific, measurable target today", points: 10 },
+  ],
+  ESFJ: [
+    { id: "support_harmony", title: "Foster positive relationships in your environment", points: 10 },
+    { id: "organize_group", title: "Organize or coordinate something for others", points: 12 },
+    { id: "celebrate_someone", title: "Recognize someone's efforts or achievements", points: 8 },
+  ],
+  
+  // Explorers (SP) - Action and adaptability
+  ISTP: [
+    { id: "solve_practically", title: "Fix or improve something with your hands", points: 12 },
+    { id: "master_skill", title: "Practice a technical skill for 30m", points: 10 },
+    { id: "analyze_system", title: "Understand how something works by taking it apart", points: 8 },
+  ],
+  ISFP: [
+    { id: "create_beauty", title: "Create or appreciate something beautiful", points: 10 },
+    { id: "personal_expression", title: "Express yourself authentically in some way", points: 8 },
+    { id: "nature_connect", title: "Spend 15m connecting with nature or beauty", points: 5 },
+  ],
+  ESTP: [
+    { id: "take_action", title: "Jump into action on something you've been thinking about", points: 12 },
+    { id: "social_energy", title: "Energize others through positive interaction", points: 10 },
+    { id: "seize_opportunity", title: "Seize an opportunity that presents itself today", points: 15 },
+  ],
+  ESFP: [
+    { id: "bring_joy", title: "Bring joy or laughter to someone's day", points: 10 },
+    { id: "live_moment", title: "Fully experience and enjoy a beautiful moment", points: 8 },
+    { id: "help_spontaneously", title: "Help someone in a spontaneous, heartfelt way", points: 12 },
+  ],
+};
+
+// Universal quests that work for everyone
+const UNIVERSAL_QUESTS = [
   { id: "daily_focus_25", title: "Complete one 25m focus block", points: 10 },
   { id: "no_social_hour", title: "Avoid social media for 1 hour", points: 8 },
   { id: "write_intent", title: "Write a one-line session intent", points: 5 },
@@ -53,7 +144,16 @@ function dispatchCountersUpdate() {
   } catch {}
 }
 
-export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
+export default function QuestBoard({ quests, personalityType }) {
+  // Generate personality-specific quests
+  const personalityQuests = useMemo(() => {
+    if (!personalityType) return UNIVERSAL_QUESTS;
+    const specificQuests = PERSONALITY_QUESTS[personalityType.toUpperCase()] || [];
+    // Combine 2 personality-specific quests with 1 universal quest
+    return [...specificQuests.slice(0, 2), UNIVERSAL_QUESTS[0]];
+  }, [personalityType]);
+  
+  const defaultQuests = quests || personalityQuests;
   const [day, setDay] = useState(todayKey());
   const [state, setState] = useState({}); // { [questId]: boolean }
   const [customQuests, setCustomQuests] = useState([]); // array of { id, title, points }
@@ -92,7 +192,7 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
     return () => clearInterval(interval);
   }, [day]);
 
-  const allQuests = useMemo(() => [...quests, ...customQuests], [quests, customQuests]);
+  const allQuests = useMemo(() => [...defaultQuests, ...customQuests], [defaultQuests, customQuests]);
   const completedCount = useMemo(
     () => allQuests.filter((q) => !!state[q.id]).length,
     [state, allQuests]
@@ -177,7 +277,23 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
         }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
-          <h2 className="text-sm md:text-base font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Quest Board</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm md:text-base font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>
+              {getPersonalityQuestTitle(personalityType)}
+            </h2>
+            {personalityType && (
+              <span 
+                className="text-xs px-2 py-1 rounded-full font-medium"
+                style={{
+                  background: getPersonalityAccentColor(personalityType),
+                  color: 'var(--color-green-900)',
+                  border: '1px solid var(--color-green-900-20)'
+                }}
+              >
+                {personalityType}
+              </span>
+            )}
+          </div>
           <div className="text-xs md:text-sm text-neutral-600 font-medium">{day}</div>
         </div>
 
@@ -237,23 +353,27 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
 
         {/* Quests List */}
         <ul className="space-y-2">
-          {allQuests.map((q) => {
+          {allQuests.map((q, index) => {
             const done = !!state[q.id];
+            const isPersonalityQuest = personalityType && index < 2; // First 2 are personality-specific
             return (
               <li
                 key={q.id}
                 className="flex items-center justify-between gap-3 rounded-xl p-2.5 transition-all duration-200"
                 style={{
-                  background: done ? "var(--color-green-900-10)" : "var(--surface)",
+                  background: done ? (isPersonalityQuest ? getPersonalityAccentColor(personalityType) : "var(--color-green-900-10)") : "var(--surface)",
                   border: `2px solid ${done ? "var(--color-green-900)" : "var(--color-green-900-30)"}`,
-                  boxShadow: done ? "0 2px 0 var(--color-green-900)" : "none"
+                  boxShadow: done ? "0 2px 0 var(--color-green-900)" : (isPersonalityQuest ? "0 1px 0 var(--color-green-900-20)" : "none")
                 }}
               >
                 <label className="flex items-center gap-3 cursor-pointer select-none flex-1 min-w-0">
+                  {isPersonalityQuest && (
+                    <span className="text-xs opacity-70 flex-shrink-0">✨</span>
+                  )}
                   <input
                     type="checkbox"
                     className="h-4 w-4 flex-shrink-0"
-                    style={{ accentColor: "var(--color-green-900)" }}
+                    style={{ accentColor: isPersonalityQuest && done ? "var(--color-green-900)" : "var(--color-green-900)" }}
                     checked={done}
                     onChange={() => toggleQuest(q)}
                   />
@@ -268,7 +388,20 @@ export default function QuestBoard({ quests = DEFAULT_QUESTS }) {
                     </span>
                   )}
                 </label>
-                <span className="nav-pill nav-pill--neutral text-xs flex-shrink-0">+{q.points}</span>
+                <div className="flex items-center gap-2">
+                  {isPersonalityQuest && (
+                    <span className="text-xs text-neutral-500 font-medium">{personalityType}</span>
+                  )}
+                  <span 
+                    className="nav-pill text-xs flex-shrink-0"
+                    style={{
+                      background: isPersonalityQuest ? getPersonalityAccentColor(personalityType) : 'var(--surface)',
+                      color: 'var(--color-green-900)'
+                    }}
+                  >
+                    +{q.points}
+                  </span>
+                </div>
               </li>
             );
           })}
@@ -329,4 +462,59 @@ function computeRelativeDate(baseYYYYMMDD, deltaDays) {
     dt.setDate(dt.getDate() + deltaDays);
     return dt.toISOString().slice(0, 10);
   }
+}
+
+// Helper functions for personality theming
+function getPersonalityQuestTitle(personalityType) {
+  if (!personalityType) return "Quest Board";
+  
+  const titles = {
+    // Analysts
+    INTJ: "Strategic Quests",
+    INTP: "Explorer Quests", 
+    ENTJ: "Leadership Quests",
+    ENTP: "Innovation Quests",
+    // Diplomats 
+    INFJ: "Vision Quests",
+    INFP: "Authentic Quests",
+    ENFJ: "Harmony Quests",
+    ENFP: "Inspiration Quests",
+    // Sentinels
+    ISTJ: "Structure Quests",
+    ISFJ: "Care Quests", 
+    ESTJ: "Achievement Quests",
+    ESFJ: "Community Quests",
+    // Explorers
+    ISTP: "Craft Quests",
+    ISFP: "Expression Quests",
+    ESTP: "Action Quests",
+    ESFP: "Joy Quests"
+  };
+  
+  return titles[personalityType.toUpperCase()] || "Quest Board";
+}
+
+function getPersonalityAccentColor(personalityType) {
+  if (!personalityType) return 'var(--surface)';
+  
+  const colors = {
+    INTJ: 'var(--color-purple-400)',
+    INTP: 'var(--color-cyan-200)', 
+    ENTJ: 'var(--color-orange-500)',
+    ENTP: 'var(--color-pink-500)',
+    INFJ: 'var(--color-blue-400)',
+    INFP: 'var(--color-pink-200)',
+    ENFJ: 'var(--color-teal-300)', 
+    ENFP: 'var(--color-amber-400)',
+    ISTJ: 'var(--color-blue-400)',
+    ISFJ: 'var(--color-pink-200)',
+    ESTJ: 'var(--color-orange-500)',
+    ESFJ: 'var(--color-pink-500)', 
+    ISTP: 'var(--color-teal-300)',
+    ISFP: 'var(--color-lilac-300)',
+    ESTP: 'var(--color-amber-400)',
+    ESFP: 'var(--color-yellow-200)'
+  };
+  
+  return colors[personalityType.toUpperCase()] || 'var(--surface)';
 }
