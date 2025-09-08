@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -113,11 +113,11 @@ export default function Home() {
     const now = Date.now();
     return sessions.find(s => (s.status||"active") === "active" && (s.ends_at||s.endsAt||0) > now);
   }
-  function refreshToday() {
+  const refreshToday = useCallback(() => {
     setTodayMinutes(computeTodayMinutes());
     setStreakDays(readStreak());
     setHasActive(!!getActive());
-  }
+  }, []); // No dependencies as it only uses local functions and state setters
 
   // Listen for template start events and create a local active session
   useEffect(() => {
@@ -206,7 +206,7 @@ export default function Home() {
       window.removeEventListener("mindshift:blocker:quiz", onQuiz);
       window.removeEventListener("mindshift:focus:break_request", onBreakReq);
     };
-  }, []);
+  }, [refreshToday]);
 
   const handleProfileDone = () => {
     setShowProfile(false);
@@ -271,7 +271,7 @@ export default function Home() {
           </div>
         );
     }
-  }, [cluster]);
+  }, [cluster, mbti]);
 
   const heroRight = useMemo(() => {
     switch (cluster) {
@@ -301,7 +301,7 @@ export default function Home() {
           </div>
         );
     }
-  }, [cluster]);
+  }, [cluster, mbti]);
 
   // Determine which lower sections to hide because they already appear in hero
   const used = useMemo(() => {
