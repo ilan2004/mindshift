@@ -452,7 +452,7 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <div className="flex items-center gap-2">
-        <h1 className="font-tanker text-5xl leading-none text-center">{heading}</h1>
+        <h1 className="font-tanker text-5xl leading-none text-center" style={{ color: 'var(--mbti-text-primary)' }}>{heading}</h1>
         <button
           className="text-xs px-2 py-1 rounded-md border border-neutral-300 text-neutral-600 hover:bg-neutral-50"
           onClick={() => setShowNameModal(true)}

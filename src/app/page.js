@@ -14,6 +14,9 @@ import PeerStatusPanel from "@/components/PeerStatusPanel";
 import CommunityChallenges from "@/components/CommunityChallenges";
 import LeaderboardSection from "@/components/LeaderboardSection";
 import PersonalityProfile from "@/components/PersonalityProfile";
+import NotificationDemo from "@/components/NotificationDemo";
+import PersonalityColorDemo from "@/components/PersonalityColorDemo";
+import ColorDebug from "@/components/ColorDebug";
 import { buildBento, styleFor } from "./buildBento";
 
 // Phase 1 personality intelligence components - to be integrated
@@ -401,6 +404,7 @@ export default function Home() {
 
   return (
     <>
+    <ColorDebug />
     {showProfile && <PersonalityProfile cluster={cluster} onDone={handleProfileDone} />}
     <section 
       className="w-full"
@@ -439,7 +443,7 @@ export default function Home() {
         {/* Today strip */}
           <div className="w-full max-w-4xl reveal-on-scroll">
           <div className="text-center mb-3">
-            <div className="font-tanker text-2xl text-green tracking-widest">TODAY</div>
+            <div className="font-tanker text-2xl tracking-widest" style={{ color: 'var(--mbti-text-primary)' }}>TODAY</div>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-neutral-700">
             <span className="nav-pill">{todayMinutes}m focused</span>
@@ -465,7 +469,7 @@ export default function Home() {
             }}
           >
             <div className="text-center mb-4">
-              <div className="font-tanker text-xl text-green tracking-widest">TEMPLATES</div>
+              <div className="font-tanker text-xl tracking-widest" style={{ color: 'var(--mbti-text-primary)' }}>TEMPLATES</div>
             </div>
             <SmartTemplateGrid 
               onTemplateSelect={handleStartFocus}
@@ -489,7 +493,8 @@ export default function Home() {
         <div className="w-full max-w-4xl reveal-on-scroll">
           <div className="text-center mb-4">
             <button 
-              className="font-tanker text-xl text-green tracking-widest hover:text-green/80 transition-colors"
+              className="font-tanker text-xl tracking-widest transition-colors"
+              style={{ color: 'var(--mbti-text-primary)' }}
               onClick={() => setMoreOpen(!moreOpen)}
             >
               MORE FOR YOU {moreOpen ? '▲' : '▼'}
@@ -512,6 +517,13 @@ export default function Home() {
               {!used.has("CommunityChallenges") && (
                 <CommunityChallenges personalityType={mbti} />
               )}
+              {/* Demo Components - Temporary */}
+              <div className="md:col-span-2">
+                <NotificationDemo />
+              </div>
+              <div className="md:col-span-2">
+                <PersonalityColorDemo />
+              </div>
             </div>
           )}
         </div>

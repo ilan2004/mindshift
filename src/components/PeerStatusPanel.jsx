@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getLeaderboard, getFriends, getUsersByIds } from "@/lib/api";
+import { useNotifications } from '@/contexts/NotificationContext';
 
 // MBTI compatibility and peer suggestions
 const PERSONALITY_COMPATIBLE = {
@@ -86,9 +87,10 @@ function randomStatus() {
   return modes[Math.floor(Math.random() * modes.length)];
 }
 
-export default function PeerStatusPanel({ userId = 1, personalityType }) {
+export default function PeerStatusPanel({ userId = 1, personalityType, gender = null }) {
   const [peers, setPeers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { sendNudge, notifyPeerActivity, addNotification } = useNotifications();
 
   useEffect(() => {
     let mounted = true;
@@ -126,13 +128,74 @@ export default function PeerStatusPanel({ userId = 1, personalityType }) {
     [peers]
   );
 
+  // Handle nudging a peer
+  const handleNudgePeer = (peer, userPersonalityType) => {
+    const nudgeType = getPersonalityNudgeText(peer.personality, userPersonalityType).toLowerCase();
+    
+    // Send the nudge notification
+    sendNudge(peer, nudgeType);
+    
+    // Show confirmation that nudge was sent
+    addNotification({
+      type: 'success',
+      title: 'Nudge Sent! 🚀',
+      message: `You ${nudgeType}d ${peer.name}. They'll be motivated!`,
+      duration: 3000
+    });
+    
+    // Simulate peer activity response (in real app this would come from backend)
+    setTimeout(() => {
+      const responses = [
+        'Thanks for the nudge!',
+        'Just what I needed!', 
+        'Starting a focus session now!',
+        'Motivation received! 💪'
+      ];
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      
+      addNotification({
+        type: 'peer_activity',
+        title: `${peer.name} responded`,
+        message: randomResponse,
+        avatar: peer.avatar,
+        duration: 4000
+      });
+    }, 2000 + Math.random() * 3000); // Random delay 2-5 seconds
+    
+    // Update peer status to show they were nudged
+    setPeers(prev => prev.map(p => 
+      p.id === peer.id 
+        ? { ...p, lastNudged: Date.now() }
+        : p
+    ));
+  };
+  
+  // Simulate peer activity updates
+  useEffect(() => {
+    if (peers.length === 0) return;
+    
+    const activityTimer = setInterval(() => {
+      // Randomly generate peer activities
+      const activePeers = peers.filter(p => p.presence.label !== 'Offline');
+      if (activePeers.length > 0 && Math.random() < 0.3) { // 30% chance every interval
+        const randomPeer = activePeers[Math.floor(Math.random() * activePeers.length)];
+        const activities = ['started_session', 'completed_session', 'streak_milestone'];
+        const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+        
+        notifyPeerActivity(randomPeer, randomActivity);
+      }
+    }, 15000); // Check every 15 seconds
+    
+    return () => clearInterval(activityTimer);
+  }, [peers, notifyPeerActivity]);
+
   return (
     <div
       className="rounded-xl p-2.5 md:p-3 w-full max-w-md mx-auto"
       style={{
         background: "var(--surface)",
         border: "2px solid var(--color-green-900)",
-        boxShadow: "0 2px 0 var(--color-green-900)",
+        boxShadow: "0 2px 0 var(--color-green-900)"
       }}
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
@@ -208,10 +271,14 @@ export default function PeerStatusPanel({ userId = 1, personalityType }) {
               </div>
               
               <button 
-                className="nav-pill text-xs px-2.5 py-1.25 font-medium w-full sm:w-auto flex-shrink-0"
+                className="nav-pill text-xs px-2.5 py-1.25 font-medium w-full sm:w-auto flex-shrink-0 hover:scale-105 transition-transform"
                 style={{
                   background: getPersonalityAccentColor(p.personality || personalityType),
                   color: 'var(--color-green-900)'
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNudgePeer(p, personalityType);
                 }}
               >
                 {getPersonalityNudgeText(p.personality, personalityType)}

@@ -1,0 +1,251 @@
+/* 🎨 MindShift Enhanced Color Palette */
+/* Comprehensive color system with personality and gender awareness */
+
+:root {
+  /* === EXISTING CORE COLORS === */
+  --color-mint-500: rgb(130, 237, 166);
+  --color-green-900: rgb(3, 89, 77);
+  --color-lilac-300: rgb(246, 187, 253);
+  --color-orange-500: rgb(255, 145, 36);
+  --color-amber-400: rgb(253, 192, 104);
+  --color-cyan-200: rgb(174, 251, 255);
+  --color-blue-400: rgb(88, 154, 240);
+  --color-purple-400: rgb(200, 140, 253);
+  --color-cream: rgb(249, 248, 244);
+  --color-pink-200: rgb(252, 205, 220);
+  --color-pink-500: rgb(252, 86, 129);
+  --color-yellow-200: rgb(255, 255, 148);
+  --color-lime-300: rgb(216, 226, 104);
+  --color-teal-300: rgb(137, 169, 161);
+  --color-green-900-20: rgba(3, 89, 77, 0.2);
+
+  /* === EXPANDED GENDER-AWARE PALETTE === */
+  
+  /* 🌸 FEMININE SPECTRUM - Soft, warm, nurturing */
+  --color-rose-200: rgb(254, 205, 211);      /* Soft rose */
+  --color-rose-300: rgb(253, 164, 175);      /* Medium rose */
+  --color-rose-400: rgb(251, 113, 133);      /* Vibrant rose */
+  --color-blush-200: rgb(255, 219, 234);     /* Gentle blush */
+  --color-blush-300: rgb(252, 182, 211);     /* Warm blush */
+  --color-coral-200: rgb(254, 202, 202);     /* Soft coral */
+  --color-coral-300: rgb(252, 165, 165);     /* Medium coral */
+  --color-peach-200: rgb(254, 215, 170);     /* Soft peach */
+  --color-peach-300: rgb(253, 186, 116);     /* Golden peach */
+  --color-lavender-200: rgb(233, 213, 255);  /* Soft lavender */
+  --color-lavender-300: rgb(196, 181, 253);  /* Medium lavender */
+  --color-mauve-200: rgb(244, 208, 234);     /* Gentle mauve */
+  --color-mauve-300: rgb(232, 183, 215);     /* Warm mauve */
+
+  /* 💙 MASCULINE SPECTRUM - Strong, cool, confident */
+  --color-slate-300: rgb(203, 213, 225);     /* Light slate */
+  --color-slate-400: rgb(148, 163, 184);     /* Medium slate */
+  --color-slate-500: rgb(100, 116, 139);     /* Strong slate */
+  --color-steel-200: rgb(226, 232, 240);     /* Light steel */
+  --color-steel-300: rgb(203, 213, 225);     /* Medium steel */
+  --color-navy-200: rgb(191, 219, 254);      /* Light navy */
+  --color-navy-300: rgb(147, 197, 253);      /* Medium navy */
+  --color-navy-400: rgb(96, 165, 250);       /* Strong navy */
+  --color-forest-200: rgb(187, 247, 208);    /* Light forest */
+  --color-forest-300: rgb(134, 239, 172);    /* Medium forest */
+  --color-forest-400: rgb(74, 222, 128);     /* Strong forest */
+  --color-charcoal-200: rgb(229, 231, 235);  /* Light charcoal */
+  --color-charcoal-300: rgb(209, 213, 219);  /* Medium charcoal */
+
+  /* === PERSONALITY-SPECIFIC COLORS === */
+
+  /* 🧠 ANALYSTS (NT) - Cool, intellectual, strategic */
+  --color-analyst-primary: rgb(139, 92, 246);    /* Deep purple */
+  --color-analyst-secondary: rgb(168, 162, 158); /* Neutral gray */
+  --color-analyst-accent: rgb(14, 165, 233);     /* Electric blue */
+  --color-analyst-soft: rgb(224, 231, 255);      /* Soft blue-white */
+  
+  /* 💚 DIPLOMATS (NF) - Warm, empathetic, idealistic */
+  --color-diplomat-primary: rgb(34, 197, 94);    /* Vibrant green */
+  --color-diplomat-secondary: rgb(251, 146, 60); /* Warm orange */
+  --color-diplomat-accent: rgb(236, 72, 153);    /* Bright pink */
+  --color-diplomat-soft: rgb(240, 253, 244);     /* Soft green-white */
+  
+  /* 🛡️ SENTINELS (SJ) - Stable, reliable, traditional */
+  --color-sentinel-primary: rgb(59, 130, 246);   /* Classic blue */
+  --color-sentinel-secondary: rgb(161, 98, 7);   /* Warm brown */
+  --color-sentinel-accent: rgb(5, 150, 105);     /* Forest green */
+  --color-sentinel-soft: rgb(239, 246, 255);     /* Soft blue-white */
+  
+  /* ⚡ EXPLORERS (SP) - Dynamic, spontaneous, energetic */
+  --color-explorer-primary: rgb(245, 158, 11);   /* Golden yellow */
+  --color-explorer-secondary: rgb(239, 68, 68);  /* Vibrant red */
+  --color-explorer-accent: rgb(168, 85, 247);    /* Electric purple */
+  --color-explorer-soft: rgb(255, 251, 235);     /* Soft yellow-white */
+
+  /* === NOTIFICATION-SPECIFIC COLORS === */
+  
+  /* Success variations */
+  --color-success-light: rgb(187, 247, 208);
+  --color-success-medium: rgb(134, 239, 172);
+  --color-success-strong: rgb(34, 197, 94);
+  
+  /* Error variations */
+  --color-error-light: rgb(254, 226, 226);
+  --color-error-medium: rgb(252, 165, 165);
+  --color-error-strong: rgb(239, 68, 68);
+  
+  /* Warning variations */
+  --color-warning-light: rgb(254, 243, 199);
+  --color-warning-medium: rgb(253, 230, 138);
+  --color-warning-strong: rgb(245, 158, 11);
+  
+  /* Info variations */
+  --color-info-light: rgb(219, 234, 254);
+  --color-info-medium: rgb(147, 197, 253);
+  --color-info-strong: rgb(59, 130, 246);
+
+  /* === GENDER-AWARE PERSONALITY COMBINATIONS === */
+  
+  /* Feminine Analyst Colors */
+  --color-analyst-fem-primary: rgb(196, 181, 253);   /* Soft purple */
+  --color-analyst-fem-secondary: rgb(244, 208, 234); /* Gentle mauve */
+  --color-analyst-fem-accent: rgb(147, 197, 253);    /* Soft blue */
+  
+  /* Masculine Analyst Colors */
+  --color-analyst-masc-primary: rgb(139, 92, 246);   /* Deep purple */
+  --color-analyst-masc-secondary: rgb(100, 116, 139); /* Steel gray */
+  --color-analyst-masc-accent: rgb(14, 165, 233);    /* Electric blue */
+  
+  /* Feminine Diplomat Colors */
+  --color-diplomat-fem-primary: rgb(254, 205, 211);  /* Rose */
+  --color-diplomat-fem-secondary: rgb(254, 215, 170); /* Peach */
+  --color-diplomat-fem-accent: rgb(134, 239, 172);   /* Soft green */
+  
+  /* Masculine Diplomat Colors */
+  --color-diplomat-masc-primary: rgb(34, 197, 94);   /* Forest green */
+  --color-diplomat-masc-secondary: rgb(74, 222, 128); /* Strong green */
+  --color-diplomat-masc-accent: rgb(147, 197, 253);  /* Cool blue */
+  
+  /* Feminine Sentinel Colors */
+  --color-sentinel-fem-primary: rgb(191, 219, 254);  /* Light navy */
+  --color-sentinel-fem-secondary: rgb(252, 205, 220); /* Pink */
+  --color-sentinel-fem-accent: rgb(187, 247, 208);   /* Light forest */
+  
+  /* Masculine Sentinel Colors */
+  --color-sentinel-masc-primary: rgb(59, 130, 246);  /* Classic blue */
+  --color-sentinel-masc-secondary: rgb(100, 116, 139); /* Steel */
+  --color-sentinel-masc-accent: rgb(5, 150, 105);    /* Forest green */
+  
+  /* Feminine Explorer Colors */
+  --color-explorer-fem-primary: rgb(255, 255, 148);  /* Soft yellow */
+  --color-explorer-fem-secondary: rgb(253, 186, 116); /* Golden peach */
+  --color-explorer-fem-accent: rgb(196, 181, 253);   /* Soft purple */
+  
+  /* Masculine Explorer Colors */
+  --color-explorer-masc-primary: rgb(245, 158, 11);  /* Bold yellow */
+  --color-explorer-masc-secondary: rgb(255, 145, 36); /* Orange */
+  --color-explorer-masc-accent: rgb(239, 68, 68);    /* Vibrant red */
+
+  /* === CONTEXTUAL COLORS === */
+  
+  /* Focus states */
+  --color-focus-active: rgb(34, 197, 94);    /* Success green */
+  --color-focus-paused: rgb(245, 158, 11);   /* Warning amber */
+  --color-focus-break: rgb(147, 197, 253);   /* Info blue */
+  --color-focus-idle: rgb(156, 163, 175);    /* Neutral gray */
+  
+  /* Streak indicators */
+  --color-streak-fire: rgb(239, 68, 68);     /* Fire red */
+  --color-streak-gold: rgb(245, 158, 11);    /* Gold */
+  --color-streak-silver: rgb(156, 163, 175); /* Silver */
+  --color-streak-bronze: rgb(161, 98, 7);    /* Bronze */
+  
+  /* Social status */
+  --color-online: rgb(34, 197, 94);          /* Online green */
+  --color-busy: rgb(239, 68, 68);            /* Busy red */
+  --color-away: rgb(245, 158, 11);           /* Away amber */
+  --color-offline: rgb(156, 163, 175);       /* Offline gray */
+
+  /* === ACCESSIBILITY COLORS === */
+  
+  /* High contrast alternatives for better readability */
+  --color-contrast-text-light: rgb(255, 255, 255);
+  --color-contrast-text-dark: rgb(17, 24, 39);
+  --color-contrast-bg-light: rgb(249, 250, 251);
+  --color-contrast-bg-dark: rgb(31, 41, 55);
+  
+  /* Color-blind friendly alternatives */
+  --color-colorblind-safe-1: rgb(0, 114, 178);   /* Blue */
+  --color-colorblind-safe-2: rgb(230, 159, 0);   /* Orange */
+  --color-colorblind-safe-3: rgb(0, 158, 115);   /* Teal */
+  --color-colorblind-safe-4: rgb(204, 121, 167); /* Pink */
+
+  /* === TRANSPARENCY VARIATIONS === */
+  
+  /* All main colors with 20% opacity for subtle backgrounds */
+  --color-mint-500-20: rgba(130, 237, 166, 0.2);
+  --color-lilac-300-20: rgba(246, 187, 253, 0.2);
+  --color-orange-500-20: rgba(255, 145, 36, 0.2);
+  --color-amber-400-20: rgba(253, 192, 104, 0.2);
+  --color-cyan-200-20: rgba(174, 251, 255, 0.2);
+  --color-blue-400-20: rgba(88, 154, 240, 0.2);
+  --color-purple-400-20: rgba(200, 140, 253, 0.2);
+  --color-pink-200-20: rgba(252, 205, 220, 0.2);
+  --color-pink-500-20: rgba(252, 86, 129, 0.2);
+  --color-yellow-200-20: rgba(255, 255, 148, 0.2);
+  --color-lime-300-20: rgba(216, 226, 104, 0.2);
+  --color-teal-300-20: rgba(137, 169, 161, 0.2);
+  
+  /* 10% opacity for even more subtle effects */
+  --color-mint-500-10: rgba(130, 237, 166, 0.1);
+  --color-green-900-10: rgba(3, 89, 77, 0.1);
+  --color-purple-400-10: rgba(200, 140, 253, 0.1);
+  --color-blue-400-10: rgba(88, 154, 240, 0.1);
+}
+
+/* === UTILITY CLASSES FOR EASY APPLICATION === */
+
+/* Gender-aware backgrounds */
+.bg-feminine-soft { background-color: var(--color-blush-200); }
+.bg-feminine-medium { background-color: var(--color-rose-300); }
+.bg-feminine-strong { background-color: var(--color-rose-400); }
+
+.bg-masculine-soft { background-color: var(--color-slate-300); }
+.bg-masculine-medium { background-color: var(--color-steel-300); }
+.bg-masculine-strong { background-color: var(--color-navy-400); }
+
+/* Personality-aware backgrounds */
+.bg-analyst { background-color: var(--color-analyst-primary); }
+.bg-diplomat { background-color: var(--color-diplomat-primary); }
+.bg-sentinel { background-color: var(--color-sentinel-primary); }
+.bg-explorer { background-color: var(--color-explorer-primary); }
+
+/* Gender + Personality combinations */
+.bg-analyst-fem { background-color: var(--color-analyst-fem-primary); }
+.bg-analyst-masc { background-color: var(--color-analyst-masc-primary); }
+.bg-diplomat-fem { background-color: var(--color-diplomat-fem-primary); }
+.bg-diplomat-masc { background-color: var(--color-diplomat-masc-primary); }
+.bg-sentinel-fem { background-color: var(--color-sentinel-fem-primary); }
+.bg-sentinel-masc { background-color: var(--color-sentinel-masc-primary); }
+.bg-explorer-fem { background-color: var(--color-explorer-fem-primary); }
+.bg-explorer-masc { background-color: var(--color-explorer-masc-primary); }
+
+/* Notification-specific utility classes */
+.notification-success { 
+  background-color: var(--color-success-light);
+  border-color: var(--color-success-strong);
+  color: var(--color-success-strong);
+}
+
+.notification-error { 
+  background-color: var(--color-error-light);
+  border-color: var(--color-error-strong);
+  color: var(--color-error-strong);
+}
+
+.notification-warning { 
+  background-color: var(--color-warning-light);
+  border-color: var(--color-warning-strong);
+  color: var(--color-warning-strong);
+}
+
+.notification-info { 
+  background-color: var(--color-info-light);
+  border-color: var(--color-info-strong);
+  color: var(--color-info-strong);
+}

@@ -127,7 +127,7 @@ export default function ProductivityGraph({ maxMinutes = 120, personalityType = 
       <div 
         className="rounded-xl p-4 backdrop-blur-sm"
         style={{
-          background: "rgba(249, 248, 244, 0.85)", // Semi-transparent cream
+          background: "rgba(249, 248, 244, 0.85)",
           border: "2px solid var(--color-green-900)",
           boxShadow: "0 4px 20px rgba(3, 89, 77, 0.15)",
         }}
