@@ -16,7 +16,6 @@ import LeaderboardSection from "@/components/LeaderboardSection";
 import PersonalityProfile from "@/components/PersonalityProfile";
 import NotificationDemo from "@/components/NotificationDemo";
 import PersonalityColorDemo from "@/components/PersonalityColorDemo";
-import ColorDebug from "@/components/ColorDebug";
 import { buildBento, styleFor } from "./buildBento";
 
 // Phase 1 personality intelligence components - to be integrated
@@ -404,7 +403,6 @@ export default function Home() {
 
   return (
     <>
-    <ColorDebug />
     {showProfile && <PersonalityProfile cluster={cluster} onDone={handleProfileDone} />}
     <section 
       className="w-full"
