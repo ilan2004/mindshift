@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 const PERSONALITY_STATS = {
   INTJ: { focusPower: 9, socialEnergy: 3, planningSkill: 9, adaptability: 4, deepThinking: 10 },
@@ -31,7 +31,7 @@ const STAT_LABELS = {
 
 export default function PersonalityStatsCard({ personalityType }) {
   const [animatedStats, setAnimatedStats] = useState({});
-  const stats = PERSONALITY_STATS[personalityType] || {};
+  const stats = useMemo(() => PERSONALITY_STATS[personalityType] || {}, [personalityType]);
 
   useEffect(() => {
     // Animate stats on mount

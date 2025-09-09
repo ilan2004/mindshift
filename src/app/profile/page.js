@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Badges from "@/components/Badges";
 import ProductivityGraph from "@/components/ProductivityGraph";
@@ -72,7 +72,7 @@ export default function ProfilePage() {
 
   // Scrollspy setup
   const [activeId, setActiveId] = useState("overview");
-  const sectionIds = ["overview", "personality", "profile", "progress", "badges", "community", "notifications", "account"];
+  const sectionIds = useMemo(() => ["overview", "personality", "profile", "progress", "badges", "community", "notifications", "account"], []);
   const observersRef = useRef([]);
 
   useEffect(() => {
@@ -108,7 +108,7 @@ export default function ProfilePage() {
       observersRef.current.forEach(({ observer, el }) => observer.unobserve(el));
       observersRef.current = [];
     };
-  }, []);
+  }, [sectionIds]);
 
   // Handlers: persist edits
   const saveName = (v) => { setName(v); lsSet(KEY_PROFILE_NAME, v); };

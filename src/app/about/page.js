@@ -92,7 +92,7 @@ export default function AboutMainPage() {
             }}
           >
             <h3 className="font-tanker text-lg text-green tracking-wide mb-4 text-center">
-              WHAT YOU'LL DISCOVER
+              WHAT YOU&apos;LL DISCOVER
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -138,7 +138,7 @@ export default function AboutMainPage() {
         {/* CTA */}
         <div className="text-center">
           <p className="text-sm text-neutral-600 mb-4">
-            Don't know your type? Take our quick personality quiz.
+            Don&apos;t know your type? Take our quick personality quiz.
           </p>
           <button 
             onClick={() => {
