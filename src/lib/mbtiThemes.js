@@ -14,6 +14,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-purple-400)', dark: 'var(--color-purple-400)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-purple-400)', dark: 'var(--color-purple-400)' },
+      text: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
       icon: '🏗️',
       personality: 'Strategic • Systematic • Visionary'
     }
@@ -29,6 +30,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-cyan-200)', dark: 'var(--color-cyan-200)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-cyan-200)', dark: 'var(--color-cyan-200)' },
+      text: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
       icon: '🔍',
       personality: 'Curious • Analytical • Theoretical'
     }
@@ -44,6 +46,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
+      text: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       icon: '👑',
       personality: 'Leadership • Strategic • Results-driven'
     }
@@ -59,6 +62,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
+      text: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       icon: '💡',
       personality: 'Innovative • Versatile • Energetic'
     }
@@ -75,6 +79,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-purple-400)', dark: 'var(--color-purple-400)' },
+      text: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
       icon: '🔮',
       personality: 'Visionary • Meaningful • Insightful'
     }
@@ -90,6 +95,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
+      text: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
       icon: '🎨',
       personality: 'Authentic • Creative • Values-driven'
     }
@@ -105,6 +111,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
+      text: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
       icon: '🤝',
       personality: 'Inspirational • People-focused • Growth-oriented'
     }
@@ -120,6 +127,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
+      text: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
       icon: '🌟',
       personality: 'Enthusiastic • Creative • People-oriented'
     }
@@ -136,6 +144,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-blue-400)', dark: 'var(--color-blue-400)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-blue-400)', dark: 'var(--color-blue-400)' },
+      text: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       icon: '📋',
       personality: 'Methodical • Reliable • Organized'
     }
@@ -151,6 +160,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-pink-200)', dark: 'var(--color-pink-200)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-pink-200)', dark: 'var(--color-pink-200)' },
+      text: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
       icon: '💝',
       personality: 'Caring • Supportive • Gentle'
     }
@@ -166,6 +176,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
+      text: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       icon: '💼',
       personality: 'Executive • Results-driven • Organized'
     }
@@ -181,6 +192,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-pink-500)', dark: 'var(--color-pink-500)' },
+      text: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       icon: '🌈',
       personality: 'Harmonious • People-focused • Supportive'
     }
@@ -197,6 +209,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-teal-300)', dark: 'var(--color-teal-300)' },
+      text: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
       icon: '🔨',
       personality: 'Practical • Hands-on • Adaptable'
     }
@@ -212,6 +225,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-lilac-300)', dark: 'var(--color-lilac-300)' },
+      text: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
       icon: '🎨',
       personality: 'Artistic • Gentle • Values-driven'
     }
@@ -227,6 +241,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-orange-500)', dark: 'var(--color-orange-500)' },
+      text: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       icon: '💥',
       personality: 'Dynamic • Action-oriented • Energetic'
     }
@@ -242,6 +257,7 @@ export const MBTI_THEMES = {
       background: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
       surface: { light: 'var(--color-cream)', dark: 'var(--color-cream)' },
       progress: { light: 'var(--color-yellow-200)', dark: 'var(--color-yellow-200)' },
+      text: { light: 'var(--color-green-900)', dark: 'var(--color-green-900)' },
       icon: '🌟',
       personality: 'Joyful • People-focused • Spontaneous'
     }
@@ -323,7 +339,7 @@ export function getCurrentPersonalityTheme() {
         background: theme.colors.background.light,
         surface: theme.colors.surface.light,
         progress: theme.colors.progress.light,
-        text: 'var(--color-green-900)'
+        text: theme.colors.text.light
       }
     }
   };
@@ -339,7 +355,7 @@ export function applyPersonalityTheme(personalityType = null) {
   root.style.setProperty('--mbti-primary', theme.colors.primary.light);
   root.style.setProperty('--mbti-secondary', theme.colors.secondary.light);
   root.style.setProperty('--mbti-accent', theme.colors.accent.light);
-  root.style.setProperty('--mbti-text-primary', 'var(--color-green-900)');
+  root.style.setProperty('--mbti-text-primary', theme.colors.text.light);
   root.style.setProperty('--mbti-surface', theme.colors.surface.light);
   root.style.setProperty('--mbti-progress', theme.colors.progress.light);
   root.style.setProperty('--mbti-bg-pattern', theme.colors.background.light);

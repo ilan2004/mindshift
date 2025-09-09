@@ -31,6 +31,36 @@ export default function ClientLayout({ children }) {
         }
       } catch {}
     })();
+
+    // Listen for global auth events to immediately switch stages
+    const onSignedIn = (e) => {
+      const detail = (e && e.detail) || {};
+      if (detail.testCompleted) {
+        setUserMeta({
+          username: detail.username || "",
+          gender: (detail.gender === "female" ? "female" : detail.gender === "male" ? "male" : ""),
+          mode: "general",
+        });
+        setStage("app");
+      } else {
+        // If not completed, ensure we're on intro form to start tests
+        setStage("introForm");
+      }
+    };
+    const onSignedOut = () => {
+      setUserMeta({ username: "", gender: "", mode: "general" });
+      setStage("introForm");
+    };
+    try {
+      window.addEventListener('mindshift:auth:signed_in', onSignedIn);
+      window.addEventListener('mindshift:auth:signed_out', onSignedOut);
+    } catch {}
+    return () => {
+      try {
+        window.removeEventListener('mindshift:auth:signed_in', onSignedIn);
+        window.removeEventListener('mindshift:auth:signed_out', onSignedOut);
+      } catch {}
+    };
   }, []);
 
   const handleLoaderComplete = () => {

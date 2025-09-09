@@ -267,8 +267,39 @@ body {
 
 /* Small screens */
 @media (max-width: 809.98px) {
-  .navbar-actions { gap: 10px; }
-  .nav-pill { height: 42px; padding: 0 14px; font-size: 0.95rem; }
+  .navbar-actions { gap: 8px; }
+  .nav-pill { 
+    height: 36px; 
+    padding: 0 10px; 
+    font-size: 0.8rem; 
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  
+  /* Extra small buttons for mobile theme toggle */
+  .nav-pill--compact {
+    height: 32px;
+    padding: 0 8px;
+    font-size: 0.75rem;
+    min-width: 40px;
+  }
+}
+
+/* Extra small screens - even tinier buttons */
+@media (max-width: 480px) {
+  .navbar-actions { gap: 6px; }
+  .nav-pill { 
+    height: 32px; 
+    padding: 0 8px; 
+    font-size: 0.75rem;
+  }
+  
+  .nav-pill--compact {
+    height: 28px;
+    padding: 0 6px;
+    font-size: 0.7rem;
+    min-width: 36px;
+  }
 }
 
 /* Simple responsive utilities (project does not use Tailwind) */

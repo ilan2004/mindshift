@@ -37,11 +37,13 @@ export default function AuthOverlay({
           setUsername(profile.username);
           setGender(profile.gender);
           
-          // Short-circuit: If user already completed test, skip to app immediately
+          // If user already completed test, skip overlays and go straight to app
           if (profile.test_completed && profile.username && profile.gender) {
             try { localStorage.setItem("ms_intro_complete", "1"); } catch {}
-            // Call onStartTest to advance to app flow
-            onStartTest?.({ mode: "general", username: profile.username, gender: profile.gender });
+            try { localStorage.setItem("ms_display_name", profile.username); } catch {}
+            try { localStorage.setItem("ms_gender", profile.gender === "female" ? "W" : "M"); } catch {}
+            // Notify app shell to switch to app stage immediately
+            try { window.dispatchEvent(new CustomEvent('mindshift:auth:signed_in', { detail: { testCompleted: true, username: profile.username, gender: profile.gender } })); } catch {}
           }
         }
       }
@@ -50,13 +52,27 @@ export default function AuthOverlay({
     checkUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         setUser(session.user);
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('username, gender, test_completed')
+            .eq('id', session.user.id)
+            .single();
+          if (profile?.test_completed) {
+            try { localStorage.setItem("ms_intro_complete", "1"); } catch {}
+            try { localStorage.setItem("ms_display_name", profile.username || ""); } catch {}
+            try { localStorage.setItem("ms_gender", profile.gender === "female" ? "W" : "M"); } catch {}
+            try { window.dispatchEvent(new CustomEvent('mindshift:auth:signed_in', { detail: { testCompleted: true, username: profile.username, gender: profile.gender } })); } catch {}
+          }
+        } catch {}
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setUsername("");
         setGender("");
+        try { window.dispatchEvent(new Event('mindshift:auth:signed_out')); } catch {}
       }
     });
 
@@ -122,7 +138,23 @@ export default function AuthOverlay({
         });
 
         if (error) throw error;
-        if (data?.user) setUser(data.user);
+        if (data?.user) {
+          setUser(data.user);
+          // Fetch profile and notify shell for immediate stage switch if completed
+          try {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('username, gender, test_completed')
+              .eq('id', data.user.id)
+              .single();
+            if (profile?.test_completed) {
+              try { localStorage.setItem("ms_intro_complete", "1"); } catch {}
+              try { localStorage.setItem("ms_display_name", profile.username || ""); } catch {}
+              try { localStorage.setItem("ms_gender", profile.gender === "female" ? "W" : "M"); } catch {}
+              try { window.dispatchEvent(new CustomEvent('mindshift:auth:signed_in', { detail: { testCompleted: true, username: profile.username, gender: profile.gender } })); } catch {}
+            }
+          } catch {}
+        }
       }
     } catch (err) {
       setError(err.message);
@@ -134,6 +166,7 @@ export default function AuthOverlay({
   const handleSignOut = async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
+    try { window.dispatchEvent(new Event('mindshift:auth:signed_out')); } catch {}
   };
 
   const canProceed = user && username.trim().length >= 2 && (gender === "male" || gender === "female");

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useLayoutEffect } from 'react';
 import { 
   getCurrentPersonalityTheme, 
   themeUtils, 
@@ -15,11 +15,18 @@ export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(null);
   const [themeMode, setThemeMode] = useState('dark');
   const [personalityType, setPersonalityType] = useState('');
+  const [ready, setReady] = useState(false);
 
-  // Initialize theme system
-  useEffect(() => {
-    initializeThemeSystem();
-    updateTheme();
+  // Initialize theme system before paint to avoid mismatch/flash
+  useLayoutEffect(() => {
+    try {
+      initializeThemeSystem();
+      // Immediately compute and apply theme state
+      updateTheme();
+    } finally {
+      setReady(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update theme state
@@ -95,7 +102,8 @@ export function ThemeProvider({ children }) {
 
   return (
     <ThemeContext.Provider value={value}>
-      {children}
+      {/* Optionally gate rendering until theme ready to prevent flash */}
+      {ready ? children : null}
     </ThemeContext.Provider>
   );
 }
