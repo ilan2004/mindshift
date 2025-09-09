@@ -20,6 +20,7 @@ import RetakeQuizModal from '@/components/RetakeQuizModal';
 import PersonalityStatsCard from '@/components/PersonalityStatsCard';
 import PersonalityEvolutionTree from '@/components/PersonalityEvolutionTree';
 import PersonalityDNA from '@/components/PersonalityDNA';
+import { usePersonalizationProfile, usePersonalizationActions } from '@/hooks/usePersonalizationProfile';
 
 export default function AboutPageContent({ personalityData, isOwnType, userStoredType }) {
   const router = useRouter();
@@ -27,6 +28,16 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
   const [showComparison, setShowComparison] = useState(false);
   const [showRetakeQuiz, setShowRetakeQuiz] = useState(false);
   const [comparisonType, setComparisonType] = useState('');
+  
+  // Personalization system
+  const { profile, idealSessionLength, guardrailsEnabled, setPersonalityType } = usePersonalizationProfile();
+  const {
+    enablePerfectionismGuard,
+    enableBreakEnforcement, 
+    enableRabbitHoleQuiz,
+    setSessionPreference,
+    addCommonBlockers
+  } = usePersonalizationActions();
 
   useEffect(() => {
     // Load gender preference from localStorage
@@ -38,7 +49,12 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
         }
       } catch {}
     }
-  }, []);
+    
+    // Sync personality type with personalization system
+    if (personalityData.type && (!profile?.personality_type || profile.personality_type !== personalityData.type)) {
+      setPersonalityType(personalityData.type);
+    }
+  }, [personalityData.type, profile?.personality_type, setPersonalityType]);
 
   // ScrollTrigger animations
   useEffect(() => {
@@ -76,15 +92,96 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
 
   const handleStartFocus = (template) => {
     try {
+      const duration = idealSessionLength || 25; // Use personalized duration
       const payload = { 
         template: template || 'work_sprint', 
-        duration: 25,
+        duration: duration,
         startedAt: Date.now() 
       };
       localStorage.setItem("mindshift_last_template", JSON.stringify(payload));
       window.dispatchEvent(new CustomEvent("mindshift:focus:start_template", { detail: payload }));
       router.push('/');
     } catch {}
+  };
+  
+  // Train strength handlers
+  const handleTrainStrength = (strengthType) => {
+    const strengthActions = {
+      'Strategic Planning': () => {
+        setSessionPreference(75, 15, 'reflective');
+        handleStartFocus('strategic_planning');
+      },
+      'Deep Focus': () => {
+        setSessionPreference(90, 20, 'reflective');
+        handleStartFocus('deep_reading');
+      },
+      'Creative Problem Solving': () => {
+        setSessionPreference(45, 10, 'physical');
+        handleStartFocus('creative_sprint');
+      },
+      'Leadership': () => {
+        setSessionPreference(60, 15, 'social');
+        handleStartFocus('leadership_sprint');
+      },
+      'Organization': () => {
+        setSessionPreference(50, 10, 'reflective');
+        handleStartFocus('systematic_approach');
+      },
+      'Empathy': () => {
+        setSessionPreference(40, 15, 'social');
+        handleStartFocus('helping_others');
+      },
+      'Adaptability': () => {
+        setSessionPreference(30, 5, 'physical');
+        handleStartFocus('flexible_focus');
+      },
+      'Innovation': () => {
+        setSessionPreference(35, 10, 'physical');
+        handleStartFocus('innovation_time');
+      }
+    };
+    
+    const action = strengthActions[strengthType] || (() => handleStartFocus());
+    action();
+  };
+  
+  // Guard weakness handlers
+  const handleGuardWeakness = (weaknessType) => {
+    const weaknessGuards = {
+      'perfectionism': () => {
+        enablePerfectionismGuard();
+        alert('✅ Perfectionism guard enabled! Sessions will auto-timebox to prevent overthinking.');
+      },
+      'overthinking': () => {
+        enableRabbitHoleQuiz();
+        alert('✅ Focus guard enabled! You\'ll get gentle check-ins if you drift off-topic.');
+      },
+      'procrastination': () => {
+        addCommonBlockers(['social_media', 'notifications']);
+        alert('✅ Procrastination guards enabled! Distracting sites will trigger focus quizzes.');
+      },
+      'burnout': () => {
+        enableBreakEnforcement();
+        alert('✅ Burnout prevention enabled! Mandatory breaks will be enforced after long sessions.');
+      },
+      'distraction': () => {
+        addCommonBlockers(['social_media', 'notifications', 'overthinking']);
+        enableRabbitHoleQuiz();
+        alert('✅ Distraction shields activated! Multiple guards are now protecting your focus.');
+      },
+      'inconsistency': () => {
+        enableBreakEnforcement();
+        setSessionPreference(idealSessionLength, 10, 'reflective');
+        alert('✅ Consistency helper enabled! Your sessions are now optimized for sustainable progress.');
+      }
+    };
+    
+    const guard = weaknessGuards[weaknessType] || (() => {
+      enablePerfectionismGuard();
+      alert('✅ Focus guard enabled to help with this challenge!');
+    });
+    
+    guard();
   };
 
   const clusterInfo = getClusterInfo(personalityData.cluster);
@@ -173,10 +270,17 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
                 {/* Strengths */}
                 <div>
                   <h3 className="font-tanker text-lg text-green tracking-wide mb-3">STRENGTHS</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="space-y-2">
                     {personalityData.strengths.map((strength) => (
-                      <div key={strength} className="pill text-sm">
-                        {strength}
+                      <div key={strength} className="flex items-center justify-between gap-3 p-2 rounded-lg border border-neutral-200">
+                        <span className="text-sm font-medium text-neutral-800">{strength}</span>
+                        <button 
+                          onClick={() => handleTrainStrength(strength)}
+                          className="nav-pill nav-pill--cyan text-xs px-3 py-1"
+                          title={`Start a personalized session to train your ${strength} skills`}
+                        >
+                          💪 Train This
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -268,7 +372,7 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
                       <div className="nav-pill nav-pill--cyan text-xs px-2 py-1 h-auto">
                         ✓
                       </div>
-                      {tip}
+                      <span className="flex-1">{tip}</span>
                     </li>
                   ))}
                 </ul>
@@ -279,19 +383,72 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
                   ⚠️ Watch Out For
                 </h3>
                 <ul className="space-y-2">
-                  {personalityData.watchOut.map((warning, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm text-neutral-700">
-                      <div className="nav-pill nav-pill--amber text-xs px-2 py-1 h-auto">
-                        !
-                      </div>
-                      {warning}
-                    </li>
-                  ))}
+                  {personalityData.watchOut.map((warning, index) => {
+                    // Extract key weakness type from warning text for mapping
+                    const weaknessType = warning.toLowerCase().includes('perfectionism') ? 'perfectionism' :
+                                       warning.toLowerCase().includes('overthink') ? 'overthinking' :
+                                       warning.toLowerCase().includes('procrastin') ? 'procrastination' :
+                                       warning.toLowerCase().includes('burnout') ? 'burnout' :
+                                       warning.toLowerCase().includes('distract') ? 'distraction' :
+                                       'inconsistency';
+                    
+                    return (
+                      <li key={index} className="flex items-center gap-2 text-sm text-neutral-700 p-2 rounded-lg border border-neutral-200">
+                        <div className="nav-pill nav-pill--amber text-xs px-2 py-1 h-auto">
+                          !
+                        </div>
+                        <span className="flex-1">{warning}</span>
+                        <button 
+                          onClick={() => handleGuardWeakness(weaknessType)}
+                          className="nav-pill nav-pill--amber text-xs px-3 py-1"
+                          title={`Enable protection against: ${warning}`}
+                        >
+                          🛡️ Guard Me
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Personalization Status */}
+        {isOwnType && Object.keys(guardrailsEnabled).some(key => guardrailsEnabled[key]) && (
+          <div className="w-full max-w-4xl reveal-on-scroll">
+            <div className="retro-console rounded-xl p-4">
+              <h3 className="font-tanker text-lg text-green tracking-wide mb-3 text-center">
+                ⚙️ YOUR ACTIVE GUARDS ⚙️
+              </h3>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {guardrailsEnabled.perfectionism_timebox && (
+                  <div className="nav-pill nav-pill--amber text-xs">
+                    🛡️ Perfectionism Guard
+                  </div>
+                )}
+                {guardrailsEnabled.rabbit_hole_quiz && (
+                  <div className="nav-pill nav-pill--amber text-xs">
+                    🛡️ Focus Guard
+                  </div>
+                )}
+                {guardrailsEnabled.break_enforcement && (
+                  <div className="nav-pill nav-pill--amber text-xs">
+                    🛡️ Break Enforcer
+                  </div>
+                )}
+                {guardrailsEnabled.distraction_blocking && (
+                  <div className="nav-pill nav-pill--amber text-xs">
+                    🛡️ Distraction Shield
+                  </div>
+                )}
+              </div>
+              <div className="text-xs text-neutral-600 text-center mt-2">
+                💪 Optimized for {idealSessionLength}min sessions based on your {personalityData.type} profile
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Gaming-Style Stats & DNA Section */}
         <div className="w-full max-w-6xl reveal-on-scroll">

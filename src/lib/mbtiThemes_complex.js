@@ -561,7 +561,7 @@ export function initializeThemeSystem() {
   }
 }
 
-export default {
+const mbtiThemesComplex = {
   MBTI_THEMES,
   getCurrentPersonalityTheme,
   applyPersonalityTheme,
@@ -569,3 +569,5 @@ export default {
   themeUtils,
   initializeThemeSystem
 };
+
+export default mbtiThemesComplex;

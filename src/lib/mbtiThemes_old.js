@@ -635,7 +635,7 @@ export function initializeThemeSystem() {
 }
 
 // Export everything for easy access
-export default {
+const mbtiThemesOld = {
   MBTI_THEMES,
   MBTI_GROUP_PALETTES,
   getCurrentPersonalityTheme,
@@ -644,3 +644,5 @@ export default {
   themeUtils,
   initializeThemeSystem
 };
+
+export default mbtiThemesOld;
