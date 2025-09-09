@@ -63,6 +63,7 @@ export default function SlideMenu({ isOpen, onClose }) {
   }, [isOpen]);
 
   const menuItems = [
+    { href: "/about", label: "About Your Type", icon: "🧠" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/leaderboard", label: "Leaderboard" },
     { href: "/game", label: "Game" },
@@ -141,6 +142,7 @@ export default function SlideMenu({ isOpen, onClose }) {
               className="menu-item nav-pill nav-pill--cyan w-full text-center text-lg"
               onClick={onClose}
             >
+              {item.icon && <span className="mr-2">{item.icon}</span>}
               {item.label}
             </Link>
           ))}

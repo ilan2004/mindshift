@@ -20,22 +20,60 @@ export function ThemeProvider({ children }) {
   // Initialize theme system before paint to avoid mismatch/flash
   useLayoutEffect(() => {
     try {
+      // Apply theme to DOM first
       initializeThemeSystem();
-      // Immediately compute and apply theme state
-      updateTheme();
+      
+      // Then sync React state with applied theme
+      const currentTheme = getCurrentPersonalityTheme();
+      const personality = getPersonalityType();
+      setTheme(currentTheme);
+      setThemeMode(currentTheme.currentMode);
+      setPersonalityType(personality);
+      
+      // Ensure CSS variables are applied to document root
+      const root = document.documentElement;
+      const cssVars = {
+        '--mbti-primary': currentTheme.colors.current.primary,
+        '--mbti-secondary': currentTheme.colors.current.secondary,
+        '--mbti-accent': currentTheme.colors.current.accent,
+        '--mbti-text-primary': currentTheme.colors.current.text,
+        '--mbti-bg-pattern': currentTheme.colors.current.background,
+        '--mbti-surface': currentTheme.colors.current.surface,
+        '--mbti-progress': currentTheme.colors.current.progress,
+      };
+      
+      Object.entries(cssVars).forEach(([key, value]) => {
+        root.style.setProperty(key, value);
+      });
     } finally {
       setReady(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update theme state
+  // Update theme state and ensure DOM sync
   const updateTheme = () => {
     const currentTheme = getCurrentPersonalityTheme();
     const personality = getPersonalityType();
     setTheme(currentTheme);
     setThemeMode(currentTheme.currentMode);
     setPersonalityType(personality);
+    
+    // Always ensure CSS variables are applied to DOM
+    const root = document.documentElement;
+    const cssVars = {
+      '--mbti-primary': currentTheme.colors.current.primary,
+      '--mbti-secondary': currentTheme.colors.current.secondary,
+      '--mbti-accent': currentTheme.colors.current.accent,
+      '--mbti-text-primary': currentTheme.colors.current.text,
+      '--mbti-bg-pattern': currentTheme.colors.current.background,
+      '--mbti-surface': currentTheme.colors.current.surface,
+      '--mbti-progress': currentTheme.colors.current.progress,
+    };
+    
+    Object.entries(cssVars).forEach(([key, value]) => {
+      root.style.setProperty(key, value);
+    });
   };
 
   // Get personality type from localStorage
@@ -53,10 +91,12 @@ export function ThemeProvider({ children }) {
     setThemeMode(newMode);
     updateTheme();
     
-    // Dispatch event for other components to react
-    window.dispatchEvent(new CustomEvent('theme-changed', { 
-      detail: { mode: newMode, theme } 
-    }));
+    // Small delay to ensure DOM is updated before dispatching event
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new CustomEvent('theme-changed', { 
+        detail: { mode: newMode, theme } 
+      }));
+    });
   };
 
   // Apply theme for specific personality type
@@ -65,9 +105,12 @@ export function ThemeProvider({ children }) {
     updateTheme();
     setPersonalityType(personality);
     
-    window.dispatchEvent(new CustomEvent('personality-changed', { 
-      detail: { personality, theme: getCurrentPersonalityTheme() } 
-    }));
+    // Small delay to ensure DOM is updated before dispatching event
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new CustomEvent('personality-changed', { 
+        detail: { personality, theme: getCurrentPersonalityTheme() } 
+      }));
+    });
   };
 
   // Get CSS variables for current theme

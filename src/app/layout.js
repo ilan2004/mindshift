@@ -1,6 +1,7 @@
 import Link from "next/link";
 import localFont from "next/font/local";
 import FooterFocusBar from "../components/FooterFocusBar";
+import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import ClientLayout from "../components/ClientLayout";
 import { ThemeProvider } from "../contexts/ThemeContext";
@@ -54,6 +55,7 @@ export default function RootLayout({ children }) {
               </defs>
             </svg>
             <main className="min-h-screen mx-auto px-4 md:px-6 py-6">{children}</main>
+            <Footer />
             <FooterFocusBar />
           </ClientLayout>
         </ThemeProvider>
