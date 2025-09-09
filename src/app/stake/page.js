@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { createStake, getStakes, updateStake, updateStakeStatus, deleteStake } from "@/lib/api";
 import ContractTracker from "@/components/ContractTracker";
 
@@ -79,7 +79,7 @@ export default function StakePage() {
   // KPI data
   const [allStakes, setAllStakes] = useState([]);
 
-  const loadStakes = async () => {
+  const loadStakes = useCallback(async () => {
     try {
       const items = await getStakes();
       setAllStakes(items);
@@ -102,7 +102,7 @@ export default function StakePage() {
         if (nextSel) setSelected(nextSel);
       }
     } catch {}
-  };
+  }, [selected]);
 
   useEffect(() => {
     loadStakes();
@@ -114,7 +114,7 @@ export default function StakePage() {
       if (!seen) setShowIntro(true);
     } catch {}
     return () => window.removeEventListener("mindshift:stakes:update", onUpd);
-  }, []);
+  }, [loadStakes]);
 
   useEffect(() => {
     if (!selected) return;

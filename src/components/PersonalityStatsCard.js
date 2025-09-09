@@ -40,7 +40,7 @@ export default function PersonalityStatsCard({ personalityType }) {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [personalityType]);
+  }, [personalityType, stats]);
 
   return (
     <div className="retro-console rounded-xl p-4">

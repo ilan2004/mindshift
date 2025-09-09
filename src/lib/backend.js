@@ -5,7 +5,6 @@ import { getSupabaseClient } from './supabase';
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 if (!API_BASE) {
-  // eslint-disable-next-line no-console
   console.warn("NEXT_PUBLIC_API_BASE_URL is not set. Set it in .env.local, e.g. http://127.0.0.1:8000");
 }
 
