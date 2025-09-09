@@ -43,9 +43,15 @@ export default function PersonalityGrid({ currentType, genderPreference = 'male'
           <Link
             key={t.type}
             href={`/about/${t.type.toLowerCase()}`}
-            className={`block p-3 rounded-lg border transition-all ${
+            className={`block p-3 rounded-lg border transition-all hover:transform hover:scale-105 ${
               t.type === currentType ? 'border-green-900' : 'border-neutral-200 hover:border-green-900'
             }`}
+            style={{
+              background: 'var(--surface)',
+              boxShadow: t.type === currentType 
+                ? '0 4px 0 var(--color-green-900), 0 8px 16px rgba(3, 89, 77, 0.2)'
+                : '0 2px 0 var(--color-green-900), 0 4px 8px rgba(3, 89, 77, 0.1)'
+            }}
           >
             <div className="flex flex-col items-center text-center gap-2">
               <div className="w-20 h-20 relative rounded-lg overflow-hidden">

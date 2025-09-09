@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getPersonalityData, getAllTypes } from '@/lib/personalityData';
 import AboutPageContent from '@/components/AboutPageContent';
 
@@ -11,6 +11,25 @@ export default function PersonalityTypePage() {
   const [loading, setLoading] = useState(true);
   const [personalityData, setPersonalityData] = useState(null);
   const [userStoredType, setUserStoredType] = useState('');
+
+  const readStoredType = () => {
+    if (typeof window === 'undefined') return '';
+    try {
+      return (localStorage.getItem('mindshift_personality_type') || '').toUpperCase();
+    } catch {
+      return '';
+    }
+  };
+
+  const handleInvalidType = useCallback((storedType) => {
+    if (storedType) {
+      // Redirect to user's stored type
+      router.replace(`/about/${storedType.toLowerCase()}`);
+    } else {
+      // No stored type - redirect to main about page for type selection
+      router.replace('/about');
+    }
+  }, [router]);
 
   useEffect(() => {
     // Get the type from URL params
@@ -38,26 +57,7 @@ export default function PersonalityTypePage() {
 
     // No type parameter - shouldn't happen with dynamic routes, but handle gracefully
     handleInvalidType(storedType);
-  }, [params, router]);
-
-  const readStoredType = () => {
-    if (typeof window === 'undefined') return '';
-    try {
-      return (localStorage.getItem('mindshift_personality_type') || '').toUpperCase();
-    } catch {
-      return '';
-    }
-  };
-
-  const handleInvalidType = (storedType) => {
-    if (storedType) {
-      // Redirect to user's stored type
-      router.replace(`/about/${storedType.toLowerCase()}`);
-    } else {
-      // No stored type - redirect to main about page for type selection
-      router.replace('/about');
-    }
-  };
+  }, [params, router, handleInvalidType]);
 
   if (loading) {
     return (
