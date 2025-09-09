@@ -86,7 +86,8 @@ export default function SlideMenu({ isOpen, onClose }) {
         console.warn('Could not clear localStorage:', e);
       }
       
-      // Close menu and redirect to home page
+      // Notify app shell to show auth overlay immediately and redirect home
+      try { window.dispatchEvent(new Event('mindshift:auth:signed_out')); } catch {}
       onClose();
       router.push('/');
     } catch (error) {

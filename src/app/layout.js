@@ -28,6 +28,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        {/* Viewport for mobile responsiveness */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
         {/* PWA: manifest and theme color */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#10b981" />

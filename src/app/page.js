@@ -406,26 +406,32 @@ export default function Home() {
       className="w-full"
       style={getCSSVariables()}
     >
-      <div className="w-full px-4 md:px-6 py-6 flex flex-col items-center gap-8">
+      <div className="w-full px-4 md:px-6 py-6 flex flex-col items-center gap-6 md:gap-8">
         
         {/* HERO: 3-Column Layout with CharacterCard Centerpiece */}
-        <div className="w-full max-w-8xl grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
+        <div className="w-full max-w-8xl grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 items-start">
           
-          {/* Left Panel - Personality-specific component */}
-          <div className="w-full flex justify-center md:justify-end mt-16">
-            {heroLeft}
+          {/* Center: CharacterCard (The Star) - Show first on mobile for prominence */}
+          <div className="w-full flex justify-center order-1 md:order-2 md:col-start-2 mb-6 md:mb-0">
+            <div className="reveal-on-scroll w-full flex justify-center min-h-[300px] sm:min-h-[400px]">
+              <div className="w-full max-w-sm flex justify-center items-start">
+                <CharacterCard personalityType={mbti} />
+              </div>
+            </div>
           </div>
           
-          {/* Center: CharacterCard (The Star) */}
-          <div className="w-full flex justify-center">
-            <div className="reveal-on-scroll">
-              <CharacterCard personalityType={mbti} />
+          {/* Left Panel - Personality-specific component */}
+          <div className="w-full flex justify-center md:justify-end mt-4 md:mt-16 order-2 md:order-1">
+            <div className="w-full max-w-sm md:max-w-md">
+              {heroLeft}
             </div>
           </div>
           
           {/* Right Panel - Personality-specific component */}
-          <div className="w-full flex justify-center md:justify-start mt-16">
-            {heroRight}
+          <div className="w-full flex justify-center md:justify-start mt-4 md:mt-16 order-3 md:order-3">
+            <div className="w-full max-w-sm md:max-w-md">
+              {heroRight}
+            </div>
           </div>
           
         </div>
@@ -492,29 +498,19 @@ export default function Home() {
           {moreOpen && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 reveal-on-scroll">
               {moreItems.includes("ProductivityGraph") && !used.has("ProductivityGraph") && (
-                <div className="card">
-                  <ProductivityGraph personalityType={mbti} />
-                </div>
+                <ProductivityGraph personalityType={mbti} />
               )}
               {moreItems.includes("QuestBoard") && !used.has("QuestBoard") && (
-                <div className="card">
-                  <QuestBoard personalityType={mbti} />
-                </div>
+                <QuestBoard personalityType={mbti} />
               )}
               {moreItems.includes("LeaderboardSection") && !used.has("LeaderboardSection") && (
-                <div className="card">
-                  <LeaderboardSection personalityType={mbti} />
-                </div>
+                <LeaderboardSection personalityType={mbti} />
               )}
               {moreItems.includes("Badges") && (
-                <div className="card">
-                  <Badges />
-                </div>
+                <Badges />
               )}
               {!used.has("CommunityChallenges") && (
-                <div className="card">
-                  <CommunityChallenges personalityType={mbti} />
-                </div>
+                <CommunityChallenges personalityType={mbti} />
               )}
             </div>
           )}

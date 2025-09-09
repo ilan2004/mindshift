@@ -37,7 +37,7 @@ const BADGES = [
     id: "first_focus",
     title: "First Focus",
     desc: "Complete your first focus session",
-    emoji: "🎯",
+    emoji: "⚡",
     variant: "cyan",
     test: ({ totalSessions }) => totalSessions >= 1,
   },
@@ -45,7 +45,7 @@ const BADGES = [
     id: "hundred_points",
     title: "Century Points",
     desc: "Reach 100 total points",
-    emoji: "💯",
+    emoji: "🏆",
     variant: "green",
     test: ({ points }) => points >= 100,
   },
@@ -61,9 +61,25 @@ const BADGES = [
     id: "custom_creator",
     title: "Quest Maker",
     desc: "Add your first custom quest",
-    emoji: "🛠️",
+    emoji: "✨",
     variant: "purple",
     test: ({ hasCustomQuest }) => !!hasCustomQuest,
+  },
+  {
+    id: "productive_day",
+    title: "Productive Day",
+    desc: "Focus for 2+ hours in one day",
+    emoji: "🚀",
+    variant: "green",
+    test: ({ totalMinutesToday }) => (totalMinutesToday || 0) >= 120,
+  },
+  {
+    id: "consistency_master",
+    title: "Consistency Master",
+    desc: "Complete 21 focus sessions",
+    emoji: "💪",
+    variant: "amber",
+    test: ({ totalSessions }) => totalSessions >= 21,
   },
 ];
 
@@ -80,26 +96,13 @@ function hasAnyCustomQuestForToday() {
   } catch { return false; }
 }
 
-// Recent feed helpers
-function readRecent() {
-  try {
-    const raw = localStorage.getItem("mindshift_badges_recent");
-    const arr = raw ? JSON.parse(raw) : [];
-    return Array.isArray(arr) ? arr : [];
-  } catch { return []; }
-}
-function writeRecent(list) {
-  try { localStorage.setItem("mindshift_badges_recent", JSON.stringify(list)); } catch {}
-}
 
 export default function Badges() {
   const [earned, setEarned] = useState([]); // array of ids
   const [toasts, setToasts] = useState([]); // { id, title, emoji }
-  const [recent, setRecent] = useState([]); // persisted recent feed
 
   const load = () => {
     setEarned(readBadges());
-    setRecent(readRecent());
   };
 
   // Evaluate and award any new badges
@@ -108,7 +111,20 @@ export default function Badges() {
     const streak = getNumber("mindshift_streak", 0);
     const sessions = readSessions();
     const totalSessions = sessions.length;
-    const context = { points, streak, totalSessions, hasCustomQuest: hasAnyCustomQuestForToday() };
+    
+    // Calculate today's total focus minutes
+    const today = todayKey();
+    const totalMinutesToday = sessions
+      .filter(s => {
+        const sessionDate = new Date(s.started_at || s.startedAt || 0);
+        return sessionDate.toLocaleDateString("en-CA") === today;
+      })
+      .reduce((sum, s) => {
+        const duration = s.duration_minutes || 0;
+        return sum + duration;
+      }, 0);
+    
+    const context = { points, streak, totalSessions, totalMinutesToday, hasCustomQuest: hasAnyCustomQuestForToday() };
 
     const have = new Set(readBadges());
     const prevEarned = new Set(earned);
@@ -128,15 +144,6 @@ export default function Badges() {
       if (newly.length) {
         const metas = BADGES.filter((b) => newly.includes(b.id));
         metas.forEach((b) => addToast(b));
-        // Append to recent feed (cap 10)
-        const now = Date.now();
-        const prev = readRecent();
-        const appended = [
-          ...metas.map((b) => ({ id: `${b.id}_${now}`, badgeId: b.id, title: b.title, emoji: b.emoji, ts: now })),
-          ...prev,
-        ].slice(0, 10);
-        writeRecent(appended);
-        setRecent(appended);
       }
       dispatchBadgesUpdate();
     } else {
@@ -176,9 +183,6 @@ export default function Badges() {
   }, [earned]);
 
   const earnedCount = list.filter((b) => b.earned).length;
-
-  // Map for quick badge meta lookup
-  const badgeById = useMemo(() => Object.fromEntries(BADGES.map((b) => [b.id, b])), []);
 
   return (
     <>
@@ -248,44 +252,6 @@ export default function Badges() {
         </AnimatePresence>
       </div>
 
-      {/* Recently unlocked feed */}
-      <div className="w-full max-w-md mx-auto px-2 md:px-3 mt-3">
-        <div 
-          className="rounded-xl p-2.5"
-          style={{
-            background: "var(--surface)",
-            border: "2px solid var(--color-green-900)",
-            boxShadow: "0 2px 0 var(--color-green-900)"
-          }}
-        >
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs md:text-sm font-semibold text-neutral-800" style={{ fontFamily: "Tanker, sans-serif" }}>Recently unlocked</h3>
-            <button
-              type="button"
-              className="nav-pill text-xs px-2 py-1"
-              onClick={() => { writeRecent([]); setRecent([]); }}
-            >
-              Clear
-            </button>
-          </div>
-          {recent.length === 0 ? (
-            <div className="text-xs text-neutral-500 text-center py-2">No recent badges yet.</div>
-          ) : (
-            <ul className="flex flex-wrap gap-1">
-              {recent.slice(0, 6).map((r) => {
-                const meta = badgeById[r.badgeId];
-                const variant = meta?.variant || "green";
-                return (
-                  <li key={r.id} className={`nav-pill nav-pill--${variant} text-xs`} title={new Date(r.ts).toLocaleString()}>
-                    <span className="mr-1" aria-hidden>{r.emoji}</span>
-                    {r.title}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      </div>
     </>
   );
 }

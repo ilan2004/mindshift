@@ -7,7 +7,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { theme, themeMode, personalityType, toggleTheme, getCSSVariables } = useTheme();
+  const { themeMode, toggleTheme, getCSSVariables } = useTheme();
   
   // Close menu on route change/hash change
   useEffect(() => {
@@ -20,29 +20,24 @@ export default function Navbar() {
     };
   }, []);
 
-  // Navbar uses same background as body through CSS variables
-  const getNavbarBorder = () => {
-    if (!theme) return 'border-green';
-    return `border-[${theme.colors.current.primary}]`;
-  };
-
   return (
     <header 
-      className={`sticky top-0 z-30 w-full border-b-2 ${getNavbarBorder()}`}
+      className="sticky top-0 z-30 w-full border-b-2"
       style={{
         ...getCSSVariables(),
         background: 'var(--mbti-bg-pattern, var(--bg-default))',
+        borderColor: 'var(--mbti-primary)',
         transition: 'background 0.3s ease, border-color 0.3s ease',
       }}
     >
-      <nav className="max-w-7xl mx-auto px-4 py-4 md:px-6">
+      <nav className="max-w-7xl mx-auto px-4 py-3 md:px-6 md:py-4">
         <div className="flex items-center">
           {/* Logo aligned left */}
           <div className="flex-1">
             <Link
               href="/"
-              className="font-tanker font-semibold text-4xl md:text-5xl leading-none tracking-widest transition-colors"
-              style={{ color: theme?.colors.current.text || 'var(--color-green-900)' }}
+              className="font-tanker font-semibold text-3xl sm:text-4xl md:text-5xl leading-none tracking-widest transition-colors"
+              style={{ color: 'var(--mbti-text-primary)' }}
               aria-label="Go to Home"
             >
               MindShift
@@ -50,11 +45,11 @@ export default function Navbar() {
           </div>
 
           {/* Theme toggle and menu buttons */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 md:gap-3 sm:gap-2">
             {/* Theme Toggle Button */}
             <button
               type="button"
-              className="nav-pill transition-all duration-200 hover:scale-105"
+              className="nav-pill nav-pill--compact transition-all duration-200 hover:scale-105"
               onClick={toggleTheme}
               style={{
                 background: 'var(--color-amber-400)',
@@ -66,21 +61,6 @@ export default function Navbar() {
               {themeMode === 'personality' ? 'STD' : 'PRO'}
             </button>
             
-            {/* Personality Type Badge (optional) */}
-            {personalityType && (
-              <div 
-                className="nav-pill text-sm font-bold"
-                style={{
-                  background: 'var(--color-pink-200)',
-                  color: 'var(--color-green-900)',
-                  borderColor: 'var(--color-green-900)'
-                }}
-                title={theme?.name || personalityType}
-              >
-                {personalityType}
-              </div>
-            )}
-
             {/* Menu button */}
             <button
               type="button"
