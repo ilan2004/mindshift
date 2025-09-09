@@ -273,6 +273,95 @@ function getPersonalityType() {
   }
 }
 
+// Get gender from localStorage
+function getGender() {
+  try {
+    const gender = localStorage.getItem('ms_gender');
+    return gender === 'W' ? 'female' : gender === 'M' ? 'male' : null;
+  } catch {
+    return null;
+  }
+}
+
+// Get gender-aware colors for personality type
+function getGenderAwareColors(personalityType, gender) {
+  if (!gender || !personalityType) {
+    // Fallback to original theme colors
+    const theme = MBTI_THEMES[personalityType] || MBTI_THEMES.INFP;
+    return theme.colors;
+  }
+
+  const type = personalityType.toUpperCase();
+  const group = MBTI_THEMES[type]?.group || 'NF';
+  const isFeminine = gender === 'female';
+  const suffix = isFeminine ? '-fem' : '-masc';
+  
+  // Map personality groups to color variables
+  const groupColorMap = {
+    'NT': 'analyst',  // Analysts
+    'NF': 'diplomat', // Diplomats 
+    'SJ': 'sentinel', // Sentinels
+    'SP': 'explorer'  // Explorers
+  };
+  
+  const colorGroup = groupColorMap[group] || 'diplomat';
+  
+  const bgColorVar = `var(--color-${colorGroup}${suffix}-primary)`;
+  
+  // Optimized text colors for each personality + gender combination
+  const textColorMap = {
+    // Analysts
+    'analyst-fem': 'rgb(91, 33, 182)',    // Deep purple on soft lavender
+    'analyst-masc': 'rgb(76, 29, 149)',   // Deep purple on rich lavender
+    
+    // Diplomats  
+    'diplomat-fem': 'rgb(154, 52, 18)',   // Warm terracotta on soft peach
+    'diplomat-masc': 'rgb(154, 52, 18)',  // Terracotta on warm apricot
+    
+    // Sentinels
+    'sentinel-fem': 'rgb(101, 67, 33)',   // Deep chocolate brown on warm cream
+    'sentinel-masc': 'rgb(45, 69, 28)',   // Very deep forest green on light sage
+    
+    // Explorers
+    'explorer-fem': 'rgb(161, 98, 7)',    // Golden brown on soft yellow
+    'explorer-masc': 'rgb(153, 27, 27)',  // Deep crimson on warm salmon
+  };
+  
+  const textColorKey = `${colorGroup}${suffix}`;
+  const textColor = textColorMap[textColorKey] || 'var(--color-green-900)';
+  
+  return {
+    primary: { 
+      light: bgColorVar, 
+      dark: bgColorVar 
+    },
+    secondary: { 
+      light: `var(--color-${colorGroup}${suffix}-secondary)`, 
+      dark: `var(--color-${colorGroup}${suffix}-secondary)` 
+    },
+    accent: { 
+      light: `var(--color-${colorGroup}${suffix}-accent)`, 
+      dark: `var(--color-${colorGroup}${suffix}-accent)` 
+    },
+    background: { 
+      light: bgColorVar, 
+      dark: bgColorVar 
+    },
+    surface: { 
+      light: 'var(--color-cream)', 
+      dark: 'var(--color-cream)' 
+    },
+    progress: { 
+      light: bgColorVar, 
+      dark: bgColorVar 
+    },
+    text: { 
+      light: textColor, 
+      dark: textColor 
+    }
+  };
+}
+
 // Get current theme preference (personality vs mint)
 export function getThemePreference() {
   try {
@@ -294,6 +383,7 @@ export function setThemePreference(mode) {
 // Get current theme (either personality-based or mint default)
 export function getCurrentPersonalityTheme() {
   const personalityType = getPersonalityType();
+  const gender = getGender();
   const themeMode = getThemePreference();
   
   if (themeMode === 'mint') {
@@ -324,22 +414,23 @@ export function getCurrentPersonalityTheme() {
     };
   }
   
-  // Return personality theme
+  // Return personality theme with gender-aware colors
   const theme = MBTI_THEMES[personalityType] || MBTI_THEMES.INFP;
+  const colors = getGenderAwareColors(personalityType, gender);
   
   return {
     ...theme,
     currentMode: 'personality',
     colors: {
-      ...theme.colors,
+      ...colors,
       current: {
-        primary: theme.colors.primary.light,
-        secondary: theme.colors.secondary.light,
-        accent: theme.colors.accent.light,
-        background: theme.colors.background.light,
-        surface: theme.colors.surface.light,
-        progress: theme.colors.progress.light,
-        text: theme.colors.text.light
+        primary: colors.primary.light,
+        secondary: colors.secondary.light,
+        accent: colors.accent.light,
+        background: colors.background.light,
+        surface: colors.surface.light,
+        progress: colors.progress.light,
+        text: colors.text.light
       }
     }
   };
@@ -348,21 +439,26 @@ export function getCurrentPersonalityTheme() {
 // Apply personality theme to document
 export function applyPersonalityTheme(personalityType = null) {
   const personality = personalityType || getPersonalityType();
-  const theme = MBTI_THEMES[personality] || MBTI_THEMES.INFP;
+  const gender = getGender();
+  const colors = getGenderAwareColors(personality, gender);
   
-  // Apply CSS variables - using single colors only
+  // Apply CSS variables - using gender-aware colors
   const root = document.documentElement;
-  root.style.setProperty('--mbti-primary', theme.colors.primary.light);
-  root.style.setProperty('--mbti-secondary', theme.colors.secondary.light);
-  root.style.setProperty('--mbti-accent', theme.colors.accent.light);
-  root.style.setProperty('--mbti-text-primary', theme.colors.text.light);
-  root.style.setProperty('--mbti-surface', theme.colors.surface.light);
-  root.style.setProperty('--mbti-progress', theme.colors.progress.light);
-  root.style.setProperty('--mbti-bg-pattern', theme.colors.background.light);
+  root.style.setProperty('--mbti-primary', colors.primary.light);
+  root.style.setProperty('--mbti-secondary', colors.secondary.light);
+  root.style.setProperty('--mbti-accent', colors.accent.light);
+  root.style.setProperty('--mbti-text-primary', colors.text.light);
+  root.style.setProperty('--mbti-surface', colors.surface.light);
+  root.style.setProperty('--mbti-progress', colors.progress.light);
+  root.style.setProperty('--mbti-bg-pattern', colors.background.light);
   
-  // Add personality class to body
+  // Add personality and gender classes to body
   document.body.classList.remove(...Object.keys(MBTI_THEMES).map(type => `mbti-${type.toLowerCase()}`));
+  document.body.classList.remove('mbti-feminine', 'mbti-masculine');
   document.body.classList.add(`mbti-${personality.toLowerCase()}`);
+  if (gender) {
+    document.body.classList.add(`mbti-${gender === 'female' ? 'feminine' : 'masculine'}`);
+  }
 }
 
 // Apply mint theme

@@ -6,7 +6,7 @@
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   --font-accent: "Homemade Apple", cursive;
   /* Local font variable injected by next/font/local in layout: --font-tanker */
-  /* Core colors */
+  /* === CORE COLORS === */
   --color-mint-500: rgb(130, 237, 166);
   --color-green-900: rgb(3, 89, 77);
   --color-lilac-300: rgb(246, 187, 253);
@@ -22,6 +22,80 @@
   --color-lime-300: rgb(216, 226, 104);
   --color-teal-300: rgb(137, 169, 161);
   --color-green-900-20: rgba(3, 89, 77, 0.2);
+
+  /* === ENHANCED GENDER-AWARE PALETTE === */
+  
+  /* 🌸 FEMININE SPECTRUM - Soft, warm, nurturing */
+  --color-rose-200: rgb(254, 205, 211);      /* Soft rose */
+  --color-rose-300: rgb(253, 164, 175);      /* Medium rose */
+  --color-rose-400: rgb(251, 113, 133);      /* Vibrant rose */
+  --color-blush-200: rgb(255, 219, 234);     /* Gentle blush */
+  --color-blush-300: rgb(252, 182, 211);     /* Warm blush */
+  --color-coral-200: rgb(254, 202, 202);     /* Soft coral */
+  --color-coral-300: rgb(252, 165, 165);     /* Medium coral */
+  --color-peach-200: rgb(254, 215, 170);     /* Soft peach */
+  --color-peach-300: rgb(253, 186, 116);     /* Golden peach */
+  --color-lavender-200: rgb(233, 213, 255);  /* Soft lavender */
+  --color-lavender-300: rgb(196, 181, 253);  /* Medium lavender */
+  --color-mauve-200: rgb(244, 208, 234);     /* Gentle mauve */
+  --color-mauve-300: rgb(232, 183, 215);     /* Warm mauve */
+
+  /* 💙 MASCULINE SPECTRUM - Strong, cool, confident */
+  --color-slate-300: rgb(203, 213, 225);     /* Light slate */
+  --color-slate-400: rgb(148, 163, 184);     /* Medium slate */
+  --color-slate-500: rgb(100, 116, 139);     /* Strong slate */
+  --color-steel-200: rgb(226, 232, 240);     /* Light steel */
+  --color-steel-300: rgb(203, 213, 225);     /* Medium steel */
+  --color-navy-200: rgb(191, 219, 254);      /* Light navy */
+  --color-navy-300: rgb(147, 197, 253);      /* Medium navy */
+  --color-navy-400: rgb(96, 165, 250);       /* Strong navy */
+  --color-forest-200: rgb(187, 247, 208);    /* Light forest */
+  --color-forest-300: rgb(134, 239, 172);    /* Medium forest */
+  --color-forest-400: rgb(74, 222, 128);     /* Strong forest */
+  --color-charcoal-200: rgb(229, 231, 235);  /* Light charcoal */
+  --color-charcoal-300: rgb(209, 213, 219);  /* Medium charcoal */
+
+  /* === GENDER-AWARE PERSONALITY COMBINATIONS === */
+  
+  /* Feminine Analyst Colors */
+  --color-analyst-fem-primary: rgb(233, 213, 255);   /* Soft lavender */
+  --color-analyst-fem-secondary: rgb(244, 208, 234); /* Gentle mauve */
+  --color-analyst-fem-accent: rgb(147, 197, 253);    /* Soft blue */
+  
+  /* Masculine Analyst Colors */
+  --color-analyst-masc-primary: rgb(216, 180, 254);  /* Rich lavender */
+  --color-analyst-masc-secondary: rgb(196, 181, 253); /* Soft purple */
+  --color-analyst-masc-accent: rgb(147, 51, 234);    /* Deep purple */
+  
+  /* Feminine Diplomat Colors */
+  --color-diplomat-fem-primary: rgb(254, 215, 170);  /* Soft peach */
+  --color-diplomat-fem-secondary: rgb(254, 205, 211); /* Rose */
+  --color-diplomat-fem-accent: rgb(187, 247, 208);   /* Light forest */
+  
+  /* Masculine Diplomat Colors */
+  --color-diplomat-masc-primary: rgb(254, 205, 178); /* Warm apricot */
+  --color-diplomat-masc-secondary: rgb(253, 186, 140); /* Light peach */
+  --color-diplomat-masc-accent: rgb(251, 146, 60);   /* Golden orange */
+  
+  /* Feminine Sentinel Colors */
+  --color-sentinel-fem-primary: rgb(252, 248, 227);  /* Warm cream background */
+  --color-sentinel-fem-secondary: rgb(249, 243, 211); /* Soft gold background */
+  --color-sentinel-fem-accent: rgb(101, 67, 33);     /* Deep chocolate brown text */
+  
+  /* Masculine Sentinel Colors */
+  --color-sentinel-masc-primary: rgb(245, 245, 220); /* Light sage background */
+  --color-sentinel-masc-secondary: rgb(240, 248, 235); /* Soft sage background */
+  --color-sentinel-masc-accent: rgb(45, 69, 28);    /* Very deep forest green text */
+  
+  /* Feminine Explorer Colors */
+  --color-explorer-fem-primary: rgb(254, 240, 138);  /* Soft yellow */
+  --color-explorer-fem-secondary: rgb(253, 224, 71); /* Golden yellow */
+  --color-explorer-fem-accent: rgb(254, 215, 170);   /* Light peach */
+  
+  /* Masculine Explorer Colors */
+  --color-explorer-masc-primary: rgb(252, 165, 165); /* Warm salmon */
+  --color-explorer-masc-secondary: rgb(254, 202, 202); /* Soft coral */
+  --color-explorer-masc-accent: rgb(239, 68, 68);    /* Vibrant red */
 
   /* Semantic aliases */
   --bg-default: var(--color-mint-500);
@@ -98,6 +172,48 @@ input:-ms-input-placeholder {
 .text-mbti-secondary { color: var(--mbti-text-secondary); }
 .border-mbti-primary { border-color: var(--mbti-primary); }
 .bg-mbti-surface { background-color: var(--mbti-surface); }
+
+/* Gender-aware personality utilities */
+.bg-analyst-fem { background-color: var(--color-analyst-fem-primary); }
+.bg-analyst-masc { background-color: var(--color-analyst-masc-primary); }
+.bg-diplomat-fem { background-color: var(--color-diplomat-fem-primary); }
+.bg-diplomat-masc { background-color: var(--color-diplomat-masc-primary); }
+.bg-sentinel-fem { background-color: var(--color-sentinel-fem-primary); }
+.bg-sentinel-masc { background-color: var(--color-sentinel-masc-primary); }
+.bg-explorer-fem { background-color: var(--color-explorer-fem-primary); }
+.bg-explorer-masc { background-color: var(--color-explorer-masc-primary); }
+
+/* Gender-specific utilities */
+.text-analyst-fem { color: var(--color-analyst-fem-primary); }
+.text-analyst-masc { color: var(--color-analyst-masc-primary); }
+.text-diplomat-fem { color: var(--color-diplomat-fem-primary); }
+.text-diplomat-masc { color: var(--color-diplomat-masc-primary); }
+.text-sentinel-fem { color: var(--color-sentinel-fem-primary); }
+.text-sentinel-masc { color: var(--color-sentinel-masc-primary); }
+.text-explorer-fem { color: var(--color-explorer-fem-primary); }
+.text-explorer-masc { color: var(--color-explorer-masc-primary); }
+
+/* Border utilities for gender-aware colors */
+.border-analyst-fem { border-color: var(--color-analyst-fem-primary); }
+.border-analyst-masc { border-color: var(--color-analyst-masc-primary); }
+.border-diplomat-fem { border-color: var(--color-diplomat-fem-primary); }
+.border-diplomat-masc { border-color: var(--color-diplomat-masc-primary); }
+.border-sentinel-fem { border-color: var(--color-sentinel-fem-primary); }
+.border-sentinel-masc { border-color: var(--color-sentinel-masc-primary); }
+.border-explorer-fem { border-color: var(--color-explorer-fem-primary); }
+.border-explorer-masc { border-color: var(--color-explorer-masc-primary); }
+
+/* Component contrast helpers - prevents same-color text/background issues */
+.component-surface {
+  background-color: var(--color-cream);
+  color: var(--color-green-900);
+  border: 2px solid var(--mbti-primary);
+  box-shadow: 0 2px 0 var(--mbti-primary);
+}
+
+/* Ensure consistent text color across all components */
+.text-mbti { color: var(--mbti-text-primary); }
+.text-consistent { color: var(--color-green-900); }
 
 /* Buttons */
 .btn {

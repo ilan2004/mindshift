@@ -1,0 +1,303 @@
+/* 🎨 MindShift Personality-Aware Color System */
+/* Building on existing palette with gender and personality differentiation */
+
+:root {
+  /* === EXISTING CORE COLORS (Base Foundation) === */
+  --color-mint-500: rgb(130, 237, 166);      /* Main brand green */
+  --color-green-900: rgb(3, 89, 77);         /* Primary border/text */
+  --color-lilac-300: rgb(246, 187, 253);     /* Soft purple */
+  --color-orange-500: rgb(255, 145, 36);     /* Energetic orange */
+  --color-amber-400: rgb(253, 192, 104);     /* Warm amber */
+  --color-cyan-200: rgb(174, 251, 255);      /* Cool cyan */
+  --color-blue-400: rgb(88, 154, 240);       /* Classic blue */
+  --color-purple-400: rgb(200, 140, 253);    /* Medium purple */
+  --color-cream: rgb(249, 248, 244);         /* Soft neutral */
+  --color-pink-200: rgb(252, 205, 220);      /* Gentle pink */
+  --color-pink-500: rgb(252, 86, 129);       /* Vibrant pink */
+  --color-yellow-200: rgb(255, 255, 148);    /* Soft yellow */
+  --color-lime-300: rgb(216, 226, 104);      /* Fresh lime */
+  --color-teal-300: rgb(137, 169, 161);      /* Muted teal */
+  --color-green-900-20: rgba(3, 89, 77, 0.2); /* Transparent border */
+
+  /* === EXTENDED PALETTE - Eye-Friendly & UI-Harmonious === */
+
+  /* 🌸 FEMININE SPECTRUM - Warm, Soft, Nurturing */
+  --color-rose-soft: rgb(255, 228, 230);        /* Ultra soft rose */
+  --color-rose-medium: rgb(254, 205, 211);      /* Your pink-200 enhanced */
+  --color-rose-warm: rgb(251, 176, 185);        /* Warmer rose */
+  
+  --color-peach-light: rgb(255, 237, 213);      /* Gentle peach */
+  --color-peach-medium: rgb(254, 215, 170);     /* Medium peach */
+  --color-peach-warm: rgb(253, 186, 116);       /* Rich peach */
+  
+  --color-lavender-light: rgb(241, 233, 255);   /* Ultra light lavender */
+  --color-lavender-medium: rgb(221, 214, 254);  /* Medium lavender */
+  --color-lavender-rich: rgb(196, 181, 253);    /* Rich lavender */
+  
+  --color-blush-light: rgb(255, 242, 245);      /* Barely there blush */
+  --color-blush-medium: rgb(252, 231, 235);     /* Soft blush */
+  --color-blush-warm: rgb(249, 168, 184);       /* Warm blush */
+
+  /* 💙 MASCULINE SPECTRUM - Light, Colorful, Confident */
+  --color-slate-light: rgb(255, 240, 245);      /* Light rose slate */
+  --color-slate-medium: rgb(255, 228, 235);     /* Soft rose slate */
+  --color-slate-strong: rgb(180, 50, 80);       /* Strong red text */
+  
+  --color-steel-light: rgb(255, 245, 240);      /* Light coral steel */
+  --color-steel-medium: rgb(255, 235, 225);     /* Soft coral steel */
+  --color-steel-strong: rgb(160, 45, 70);       /* Strong coral text */
+  
+  --color-navy-light: rgb(239, 246, 255);       /* Light navy */
+  --color-navy-medium: rgb(191, 219, 254);      /* Medium navy */
+  --color-navy-strong: rgb(96, 165, 250);       /* Strong navy */
+  
+  --color-forest-light: rgb(240, 253, 244);     /* Light forest */
+  --color-forest-medium: rgb(187, 247, 208);    /* Medium forest */
+  --color-forest-strong: rgb(34, 197, 94);      /* Strong forest */
+
+  /* === PERSONALITY TYPE COLORS === */
+  
+  /* 🧠 ANALYSTS (NT) - Strategic, Logical, Independent */
+  /* Base: Purple spectrum for intellect and depth */
+  --color-analyst-base: var(--color-purple-400);           /* Your existing purple */
+  --color-analyst-light: rgb(233, 213, 255);              /* Ultra light purple */
+  --color-analyst-accent: rgb(167, 139, 250);             /* Rich purple */
+  --color-analyst-strong: rgb(124, 58, 237);              /* Deep purple */
+  
+  /* 💚 DIPLOMATS (NF) - Idealistic, Empathetic, Authentic */
+  /* Base: Green spectrum for growth and harmony */
+  --color-diplomat-base: var(--color-mint-500);            /* Your existing mint */
+  --color-diplomat-light: rgb(220, 252, 231);             /* Ultra light green */
+  --color-diplomat-accent: rgb(74, 222, 128);             /* Fresh green */
+  --color-diplomat-strong: rgb(22, 163, 74);              /* Deep green */
+  
+  /* 🛡️ SENTINELS (SJ) - Practical, Reliable, Organized */
+  /* Base: Blue spectrum for stability and trust */
+  --color-sentinel-base: var(--color-blue-400);            /* Your existing blue */
+  --color-sentinel-light: rgb(239, 246, 255);             /* Ultra light blue */
+  --color-sentinel-accent: rgb(59, 130, 246);             /* Classic blue */
+  --color-sentinel-strong: rgb(29, 78, 216);              /* Deep blue */
+  
+  /* ⚡ EXPLORERS (SP) - Spontaneous, Energetic, Adaptable */
+  /* Base: Orange/Yellow spectrum for energy and warmth */
+  --color-explorer-base: var(--color-orange-500);          /* Your existing orange */
+  --color-explorer-light: rgb(255, 247, 237);             /* Ultra light orange */
+  --color-explorer-accent: rgb(251, 146, 60);             /* Warm orange */
+  --color-explorer-strong: rgb(234, 88, 12);              /* Deep orange */
+
+  /* === GENDER + PERSONALITY COMBINATIONS === */
+  
+  /* 🌸 FEMININE VARIANTS - Softer, warmer versions */
+  
+  /* Feminine Analysts - Soft purples with warmth */
+  --color-analyst-fem-primary: var(--color-lavender-medium);    /* Soft purple */
+  --color-analyst-fem-secondary: var(--color-blush-light);      /* Gentle blush */
+  --color-analyst-fem-accent: rgb(188, 166, 252);              /* Warm purple */
+  
+  /* Feminine Diplomats - Warm greens with peach */
+  --color-diplomat-fem-primary: rgb(187, 247, 208);            /* Soft green */
+  --color-diplomat-fem-secondary: var(--color-peach-light);     /* Gentle peach */
+  --color-diplomat-fem-accent: rgb(110, 231, 183);             /* Warm mint */
+  
+  /* Feminine Sentinels - Warm gold with earth tones */
+  --color-sentinel-fem-primary: rgb(252, 248, 227);            /* Warm cream background */
+  --color-sentinel-fem-secondary: rgb(249, 243, 211);          /* Soft gold background */
+  --color-sentinel-fem-accent: rgb(101, 67, 33);               /* Deep chocolate brown text */
+  
+  /* Feminine Explorers - Soft yellows/oranges with rose */
+  --color-explorer-fem-primary: rgb(254, 240, 138);            /* Soft yellow */
+  --color-explorer-fem-secondary: var(--color-rose-medium);     /* Medium rose */
+  --color-explorer-fem-accent: rgb(252, 176, 64);              /* Warm gold */
+  
+  /* 💙 MASCULINE VARIANTS - Stronger, cooler versions */
+  
+  /* Masculine Analysts - Light colorful with strong text */
+  --color-analyst-masc-primary: rgb(245, 240, 255);            /* Light purple background */
+  --color-analyst-masc-secondary: rgb(240, 235, 255);          /* Soft purple background */
+  --color-analyst-masc-accent: rgb(75, 40, 150);               /* Deep purple text */
+  
+  /* Masculine Diplomats - Light green with strong text */
+  --color-diplomat-masc-primary: rgb(240, 255, 245);           /* Light mint background */
+  --color-diplomat-masc-secondary: rgb(235, 250, 240);         /* Soft mint background */
+  --color-diplomat-masc-accent: rgb(20, 120, 60);              /* Strong forest green text */
+  
+  /* Masculine Sentinels - Light sage with forest text */
+  --color-sentinel-masc-primary: rgb(245, 245, 220);           /* Light sage background */
+  --color-sentinel-masc-secondary: rgb(240, 248, 235);         /* Soft sage background */
+  --color-sentinel-masc-accent: rgb(45, 69, 28);               /* Very deep forest green text */
+  
+  /* Masculine Explorers - Light orange with strong text */
+  --color-explorer-masc-primary: rgb(255, 248, 240);           /* Light orange background */
+  --color-explorer-masc-secondary: rgb(255, 245, 235);         /* Soft orange background */
+  --color-explorer-masc-accent: rgb(200, 80, 20);              /* Strong orange-red text */
+
+  /* === CONTEXTUAL APPLICATION COLORS === */
+  
+  /* Focus Session States */
+  --color-focus-active: var(--color-diplomat-strong);          /* Active green */
+  --color-focus-paused: var(--color-explorer-accent);          /* Paused orange */
+  --color-focus-break: var(--color-sentinel-accent);           /* Break blue */
+  --color-focus-complete: var(--color-mint-500);               /* Complete mint */
+  
+  /* Notification Types (Enhanced) */
+  --color-notification-success: var(--color-forest-medium);    /* Success */
+  --color-notification-error: rgb(254, 202, 202);             /* Soft error red */
+  --color-notification-warning: var(--color-amber-400);        /* Warning amber */
+  --color-notification-info: var(--color-cyan-200);           /* Info cyan */
+  --color-notification-nudge: var(--color-lilac-300);         /* Nudge lilac */
+  --color-notification-achievement: var(--color-yellow-200);   /* Achievement */
+  
+  /* Peer Status Indicators */
+  --color-peer-online: var(--color-mint-500);                 /* Online mint */
+  --color-peer-busy: rgb(252, 165, 165);                      /* Busy soft red */
+  --color-peer-away: var(--color-amber-400);                  /* Away amber */
+  --color-peer-offline: var(--color-teal-300);                /* Offline teal */
+  
+  /* Streak & Achievement Levels */
+  --color-streak-bronze: rgb(180, 83, 9);                     /* Bronze */
+  --color-streak-silver: rgb(107, 114, 128);                  /* Silver */
+  --color-streak-gold: rgb(217, 119, 6);                      /* Gold */
+  --color-streak-platinum: var(--color-purple-400);           /* Platinum */
+  --color-streak-diamond: var(--color-cyan-200);              /* Diamond */
+
+  /* === TRANSPARENCY VARIATIONS === */
+  
+  /* 20% opacity versions for subtle backgrounds */
+  --color-mint-500-20: rgba(130, 237, 166, 0.2);
+  --color-lilac-300-20: rgba(246, 187, 253, 0.2);
+  --color-orange-500-20: rgba(255, 145, 36, 0.2);
+  --color-amber-400-20: rgba(253, 192, 104, 0.2);
+  --color-cyan-200-20: rgba(174, 251, 255, 0.2);
+  --color-blue-400-20: rgba(88, 154, 240, 0.2);
+  --color-purple-400-20: rgba(200, 140, 253, 0.2);
+  --color-pink-200-20: rgba(252, 205, 220, 0.2);
+  --color-yellow-200-20: rgba(255, 255, 148, 0.2);
+  --color-lime-300-20: rgba(216, 226, 104, 0.2);
+  --color-teal-300-20: rgba(137, 169, 161, 0.2);
+  
+  /* 10% opacity for ultra-subtle effects */
+  --color-mint-500-10: rgba(130, 237, 166, 0.1);
+  --color-green-900-10: rgba(3, 89, 77, 0.1);
+  --color-purple-400-10: rgba(200, 140, 253, 0.1);
+  --color-blue-400-10: rgba(88, 154, 240, 0.1);
+  --color-orange-500-10: rgba(255, 145, 36, 0.1);
+  --color-pink-500-10: rgba(252, 86, 129, 0.1);
+  
+  /* 5% opacity for barely-there effects */
+  --color-personality-overlay-5: rgba(200, 140, 253, 0.05);
+  --color-gender-overlay-5: rgba(252, 205, 220, 0.05);
+  --color-focus-overlay-5: rgba(130, 237, 166, 0.05);
+}
+
+/* === DYNAMIC COLOR FUNCTIONS === */
+/* CSS custom properties that adapt based on data attributes */
+
+/* Personality-aware component styling */
+[data-personality*="NT"] {
+  --primary-color: var(--color-analyst-base);
+  --accent-color: var(--color-analyst-accent);
+  --background-color: var(--color-analyst-light);
+}
+
+[data-personality*="NF"] {
+  --primary-color: var(--color-diplomat-base);
+  --accent-color: var(--color-diplomat-accent);
+  --background-color: var(--color-diplomat-light);
+}
+
+[data-personality*="SJ"] {
+  --primary-color: var(--color-sentinel-base);
+  --accent-color: var(--color-sentinel-accent);
+  --background-color: var(--color-sentinel-light);
+}
+
+[data-personality*="SP"] {
+  --primary-color: var(--color-explorer-base);
+  --accent-color: var(--color-explorer-accent);
+  --background-color: var(--color-explorer-light);
+}
+
+/* Gender-aware refinements */
+[data-personality*="NT"][data-gender="female"] {
+  --primary-color: var(--color-analyst-fem-primary);
+  --accent-color: var(--color-analyst-fem-accent);
+  --secondary-color: var(--color-analyst-fem-secondary);
+}
+
+[data-personality*="NT"][data-gender="male"] {
+  --primary-color: var(--color-analyst-masc-primary);
+  --accent-color: var(--color-analyst-masc-accent);
+  --secondary-color: var(--color-analyst-masc-secondary);
+}
+
+[data-personality*="NF"][data-gender="female"] {
+  --primary-color: var(--color-diplomat-fem-primary);
+  --accent-color: var(--color-diplomat-fem-accent);
+  --secondary-color: var(--color-diplomat-fem-secondary);
+}
+
+[data-personality*="NF"][data-gender="male"] {
+  --primary-color: var(--color-diplomat-masc-primary);
+  --accent-color: var(--color-diplomat-masc-accent);
+  --secondary-color: var(--color-diplomat-masc-secondary);
+}
+
+[data-personality*="SJ"][data-gender="female"] {
+  --primary-color: var(--color-sentinel-fem-primary);
+  --accent-color: var(--color-sentinel-fem-accent);
+  --secondary-color: var(--color-sentinel-fem-secondary);
+}
+
+[data-personality*="SJ"][data-gender="male"] {
+  --primary-color: var(--color-sentinel-masc-primary);
+  --accent-color: var(--color-sentinel-masc-accent);
+  --secondary-color: var(--color-sentinel-masc-secondary);
+}
+
+[data-personality*="SP"][data-gender="female"] {
+  --primary-color: var(--color-explorer-fem-primary);
+  --accent-color: var(--color-explorer-fem-accent);
+  --secondary-color: var(--color-explorer-fem-secondary);
+}
+
+[data-personality*="SP"][data-gender="male"] {
+  --primary-color: var(--color-explorer-masc-primary);
+  --accent-color: var(--color-explorer-masc-accent);
+  --secondary-color: var(--color-explorer-masc-secondary);
+}
+
+/* === UTILITY CLASSES === */
+
+/* Easy application classes */
+.bg-personality { background-color: var(--primary-color); }
+.bg-personality-light { background-color: var(--background-color); }
+.text-personality { color: var(--primary-color); }
+.text-personality-accent { color: var(--accent-color); }
+.border-personality { border-color: var(--primary-color); }
+
+/* Gender-specific utilities */
+.feminine-touch { 
+  filter: brightness(1.05) saturate(0.95) hue-rotate(10deg);
+}
+
+.masculine-touch { 
+  filter: brightness(0.98) saturate(1.02) hue-rotate(-5deg);
+}
+
+/* Context-aware utilities */
+.focus-active { background-color: var(--color-focus-active); }
+.focus-paused { background-color: var(--color-focus-paused); }
+.focus-break { background-color: var(--color-focus-break); }
+.focus-complete { background-color: var(--color-focus-complete); }
+
+.peer-online { color: var(--color-peer-online); }
+.peer-busy { color: var(--color-peer-busy); }
+.peer-away { color: var(--color-peer-away); }
+.peer-offline { color: var(--color-peer-offline); }
+
+/* Streak level indicators */
+.streak-bronze { background-color: var(--color-streak-bronze); }
+.streak-silver { background-color: var(--color-streak-silver); }
+.streak-gold { background-color: var(--color-streak-gold); }
+.streak-platinum { background-color: var(--color-streak-platinum); }
+.streak-diamond { background-color: var(--color-streak-diamond); }

@@ -271,7 +271,7 @@ export default function QuestBoard({ quests, personalityType }) {
       <div 
         className="rounded-xl p-2.5 md:p-3 backdrop-blur-sm"
         style={{
-          background: "rgba(249, 248, 244, 0.85)", // Semi-transparent cream
+          background: "rgba(249, 248, 244, 0.85)",
           border: "2px solid var(--color-green-900)",
           boxShadow: "0 4px 20px rgba(3, 89, 77, 0.15)",
         }}
@@ -284,11 +284,11 @@ export default function QuestBoard({ quests, personalityType }) {
             {personalityType && (
               <span 
                 className="text-xs px-2 py-1 rounded-full font-medium"
-                style={{
-                  background: getPersonalityAccentColor(personalityType),
-                  color: 'var(--color-green-900)',
-                  border: '1px solid var(--color-green-900-20)'
-                }}
+              style={{
+                background: getPersonalityAccentColor(personalityType),
+                color: 'var(--color-green-900)',
+                border: '1px solid var(--color-green-900-20)'
+              }}
               >
                 {personalityType}
               </span>

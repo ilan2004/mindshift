@@ -4,8 +4,10 @@ import FooterFocusBar from "../components/FooterFocusBar";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import ClientLayout from "../components/ClientLayout";
+import NotificationManager from "../components/NotificationManager";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import "./globals.css";
+import "../styles/personality-colors.css";
 
 export const metadata = {
   title: "MindShift",
@@ -44,20 +46,22 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`antialiased ${tanker.variable}`}>
         <ThemeProvider>
-          <ClientLayout>
-            <Navbar />
-            {/* Global SVG symbols (placed once) */}
-            <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
-              <defs>
-                <symbol id="chev-down" viewBox="0 0 24 24">
-                  <polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </symbol>
-              </defs>
-            </svg>
-            <main className="min-h-screen mx-auto px-4 md:px-6 py-6">{children}</main>
-            <Footer />
-            <FooterFocusBar />
-          </ClientLayout>
+          <NotificationManager>
+            <ClientLayout>
+              <Navbar />
+              {/* Global SVG symbols (placed once) */}
+              <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
+                <defs>
+                  <symbol id="chev-down" viewBox="0 0 24 24">
+                    <polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </symbol>
+                </defs>
+              </svg>
+              <main className="min-h-screen mx-auto px-4 md:px-6 py-6">{children}</main>
+              <Footer />
+              <FooterFocusBar />
+            </ClientLayout>
+          </NotificationManager>
         </ThemeProvider>
       </body>
     </html>

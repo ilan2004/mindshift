@@ -110,7 +110,7 @@ export default function LeaderboardSection({ personalityType }) {
       style={{
         background: "var(--surface)",
         border: "2px solid var(--color-green-900)",
-        boxShadow: "0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)",
+        boxShadow: "0 4px 0 var(--color-green-900)",
       }}
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
