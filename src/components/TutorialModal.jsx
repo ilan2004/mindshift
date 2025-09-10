@@ -119,6 +119,11 @@ export default function TutorialModal() {
     return null;
   }
 
+  // Ensure document.body is available before creating portal
+  if (typeof document === 'undefined' || !document.body) {
+    return null;
+  }
+
   const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
 
   return createPortal(
@@ -142,42 +147,42 @@ export default function TutorialModal() {
         className="relative w-full max-w-2xl mx-auto"
       >
         {/* Main Modal Card using MindShift styles */}
-        <div className="retro-console rounded-3xl p-8 max-h-[90vh] overflow-y-auto">
+        <div className="retro-console rounded-3xl p-4 md:p-8 max-h-[90vh] overflow-y-auto relative">
+          {/* Close Button - Absolute positioned to top-right */}
+          <button
+            onClick={handleClose}
+            className="absolute top-3 right-3 md:top-5 md:right-5 flex items-center justify-center shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 transition-colors z-10"
+            style={{ color: 'var(--text-default)' }}
+            aria-label="Close tutorial"
+          >
+            <X size={16} className="md:hidden" />
+            <X size={20} className="hidden md:block" />
+          </button>
+          
           {/* Header */}
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex-1">
-              {/* Tutorial Badge */}
-              <div className="inline-flex items-center gap-2 mb-3">
-                <div className="nav-pill nav-pill--cyan text-xs font-bold uppercase tracking-wider">
-                  Tutorial
-                </div>
-                <div className="nav-pill nav-pill--outline text-xs">
-                  Step {currentStep + 1} of {totalSteps}
-                </div>
+          <div className="mb-4 md:mb-6 pr-10">
+            {/* Tutorial Badge */}
+            <div className="flex flex-wrap items-center gap-2 mb-2 md:mb-3">
+              <div className="nav-pill nav-pill--cyan text-xs font-bold uppercase tracking-wider">
+                Tutorial
               </div>
-              
-              {/* Tutorial Title */}
-              <h1 
-                id="tutorial-title"
-                className="h2 font-tanker text-mbti-primary mb-2"
-              >
-                {currentStepData.title}
-              </h1>
-              
-              {/* Tutorial Series Name */}
-              <p className="text-mbti-secondary text-sm font-medium uppercase tracking-wide">
-                {currentTutorial.title}
-              </p>
+              <div className="nav-pill nav-pill--outline text-xs">
+                Step {currentStep + 1} of {totalSteps}
+              </div>
             </div>
             
-            {/* Close Button */}
-            <button
-              onClick={handleClose}
-              className="nav-icon-btn shrink-0 ml-4 hover:bg-mbti-accent/10 transition-colors"
-              aria-label="Close tutorial"
+            {/* Tutorial Title */}
+            <h1 
+              id="tutorial-title"
+              className="text-xl md:text-2xl font-tanker text-mbti-primary mb-1 md:mb-2 leading-tight"
             >
-              <X className="nav-icon" />
-            </button>
+              {currentStepData.title}
+            </h1>
+            
+            {/* Tutorial Series Name */}
+            <p className="text-mbti-secondary text-xs md:text-sm font-medium uppercase tracking-wide">
+              {currentTutorial.title}
+            </p>
           </div>
 
           {/* Progress Bar */}
@@ -250,8 +255,8 @@ export default function TutorialModal() {
           </div>
 
           {/* Decorative DNA Elements */}
-          <div className="flex justify-center mt-6 opacity-60" aria-hidden="true">
-            <div className="flex items-center gap-2">
+          <div className="flex justify-center items-center mt-6 w-full opacity-60" aria-hidden="true">
+            <div className="flex items-center justify-center w-full gap-3 px-4">
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}

@@ -194,6 +194,11 @@ export default function TutorialHighlight() {
     return null;
   }
 
+  // Ensure document.body is available before creating portal
+  if (typeof document === 'undefined' || !document.body) {
+    return null;
+  }
+
   const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
 
   return createPortal(

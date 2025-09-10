@@ -296,6 +296,12 @@ export default function ProfilePage() {
         console.warn('Could not clear localStorage:', e);
       }
       
+      // Dispatch event to update global auth state
+      try { window.dispatchEvent(new Event('mindshift:auth:signed_out')); } catch {}
+      
+      // Reset loading state after successful logout
+      setLoggingOut(false);
+      
       // Redirect to home page (this will show the auth overlay)
       router.push('/');
     } catch (error) {

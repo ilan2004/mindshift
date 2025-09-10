@@ -48,6 +48,7 @@ export default function ClientLayout({ children }) {
       }
     };
     const onSignedOut = () => {
+      console.log('🔥 Auth signed out event received, resetting to auth overlay');
       setUserMeta({ username: "", gender: "", mode: "general" });
       setStage("introForm");
     };

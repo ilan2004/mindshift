@@ -129,6 +129,17 @@ export default function AuthOverlay({
                 email: data.user.email
               });
           } catch {}
+          
+          // Dispatch signed_in event immediately after successful sign-up and profile creation
+          try {
+            window.dispatchEvent(new CustomEvent('mindshift:auth:signed_in', { 
+              detail: { 
+                testCompleted: false, 
+                username: username.trim(), 
+                gender: gender 
+              } 
+            })); 
+          } catch {}
         }
       } else {
         // Sign in
@@ -151,7 +162,7 @@ export default function AuthOverlay({
               try { localStorage.setItem("ms_intro_complete", "1"); } catch {}
               try { localStorage.setItem("ms_display_name", profile.username || ""); } catch {}
               try { localStorage.setItem("ms_gender", profile.gender === "female" ? "W" : "M"); } catch {}
-              try { window.dispatchEvent(new CustomEvent('nudge:auth:signed_in', { detail: { testCompleted: true, username: profile.username, gender: profile.gender } })); } catch {}
+              try { window.dispatchEvent(new CustomEvent('mindshift:auth:signed_in', { detail: { testCompleted: true, username: profile.username, gender: profile.gender } })); } catch {}
             }
           } catch {}
         }
@@ -165,8 +176,20 @@ export default function AuthOverlay({
 
   const handleSignOut = async () => {
     if (!supabase) return;
-    await supabase.auth.signOut();
-    try { window.dispatchEvent(new Event('nudge:auth:signed_out')); } catch {}
+    
+    try {
+      await supabase.auth.signOut();
+      // Clear local storage
+      try { localStorage.removeItem("ms_intro_complete"); } catch {}
+      try { localStorage.removeItem("ms_display_name"); } catch {}
+      try { localStorage.removeItem("ms_gender"); } catch {}
+      // Dispatch sign-out event immediately
+      try { window.dispatchEvent(new Event('mindshift:auth:signed_out')); } catch {}
+    } catch (error) {
+      console.error('Sign out error:', error);
+      // Even if sign-out fails, dispatch the event to update UI
+      try { window.dispatchEvent(new Event('mindshift:auth:signed_out')); } catch {}
+    }
   };
 
   const canProceed = user && username.trim().length >= 2 && (gender === "male" || gender === "female");

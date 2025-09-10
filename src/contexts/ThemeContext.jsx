@@ -20,17 +20,22 @@ export function ThemeProvider({ children }) {
   // Initialize theme system before paint to avoid mismatch/flash
   useLayoutEffect(() => {
     try {
-      // Apply theme to DOM first
-      initializeThemeSystem();
+      // Check if theme was already initialized by the inline script
+      const wasPreInitialized = typeof window !== 'undefined' && window.__THEME_INITIALIZED__;
       
-      // Then sync React state with applied theme
+      if (!wasPreInitialized) {
+        // Apply theme to DOM first only if not pre-initialized
+        initializeThemeSystem();
+      }
+      
+      // Always sync React state with applied theme
       const currentTheme = getCurrentPersonalityTheme();
       const personality = getPersonalityType();
       setTheme(currentTheme);
       setThemeMode(currentTheme.currentMode);
       setPersonalityType(personality);
       
-      // Ensure CSS variables are applied to document root
+      // Always ensure CSS variables are applied to document root
       const root = document.documentElement;
       const cssVars = {
         '--mbti-primary': currentTheme.colors.current.primary,
@@ -76,6 +81,31 @@ export function ThemeProvider({ children }) {
     });
   };
 
+  // Listen for personality updates from test completion
+  useEffect(() => {
+    const handlePersonalityUpdate = (event) => {
+      const { personalityType } = event.detail || {};
+      if (personalityType) {
+        // Apply the new personality theme immediately
+        applyPersonalityTheme(personalityType);
+        updateTheme();
+        
+        // Call global refreshTheme if available to sync inline script
+        if (typeof window.refreshTheme === 'function') {
+          window.refreshTheme();
+        }
+        
+        // Dispatch theme changed event for other components
+        window.dispatchEvent(new CustomEvent('theme-changed', {
+          detail: { mode: 'personality', theme: getCurrentPersonalityTheme() }
+        }));
+      }
+    };
+
+    window.addEventListener('personality-updated', handlePersonalityUpdate);
+    return () => window.removeEventListener('personality-updated', handlePersonalityUpdate);
+  }, []);
+
   // Get personality type from localStorage
   const getPersonalityType = () => {
     try {
@@ -87,15 +117,27 @@ export function ThemeProvider({ children }) {
 
   // Toggle between personality theme and mint theme
   const toggleTheme = () => {
+    // Apply theme changes immediately without delays
     const newMode = themeUtils.toggleTheme();
+    
+    // Update React state immediately
     setThemeMode(newMode);
     updateTheme();
     
-    // Small delay to ensure DOM is updated before dispatching event
+    // Call global refreshTheme if available to sync inline script
+    if (typeof window.refreshTheme === 'function') {
+      window.refreshTheme();
+    }
+    
+    // Dispatch event immediately for navbar sync
+    window.dispatchEvent(new CustomEvent('theme-changed', { 
+      detail: { mode: newMode, theme: getCurrentPersonalityTheme() } 
+    }));
+    
+    // Force a re-render to ensure all components update together
+    setReady(false);
     requestAnimationFrame(() => {
-      window.dispatchEvent(new CustomEvent('theme-changed', { 
-        detail: { mode: newMode, theme } 
-      }));
+      setReady(true);
     });
   };
 
@@ -104,6 +146,11 @@ export function ThemeProvider({ children }) {
     applyPersonalityTheme(personality);
     updateTheme();
     setPersonalityType(personality);
+    
+    // Call global refreshTheme if available to sync inline script
+    if (typeof window.refreshTheme === 'function') {
+      window.refreshTheme();
+    }
     
     // Small delay to ensure DOM is updated before dispatching event
     requestAnimationFrame(() => {
@@ -145,8 +192,10 @@ export function ThemeProvider({ children }) {
 
   return (
     <ThemeContext.Provider value={value}>
-      {/* Optionally gate rendering until theme ready to prevent flash */}
-      {ready ? children : null}
+      {/* Use suppressHydrationWarning to prevent SSR/client mismatch while theme loads */}
+      <div suppressHydrationWarning={!ready} style={ready ? {} : { visibility: 'hidden' }}>
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 }
