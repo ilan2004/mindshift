@@ -195,13 +195,13 @@ export default function PersonalityWelcome() {
     };
 
     window.addEventListener("storage", handleStorageUpdate);
-    window.addEventListener("mindshift:counters:update", handleStorageUpdate);
-    window.addEventListener("mindshift:session:completed", handleStorageUpdate);
+    window.addEventListener("nudge:counters:update", handleStorageUpdate);
+    window.addEventListener("nudge:session:completed", handleStorageUpdate);
 
     return () => {
       window.removeEventListener("storage", handleStorageUpdate);
-      window.removeEventListener("mindshift:counters:update", handleStorageUpdate);
-      window.removeEventListener("mindshift:session:completed", handleStorageUpdate);
+      window.removeEventListener("nudge:counters:update", handleStorageUpdate);
+      window.removeEventListener("nudge:session:completed", handleStorageUpdate);
     };
   }, []);
 

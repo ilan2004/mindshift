@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import HelpBulb from "./HelpBulb";
 
 // LocalStorage helpers
 function getNumber(key, def = 0) {
@@ -188,6 +189,7 @@ export default function Badges() {
     <>
       <div className="w-full max-w-md mx-auto px-2 md:px-3 mt-2">
         <div 
+          data-tutorial="badges"
           className="rounded-xl p-2.5 md:p-3 backdrop-blur-sm"
           style={{
             background: "rgba(249, 248, 244, 0.85)", // Semi-transparent cream
@@ -197,7 +199,14 @@ export default function Badges() {
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
             <h2 className="text-sm md:text-base font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Badges</h2>
-            <div className="text-xs md:text-sm text-neutral-600 font-medium">{earnedCount}/{BADGES.length} earned</div>
+            <div className="flex items-center gap-2">
+              <div className="text-xs md:text-sm text-neutral-600 font-medium">{earnedCount}/{BADGES.length} earned</div>
+              <HelpBulb 
+                tutorialId="leaderboard" 
+                title="Learn about badges and achievements"
+                variant="minimal"
+              />
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {list.map((b) => (

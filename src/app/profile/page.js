@@ -5,6 +5,14 @@ import { useRouter } from "next/navigation";
 import Badges from "@/components/Badges";
 import ProductivityGraph from "@/components/ProductivityGraph";
 import { getSupabaseClient } from "@/lib/supabase";
+import { 
+  getProfileData, 
+  saveProfileField, 
+  syncProfileData, 
+  pushLocalDataToCloud,
+  getCurrentUser 
+} from "@/lib/profileService";
+import { setupAutoSync } from "@/lib/statsSync";
 
 // Utilities: read/write localStorage with guards
 function lsGet(key, def = "") {
@@ -67,23 +75,71 @@ export default function ProfilePage() {
   const [friends, setFriends] = useState([]); // [{id,name}]
   const [loggingOut, setLoggingOut] = useState(false);
 
-  const totalMinutes = useMemo(() => computeTotalFocusMinutes(), []);
-  const streak = useMemo(() => readStreak(), []);
+  const [totalMinutes, setTotalMinutes] = useState(() => computeTotalFocusMinutes());
+  const [streak, setStreak] = useState(() => readStreak());
+  const [points, setPoints] = useState(0);
+  const [mbti, setMbti] = useState("");
+  const [isOnline, setIsOnline] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState(null);
 
   // Scrollspy setup
   const [activeId, setActiveId] = useState("overview");
   const sectionIds = useMemo(() => ["overview", "personality", "profile", "progress", "badges", "community", "notifications", "account"], []);
   const observersRef = useRef([]);
 
+  // Load profile data from Supabase + localStorage on mount
   useEffect(() => {
-    // Load profile fields
-    setName(lsGet(KEY_PROFILE_NAME, "Your Name"));
-    setAvatarUrl(lsGet(KEY_PROFILE_AVATAR, ""));
-    setBio(lsGet(KEY_PROFILE_BIO, ""));
-    setNotifSession(lsGet(KEY_NOTIF_SESSION, "false") === "true");
-    setNotifWeekly(lsGet(KEY_NOTIF_WEEKLY, "false") === "true");
-    const f = lsGetJSON(KEY_FRIENDS, []);
-    setFriends(Array.isArray(f) ? f : []);
+    let mounted = true;
+    
+    const loadProfile = async () => {
+      setIsSyncing(true);
+      
+      try {
+        // Try to sync from Supabase first
+        const profileData = await getProfileData();
+        
+        if (!mounted) return;
+        
+        if (profileData) {
+          // Update state from synced data
+          setName(profileData.username || "Your Name");
+          setAvatarUrl(profileData.avatar_url || "");
+          setBio(profileData.bio || "");
+          setMbti((profileData.mbti_type || "").toUpperCase());
+          setPoints(profileData.points || 0);
+          setStreak(profileData.streak || 0);
+          setTotalMinutes(profileData.total_focus_minutes || computeTotalFocusMinutes());
+          setLastSyncTime(new Date());
+        }
+        
+        setIsOnline(true);
+      } catch (error) {
+        console.warn('Error loading profile, using localStorage:', error);
+        setIsOnline(false);
+        
+        // Fallback to localStorage
+        if (!mounted) return;
+        setName(lsGet(KEY_PROFILE_NAME, lsGet("ms_display_name", "Your Name")));
+        setAvatarUrl(lsGet(KEY_PROFILE_AVATAR, ""));
+        setBio(lsGet(KEY_PROFILE_BIO, ""));
+        try { setPoints(Number(localStorage.getItem("mindshift_points")) || 0); } catch {}
+        try { setMbti((localStorage.getItem("mindshift_personality_type") || "").toUpperCase()); } catch {}
+        setTotalMinutes(computeTotalFocusMinutes());
+        setStreak(readStreak());
+      }
+      
+      // Load other local-only settings
+      if (mounted) {
+        setNotifSession(lsGet(KEY_NOTIF_SESSION, "false") === "true");
+        setNotifWeekly(lsGet(KEY_NOTIF_WEEKLY, "false") === "true");
+        const f = lsGetJSON(KEY_FRIENDS, []);
+        setFriends(Array.isArray(f) ? f : []);
+        setIsSyncing(false);
+      }
+    };
+    
+    loadProfile();
 
     // Scrollspy using IntersectionObserver
     const opts = { root: null, rootMargin: "0px 0px -70% 0px", threshold: [0, 0.25, 0.5, 1] };
@@ -104,16 +160,84 @@ export default function ProfilePage() {
         observersRef.current.push({ observer, el });
       }
     }
+    // Subscribe to storage and custom updates for live refresh
+    const onStorage = (e) => {
+      if (!e || !e.key) return;
+      if (e.key === "mindshift_points") {
+        try { setPoints(Number(localStorage.getItem("mindshift_points")) || 0); } catch {}
+      } else if (e.key === "mindshift_streak") {
+        setStreak(readStreak());
+      } else if (e.key === "mindshift_personality_type") {
+        try { setMbti((localStorage.getItem("mindshift_personality_type") || "").toUpperCase()); } catch {}
+      } else if (e.key === KEY_PROFILE_NAME || e.key === "ms_display_name") {
+        setName(lsGet(KEY_PROFILE_NAME, lsGet("ms_display_name", "Your Name")));
+      } else if (e.key === KEY_PROFILE_AVATAR) {
+        setAvatarUrl(lsGet(KEY_PROFILE_AVATAR, ""));
+      } else if (e.key === KEY_PROFILE_BIO) {
+        setBio(lsGet(KEY_PROFILE_BIO, ""));
+      } else if (e.key === KEY_FRIENDS) {
+        const f = lsGetJSON(KEY_FRIENDS, []);
+        setFriends(Array.isArray(f) ? f : []);
+      } else if (e.key === "mindshift_focus_sessions") {
+        setTotalMinutes(computeTotalFocusMinutes());
+      }
+    };
+    const refreshCounters = () => {
+      try { setPoints(Number(localStorage.getItem("mindshift_points")) || 0); } catch {}
+      setStreak(readStreak());
+      setTotalMinutes(computeTotalFocusMinutes());
+    };
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("mindshift:counters:update", refreshCounters);
+    window.addEventListener("mindshift:focus:sessions:update", refreshCounters);
+
+    // Gentle polling fallback in case events are missed
+    const poll = setInterval(refreshCounters, 15000);
+    
+    // Background sync every 2 minutes
+    const syncInterval = setInterval(async () => {
+      try {
+        await syncProfileData();
+        setLastSyncTime(new Date());
+      } catch (error) {
+        console.warn('Background sync failed:', error);
+      }
+    }, 120000);
+    
+    // Setup auto-sync for statistics
+    const cleanupAutoSync = setupAutoSync();
+
     return () => {
       observersRef.current.forEach(({ observer, el }) => observer.unobserve(el));
       observersRef.current = [];
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("mindshift:counters:update", refreshCounters);
+      window.removeEventListener("mindshift:focus:sessions:update", refreshCounters);
+      clearInterval(poll);
+      clearInterval(syncInterval);
+      if (cleanupAutoSync) cleanupAutoSync();
     };
+    
+    return () => mounted = false;
   }, [sectionIds]);
 
-  // Handlers: persist edits
-  const saveName = (v) => { setName(v); lsSet(KEY_PROFILE_NAME, v); };
-  const saveAvatar = (v) => { setAvatarUrl(v); lsSet(KEY_PROFILE_AVATAR, v); };
-  const saveBio = (v) => { setBio(v); lsSet(KEY_PROFILE_BIO, v); };
+  // Handlers: persist edits with Supabase sync
+  const saveName = async (v) => { 
+    setName(v); 
+    lsSet(KEY_PROFILE_NAME, v);
+    lsSet("ms_display_name", v);
+    await saveProfileField('username', v);
+  };
+  const saveAvatar = async (v) => { 
+    setAvatarUrl(v); 
+    lsSet(KEY_PROFILE_AVATAR, v);
+    await saveProfileField('avatar_url', v);
+  };
+  const saveBio = async (v) => { 
+    setBio(v); 
+    lsSet(KEY_PROFILE_BIO, v);
+    await saveProfileField('bio', v);
+  };
   const toggleNotifSession = () => { const nv = !notifSession; setNotifSession(nv); lsSet(KEY_NOTIF_SESSION, String(nv)); };
   const toggleNotifWeekly = () => { const nv = !notifWeekly; setNotifWeekly(nv); lsSet(KEY_NOTIF_WEEKLY, String(nv)); };
 
@@ -133,10 +257,33 @@ export default function ProfilePage() {
     lsSetJSON(KEY_FRIENDS, next);
   };
 
-  // Logout handler
+  // Manual sync handler
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    try {
+      await pushLocalDataToCloud();
+      await syncProfileData();
+      setLastSyncTime(new Date());
+      setIsOnline(true);
+    } catch (error) {
+      console.warn('Manual sync failed:', error);
+      setIsOnline(false);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+  
+  // Logout handler with data sync
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
+      // Try to sync local data to cloud before logout
+      try {
+        await pushLocalDataToCloud();
+      } catch (error) {
+        console.warn('Could not sync data before logout:', error);
+      }
+      
       const supabase = getSupabaseClient();
       if (supabase) {
         await supabase.auth.signOut();
@@ -199,29 +346,70 @@ export default function ProfilePage() {
                 <h1 id="overview-h" className="h2 text-green font-tanker truncate">{name || "Your Name"}</h1>
                 <p className="text-sm text-neutral-600 truncate">{bio || "Tell something about yourself"}</p>
               </div>
-              <button
-                type="button"
-                onClick={handleLogout}
-                disabled={loggingOut}
-                className="nav-pill nav-pill--accent"
-                title="Sign out of your account"
-              >
-                {loggingOut ? "Logging out..." : "Logout"}
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Sync Status Indicator */}
+                <div className="flex items-center gap-2">
+                  {isSyncing ? (
+                    <div className="pill" title="Syncing with cloud">
+                      <span className="animate-spin mr-1">⏳</span>
+                      Syncing
+                    </div>
+                  ) : isOnline ? (
+                    <button 
+                      onClick={handleManualSync}
+                      className="pill hover:opacity-80 cursor-pointer transition-opacity" 
+                      title={`Last synced: ${lastSyncTime ? lastSyncTime.toLocaleTimeString() : 'Never'}\nClick to sync now`} 
+                      style={{ background: 'var(--color-mint-500)', color: 'var(--color-green-900)' }}
+                    >
+                      <span className="mr-1">☁️</span>
+                      Synced
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={handleManualSync}
+                      className="pill hover:opacity-80 cursor-pointer transition-opacity" 
+                      title="Offline - click to try syncing" 
+                      style={{ background: 'var(--color-amber-400)', color: 'var(--color-green-900)' }}
+                    >
+                      <span className="mr-1">📱</span>
+                      Sync
+                    </button>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  className="nav-pill nav-pill--accent"
+                  title="Sign out of your account"
+                >
+                  {loggingOut ? "Logging out..." : "Logout"}
+                </button>
+              </div>
             </div>
             <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
               <MetricCard label="Total focus" value={`${totalMinutes}m`} />
               <MetricCard label="Streak" value={`${streak} days`} />
+              <MetricCard label="Points" value={points} />
               <MetricCard label="Badges" value={<BadgeCountDisplay />} />
-              <MetricCard label="Friends" value={`${friends.length}`} />
             </div>
           </section>
 
-          {/* Personality (read-only summary for now) */}
+          {/* Personality (live) */}
           <section id="personality" aria-labelledby="personality-h" className="rounded-xl p-4"
             style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}>
             <h2 id="personality-h" className="h3 font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Personality</h2>
-            <p className="text-sm text-neutral-600">Your recommendations and tone are tailored from your MBTI cluster. You can change it from the home onboarding modal in the future.</p>
+            {mbti ? (
+              <div className="mt-3 flex items-center gap-3 flex-wrap">
+                <div className="nav-pill font-tanker text-lg" style={{ background: "var(--surface)", borderColor: "var(--color-green-900)" }}>{mbti}</div>
+                <div className="pill">{groupForMBTI(mbti)} · {nameForMBTI(mbti)}</div>
+                <div className="text-sm text-neutral-700">Points: <span className="font-semibold">{points}</span></div>
+                <div className="text-sm text-neutral-700">Streak: <span className="font-semibold">{streak} days</span></div>
+                <div className="text-sm text-neutral-700">Total focus: <span className="font-semibold">{totalMinutes}m</span></div>
+              </div>
+            ) : (
+              <p className="text-sm text-neutral-600 mt-2">No personality set yet. Start a quick onboarding from the home page to determine it.</p>
+            )}
           </section>
 
           {/* Editable Profile */}
@@ -251,6 +439,8 @@ export default function ProfilePage() {
             <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
               <MetricCard label="Total focus" value={`${totalMinutes}m`} />
               <MetricCard label="Streak" value={`${streak} days`} />
+              <MetricCard label="Points" value={points} />
+              <MetricCard label="Sessions" value={readFocusSessions().length} />
             </div>
             <div className="mt-4">
               <ProductivityGraph />
@@ -269,9 +459,18 @@ export default function ProfilePage() {
           {/* Community (Add friends - private) */}
           <section id="community" aria-labelledby="community-h" className="rounded-xl p-4"
             style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}>
-            <h2 id="community-h" className="h3 font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Friends</h2>
+            <div className="flex items-center justify-between">
+              <h2 id="community-h" className="h3 font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>Friends</h2>
+              <div className="pill">{friends.length} friend{friends.length !== 1 ? 's' : ''}</div>
+            </div>
             <div className="mt-3 flex items-center gap-2">
-              <input value={friendInput} onChange={(e) => setFriendInput(e.target.value)} className="input" placeholder="Add a friend (name only)" />
+              <input 
+                value={friendInput} 
+                onChange={(e) => setFriendInput(e.target.value)} 
+                className="input" 
+                placeholder="Add a friend (name only)"
+                onKeyDown={(e) => { if (e.key === 'Enter') addFriend(); }}
+              />
               <button type="button" className="nav-pill nav-pill--primary" onClick={addFriend}>Add</button>
             </div>
             <ul className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -397,6 +596,27 @@ function BadgeCountDisplay() {
     };
   }, []);
   return <span>{count}</span>;
+}
+
+function groupForMBTI(type) {
+  const t = String(type || "").toUpperCase();
+  if (!t) return "Unknown";
+  // By temperament:
+  if (/^(INT.|ENT.)$/.test(t)) return "Analyst"; // NT
+  if (/^(INF.|ENF.)$/.test(t)) return "Diplomat"; // NF
+  if (/^(ISJ.|ESJ.)$/.test(t)) return "Sentinel"; // SJ
+  if (/^(ISP.|ESP.)$/.test(t)) return "Explorer"; // SP
+  return "Unknown";
+}
+function nameForMBTI(type) {
+  const map = {
+    INTJ: "Architect", INTP: "Logician", ENTJ: "Commander", ENTP: "Debater",
+    INFJ: "Advocate", INFP: "Mediator", ENFJ: "Protagonist", ENFP: "Campaigner",
+    ISTJ: "Logistician", ISFJ: "Defender", ESTJ: "Executive", ESFJ: "Consul",
+    ISTP: "Virtuoso", ISFP: "Adventurer", ESTP: "Entrepreneur", ESFP: "Entertainer",
+  };
+  const t = String(type || "").toUpperCase();
+  return map[t] || "Type";
 }
 
 function ToggleRow({ label, desc, checked, onChange }) {

@@ -22,6 +22,7 @@ export default function GreetingReveal({ onComplete }) {
 
     const line1 = el.querySelector(".ms-greet-1");
     const line2 = el.querySelector(".ms-greet-2");
+    const line3 = el.querySelector(".ms-greet-3");
 
     tl.set(el, { autoAlpha: 0 })
       .to(el, { autoAlpha: 1, duration: 0.2 })
@@ -33,10 +34,16 @@ export default function GreetingReveal({ onComplete }) {
       .fromTo(
         line2,
         { yPercent: 120, autoAlpha: 0 },
-        { yPercent: 0, autoAlpha: 1, duration: 0.7 },
-        "<0.15"
+        { yPercent: 0, autoAlpha: 1, duration: 0.8 },
+        "<0.2"
       )
-      .to(el, { autoAlpha: 0, duration: 0.25, delay: 0.05 })
+      .fromTo(
+        line3,
+        { yPercent: 120, autoAlpha: 0 },
+        { yPercent: 0, autoAlpha: 1, duration: 0.6 },
+        "<0.1"
+      )
+      .to(el, { autoAlpha: 0, duration: 0.3, delay: 0.8 })
       .call(() => onComplete?.());
 
     return () => tl.kill();
@@ -52,12 +59,17 @@ export default function GreetingReveal({ onComplete }) {
       <div className="text-center space-y-2" style={{ fontFamily: "Tanker, sans-serif" }}>
         <div className="overflow-hidden">
           <span className="ms-greet-1 block text-5xl md:text-7xl tracking-tight" style={{ color: "var(--color-green-900)" }}>
-            Hi,
+            Welcome to
           </span>
         </div>
         <div className="overflow-hidden">
-          <span className="ms-greet-2 block text-2xl md:text-3xl tracking-tight" style={{ color: "var(--color-green-900)" }}>
-            welcome to Mindshift
+          <span className="ms-greet-2 block text-6xl md:text-8xl tracking-tight font-bold" style={{ color: "var(--color-green-900)" }}>
+            Nudge
+          </span>
+        </div>
+        <div className="overflow-hidden mt-2">
+          <span className="ms-greet-3 block text-lg md:text-xl tracking-wide text-neutral-500">
+            Gentle Guidance. Better Habits.
           </span>
         </div>
       </div>

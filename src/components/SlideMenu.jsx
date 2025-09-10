@@ -63,7 +63,7 @@ export default function SlideMenu({ isOpen, onClose }) {
   }, [isOpen]);
 
   const menuItems = [
-    { href: "/about", label: "About Your Type", icon: "🧠" },
+    { href: "/about", label: "About Your Type" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/leaderboard", label: "Leaderboard" },
     { href: "/game", label: "Game" },
@@ -88,7 +88,7 @@ export default function SlideMenu({ isOpen, onClose }) {
       }
       
       // Notify app shell to show auth overlay immediately and redirect home
-      try { window.dispatchEvent(new Event('mindshift:auth:signed_out')); } catch {}
+      try { window.dispatchEvent(new Event('nudge:auth:signed_out')); } catch {}
       onClose();
       router.push('/');
     } catch (error) {
@@ -103,7 +103,7 @@ export default function SlideMenu({ isOpen, onClose }) {
       <div
         ref={overlayRef}
         onClick={onClose}
-        className={`fixed inset-0 bg-black/50 z-[45] ${
+        className={`fixed inset-0 bg-black/50 z-[99998] ${
           isOpen ? "pointer-events-auto" : "pointer-events-none"
         }`}
         style={{ opacity: 0 }}
@@ -112,7 +112,7 @@ export default function SlideMenu({ isOpen, onClose }) {
       {/* Menu */}
       <div
         ref={menuRef}
-        className="fixed top-0 right-0 bottom-0 w-[min(420px,90vw)] z-[46] transform"
+        className="fixed top-0 right-0 bottom-0 w-[min(420px,90vw)] z-[99999]"
         style={{
           background: "var(--surface)",
           border: "2px solid var(--color-green-900)",
@@ -154,6 +154,7 @@ export default function SlideMenu({ isOpen, onClose }) {
               onClick={handleLogout}
               disabled={loggingOut}
               className={`menu-item nav-pill nav-pill--accent w-full text-center text-lg ${loggingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
+              style={{ color: "var(--color-green-900)" }}
             >
               {loggingOut ? (
                 <>

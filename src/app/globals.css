@@ -520,3 +520,67 @@ input:-ms-input-placeholder {
 @media (min-width: 810px) {
   .nowrap-desktop { flex-wrap: nowrap !important; }
 }
+
+/* === PERSONALITY BADGE ANIMATIONS === */
+@keyframes personalityPulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes personalityGlow {
+  0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1); }
+  50% { box-shadow: 0 6px 16px rgba(0,0,0,0.25), 0 0 0 2px rgba(255,255,255,0.2), 0 0 12px rgba(255,255,255,0.1); }
+}
+
+.personality-dots > div,
+.dna-node {
+  animation: personalityPulse 3s infinite;
+}
+
+/* Retro-console personality badge hover effects */
+.retro-console:hover .nav-pill {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.retro-console:hover .dna-node {
+  animation-duration: 2s;
+  transform: scale(1.1);
+}
+
+/* Responsive retro-console personality badge styles */
+@media (max-width: 768px) {
+  .retro-console {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .retro-console > div {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .retro-console {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .retro-console .nav-pill {
+    height: 36px;
+    padding: 0 12px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  
+  .component-surface {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .dna-node {
+    width: 10px;
+    height: 10px;
+  }
+}
