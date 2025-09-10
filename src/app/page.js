@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useTutorial } from "@/contexts/TutorialContext";
+import HelpBulb from "@/components/HelpBulb";
 
 // Original components
 import CharacterCard from "@/components/CharacterCard";
@@ -63,6 +65,7 @@ export default function Home() {
   const [breakConfirm, setBreakConfirm] = useState(false);
   const [theme, setTheme] = useState(null);
   const { theme: contextTheme, getCSSVariables, getGradientClass } = useTheme();
+  const { startTutorial, completedTutorials, userPreferences } = useTutorial();
 
   // Initialize theme system
   useEffect(() => {
@@ -407,6 +410,7 @@ export default function Home() {
     <section 
       className="w-full"
       style={getCSSVariables()}
+      data-tutorial="dashboard"
     >
       <div className="w-full px-4 md:px-6 py-6 flex flex-col items-center gap-6 md:gap-8">
         
@@ -416,7 +420,7 @@ export default function Home() {
           {/* Center: CharacterCard (The Star) - Show first on mobile for prominence */}
           <div className="w-full flex justify-center order-1 md:order-2 md:col-start-2 mb-6 md:mb-0">
             <div className="reveal-on-scroll w-full flex justify-center min-h-[300px] sm:min-h-[400px]">
-              <div className="w-full max-w-sm flex justify-center items-start">
+              <div className="w-full max-w-sm flex justify-center items-start relative" data-tutorial="personality-card">
                 <CharacterCard personalityType={mbti} />
               </div>
             </div>
@@ -424,14 +428,14 @@ export default function Home() {
           
           {/* Left Panel - Personality-specific component */}
           <div className="w-full flex justify-center md:justify-end mt-4 md:mt-16 order-2 md:order-1">
-            <div className="w-full max-w-sm md:max-w-md">
+            <div className="w-full max-w-sm md:max-w-md relative">
               {heroLeft}
             </div>
           </div>
           
           {/* Right Panel - Personality-specific component */}
           <div className="w-full flex justify-center md:justify-start mt-4 md:mt-16 order-3 md:order-3">
-            <div className="w-full max-w-sm md:max-w-md">
+            <div className="w-full max-w-sm md:max-w-md relative">
               {heroRight}
             </div>
           </div>
@@ -439,7 +443,7 @@ export default function Home() {
         </div>
         
         {/* Today strip */}
-          <div className="w-full max-w-4xl reveal-on-scroll">
+          <div className="w-full max-w-4xl reveal-on-scroll relative" data-tutorial="progress-graph">
           <div className="text-center mb-3">
             <div className="font-tanker text-2xl tracking-widest" style={{ color: 'var(--mbti-text-primary)' }}>TODAY</div>
           </div>
@@ -459,31 +463,57 @@ export default function Home() {
         {/* Templates Grid - Enhanced with Smart Personality-Aware Templates */}
         <div className="w-full max-w-4xl reveal-on-scroll">
           <div 
-            className="rounded-xl p-4"
+            className="rounded-xl p-4 relative"
             style={{
               background: "var(--surface)",
               border: "2px solid var(--color-green-900)",
               boxShadow: "0 2px 0 var(--color-green-900)"
             }}
           >
+            <div className="flex justify-between items-start mb-2">
+              <div></div>
+              <HelpBulb tutorialId="focus_sessions" title="Learn about session templates" variant="accent" />
+            </div>
             <div className="text-center mb-4">
               <div className="font-tanker text-xl tracking-widest" style={{ color: 'var(--mbti-text-primary)' }}>TEMPLATES</div>
+              {userPreferences.showTooltips && !completedTutorials.has('focus_sessions') && (
+                <button
+                  onClick={() => startTutorial('focus_sessions')}
+                  className="text-xs text-mbti-accent hover:underline mt-1"
+                >
+                  Learn how templates work →
+                </button>
+              )}
             </div>
-            <SmartTemplateGrid 
-              onTemplateSelect={handleStartFocus}
-              personalityType={mbti}
-              className="grid grid-cols-1 md:grid-cols-3 gap-3"
-              cardStyle="rounded-xl p-3"
-              usePersonalityColors
-            />
+            <div data-tutorial="session-templates">
+              <SmartTemplateGrid 
+                onTemplateSelect={handleStartFocus}
+                personalityType={mbti}
+                className="grid grid-cols-1 md:grid-cols-3 gap-3"
+                cardStyle="rounded-xl p-3"
+                usePersonalityColors
+              />
+            </div>
           </div>
         </div>
         
         {/* Custom Session Scheduler */}
-        <CustomSessionScheduler personalityType={mbti} />
+        <div data-tutorial="blocking-demo" className="relative">
+                    <CustomSessionScheduler personalityType={mbti} />
+          {userPreferences.showTooltips && !completedTutorials.has('focus_sessions') && (
+            <div className="text-center mt-2">
+              <button
+                onClick={() => startTutorial('focus_sessions')}
+                className="nav-pill nav-pill--outline nav-pill--compact text-xs"
+              >
+                Learn how distraction blocking works
+              </button>
+            </div>
+          )}
+        </div>
         
         {/* Recent Activity */}
-        <div className="w-full max-w-4xl reveal-on-scroll">
+        <div className="w-full max-w-4xl reveal-on-scroll relative">
           <RecentFeed />
         </div>
         
@@ -507,22 +537,33 @@ export default function Home() {
                 <QuestBoard personalityType={mbti} />
               )}
               {moreItems.includes("LeaderboardSection") && !used.has("LeaderboardSection") && (
-                <LeaderboardSection personalityType={mbti} />
+                <div data-tutorial="leaderboard" className="relative">
+                  <LeaderboardSection personalityType={mbti} />
+                  {userPreferences.showTooltips && !completedTutorials.has('leaderboard') && (
+                    <div className="text-center mt-2">
+                      <button
+                        onClick={() => startTutorial('leaderboard')}
+                        className="text-xs text-mbti-accent hover:underline"
+                      >
+                        Explore community features →
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
               {moreItems.includes("Badges") && (
-                <Badges />
+                <div data-tutorial="badges" className="relative">
+                  <Badges />
+                </div>
               )}
               {!used.has("CommunityChallenges") && (
-                <CommunityChallenges personalityType={mbti} />
-              )}
-              {/* Demo Components - Temporary */}
-              <div className="md:col-span-2">
-                <NotificationDemo />
+                <div data-tutorial="challenges" className="relative">
+                  <CommunityChallenges personalityType={mbti} />
+                </div>
+              )}            
               </div>
-              <div className="md:col-span-2">
-                <PersonalityColorDemo />
-              </div>
-            </div>
+
+              
           )}
         </div>
         

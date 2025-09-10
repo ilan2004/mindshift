@@ -151,7 +151,7 @@ export default function AuthOverlay({
               try { localStorage.setItem("ms_intro_complete", "1"); } catch {}
               try { localStorage.setItem("ms_display_name", profile.username || ""); } catch {}
               try { localStorage.setItem("ms_gender", profile.gender === "female" ? "W" : "M"); } catch {}
-              try { window.dispatchEvent(new CustomEvent('mindshift:auth:signed_in', { detail: { testCompleted: true, username: profile.username, gender: profile.gender } })); } catch {}
+              try { window.dispatchEvent(new CustomEvent('nudge:auth:signed_in', { detail: { testCompleted: true, username: profile.username, gender: profile.gender } })); } catch {}
             }
           } catch {}
         }
@@ -166,7 +166,7 @@ export default function AuthOverlay({
   const handleSignOut = async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
-    try { window.dispatchEvent(new Event('mindshift:auth:signed_out')); } catch {}
+    try { window.dispatchEvent(new Event('nudge:auth:signed_out')); } catch {}
   };
 
   const canProceed = user && username.trim().length >= 2 && (gender === "male" || gender === "female");
@@ -178,8 +178,9 @@ export default function AuthOverlay({
         <div className="absolute inset-0 flex items-center justify-center px-6">
           <div className="w-full max-w-xl">
             <div className="text-center mb-8" style={{ fontFamily: "Tanker, sans-serif" }}>
-              <h1 className="text-4xl md:text-5xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Mind / Shift</h1>
-              <p className="mt-2 text-neutral-500">Welcome back, {username}!</p>
+              <h1 className="text-4xl md:text-5xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Nudge</h1>
+              <p className="text-sm text-neutral-400 mt-1">Gentle Guidance. Better Habits.</p>
+              <p className="mt-3 text-neutral-500">Welcome back, {username}!</p>
             </div>
 
             <div className="space-y-6">
@@ -194,7 +195,7 @@ export default function AuthOverlay({
               </div>
 
               <div className="pt-2">
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-3 justify-center">
                   <button
                     type="button"
                     onClick={() => onStartTest({ mode: "general", username, gender })}
@@ -224,8 +225,9 @@ export default function AuthOverlay({
       <div className="absolute inset-0 flex items-center justify-center px-6">
         <div className="w-full max-w-xl">
           <div className="text-center mb-8" style={{ fontFamily: "Tanker, sans-serif" }}>
-            <h1 className="text-4xl md:text-5xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Mind / Shift</h1>
-            <p className="mt-2 text-neutral-500">Let's personalize your experience</p>
+            <h1 className="text-4xl md:text-5xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Nudge</h1>
+            <p className="text-sm text-neutral-400 mt-1">Gentle Guidance. Better Habits.</p>
+            <p className="mt-3 text-neutral-500">Let's personalize your experience</p>
           </div>
 
           <div className="space-y-6">

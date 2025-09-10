@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import LeaderboardTable from "@/components/LeaderboardTable";
+import HelpBulb from "./HelpBulb";
 
 function readJSON(key, def) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; }
@@ -106,13 +107,19 @@ export default function LeaderboardSection({ personalityType }) {
 
   return (
     <div
-      className="rounded-xl p-3 md:p-4 w-full max-w-md mx-auto"
+      data-tutorial="leaderboard"
+      className="relative rounded-xl p-3 md:p-4 w-full max-w-md mx-auto"
       style={{
         background: "var(--surface)",
         border: "2px solid var(--color-green-900)",
         boxShadow: "0 4px 0 var(--color-green-900)",
       }}
     >
+      <HelpBulb 
+        tutorialId="leaderboard" 
+        title="Productivity Leaderboard & Competition"
+        position="top-2 right-2"
+      />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
         <div className="flex items-center gap-2">
           <h3 className="text-sm md:text-base font-semibold text-neutral-800" style={{ fontFamily: "Tanker, sans-serif" }}>

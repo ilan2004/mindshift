@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import HelpBulb from "./HelpBulb";
 
 // MBTI-specific quest variations
 const PERSONALITY_QUESTS = {
@@ -269,13 +270,18 @@ export default function QuestBoard({ quests, personalityType }) {
   return (
     <div id="quest-board" className="w-full max-w-md mx-auto px-2 md:px-3 mt-4">
       <div 
-        className="rounded-xl p-2.5 md:p-3 backdrop-blur-sm"
+        data-tutorial="badges"
+        className="rounded-xl p-2.5 md:p-3 backdrop-blur-sm relative"
         style={{
           background: "rgba(249, 248, 244, 0.85)",
           border: "2px solid var(--color-green-900)",
           boxShadow: "0 4px 20px rgba(3, 89, 77, 0.15)",
         }}
       >
+        <HelpBulb 
+          tutorialId="leaderboard" 
+          title="Learn about personality-specific daily quests and achievements. Complete quests to earn points and build streaks!" 
+        />
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 md:mb-4">
           <div className="flex items-center gap-2">
             <h2 className="text-sm md:text-base font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>

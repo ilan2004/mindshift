@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getLeaderboard, getFriends, getUsersByIds } from "@/lib/api";
 import { useNotifications } from '@/contexts/NotificationContext';
+import HelpBulb from "./HelpBulb";
 
 // MBTI compatibility and peer suggestions
 const PERSONALITY_COMPATIBLE = {
@@ -191,6 +192,7 @@ export default function PeerStatusPanel({ userId = 1, personalityType, gender = 
 
   return (
     <div
+      data-tutorial="peer-panel"
       className="rounded-xl p-2.5 md:p-3 w-full max-w-md mx-auto"
       style={{
         background: "var(--surface)",
@@ -216,9 +218,16 @@ export default function PeerStatusPanel({ userId = 1, personalityType, gender = 
             </span>
           )}
         </div>
-        <span className="text-xs md:text-sm text-neutral-600 font-medium">
-          {activeCount}/{peers.length} active
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs md:text-sm text-neutral-600 font-medium">
+            {activeCount}/{peers.length} active
+          </span>
+          <HelpBulb 
+            tutorialId="peer_accountability" 
+            title="Learn about peer accountability features"
+            variant="subtle"
+          />
+        </div>
       </div>
 
       {loading ? (

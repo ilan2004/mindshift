@@ -6,10 +6,12 @@ import { fetchBlocklist, saveBlocklist as saveBlocklistDB, startSession as start
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { getOrCreateToken, fetchBlocklistJSON as fetchBLJson, addDomains as addBL } from "@/lib/blocklist";
+import { useTutorial } from "@/contexts/TutorialContext";
+import { HelpCircle } from "lucide-react";
 
 // Messaging keys
-const MSG_REQUEST = "mindshift:focus";
-const MSG_RESPONSE = "mindshift:focus:status";
+const MSG_REQUEST = "nudge:focus";
+const MSG_RESPONSE = "nudge:focus:status";
 
 const DEFAULT_PRESETS = [25, 45, 60];
 const DEFAULT_BLOCKLIST = [
@@ -49,11 +51,11 @@ function writeSessions(list) {
   try { localStorage.setItem("mindshift_focus_sessions", JSON.stringify(list)); } catch {}
 }
 function dispatchFocusUpdate() {
-  try { window.dispatchEvent(new Event("mindshift:focus:update")); } catch {}
+  try { window.dispatchEvent(new Event("nudge:counters:update")); } catch {}
 }
 function dispatchSessionCompleted(minutes) {
   try {
-    const ev = new CustomEvent("mindshift:session:completed", { detail: { minutes } });
+    const ev = new CustomEvent("nudge:session:completed", { detail: { minutes } });
     window.dispatchEvent(ev);
   } catch {}
 }
@@ -69,6 +71,7 @@ export default function FooterFocusBar() {
   const [showMoreMobile, setShowMoreMobile] = useState(false);
   const [showEnablePrompt, setShowEnablePrompt] = useState(false);
   const [blToken, setBlToken] = useState("");
+  const { startTutorial, completedTutorials, userPreferences } = useTutorial();
 
   const hasExtensionRef = useRef(false);
   const barRef = useRef(null);
@@ -270,7 +273,7 @@ export default function FooterFocusBar() {
   // Helpers to build one-click subscribe links for blockers
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
   const filterListUrl = useMemo(() => (API_BASE && blToken ? `${API_BASE}/blocklist/${blToken}.filter` : ""), [API_BASE, blToken]);
-  const abpSubscribeHref = useMemo(() => (filterListUrl ? `abp:subscribe?location=${encodeURIComponent(filterListUrl)}&title=${encodeURIComponent("Mindshift Blocklist")}` : ""), [filterListUrl]);
+  const abpSubscribeHref = useMemo(() => (filterListUrl ? `abp:subscribe?location=${encodeURIComponent(filterListUrl)}&title=${encodeURIComponent("Nudge Blocklist")}` : ""), [filterListUrl]);
   const adguardSubscribeHref = useMemo(() => (filterListUrl ? `adguard:add_subscription?location=${encodeURIComponent(filterListUrl)}&title=${encodeURIComponent("Mindshift Blocklist")}` : ""), [filterListUrl]);
   const extensionInstallHref = ""; // TODO: set to your Chrome/Edge/Firefox store listing when available
 
@@ -373,7 +376,7 @@ export default function FooterFocusBar() {
   }, [status.active, status.mode]);
 
   return (
-    <div ref={barRef} className="fixed left-0 right-0 bottom-4 md:bottom-10 z-40 pointer-events-none">
+    <div ref={barRef} className="fixed left-0 right-0 bottom-4 md:bottom-10 z-10 pointer-events-none" data-tutorial="focus-bar">
       <div className="mx-auto max-w-6xl px-3 md:px-6 flex justify-center">
         <div
           className="pointer-events-auto rounded-[999px] px-3 md:px-8 py-2.5 md:py-4.5 flex flex-wrap items-center gap-1.5 md:gap-3 justify-center mx-auto"
@@ -427,8 +430,19 @@ export default function FooterFocusBar() {
                 <button type="button" onClick={primaryAction.onClick} className={primaryClass}>
                   {primaryAction.label}
                 </button>
-                <button type="button" onClick={onStop} className="nav-pill nav-pill--accent">Stop</button>
+                <button type="button" onClick={onStop} className="nav-pill nav-pill--accent" style={{ color: "var(--color-green-900)" }}>Stop</button>
                 <button type="button" onClick={() => onStartBreak(5)} className="nav-pill nav-pill--cyan">Break 5m</button>
+                {/* Tutorial help for new users */}
+                {userPreferences.showTooltips && !completedTutorials.has('focus_sessions') && (
+                  <button
+                    type="button"
+                    onClick={() => startTutorial('focus_sessions')}
+                    className="nav-pill nav-pill--outline nav-pill--compact"
+                    title="Learn how focus sessions work"
+                  >
+                    <HelpCircle size={14} />
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -466,6 +480,17 @@ export default function FooterFocusBar() {
                 >
                   + Domain
                 </button>
+                {/* Tutorial help for mobile users */}
+                {userPreferences.showTooltips && !completedTutorials.has('focus_sessions') && (
+                  <button
+                    type="button"
+                    onClick={() => startTutorial('focus_sessions')}
+                    className="nav-pill nav-pill--outline nav-pill--compact"
+                    title="How does this work?"
+                  >
+                    ?
+                  </button>
+                )}
               </div>
             </>
           )}
@@ -476,7 +501,7 @@ export default function FooterFocusBar() {
             id="more-actions-row"
             className={`${showMoreMobile ? "flex" : "hidden"} md:hidden basis-full justify-center items-center gap-2`}
           >
-            <button type="button" onClick={onStop} className="nav-pill nav-pill--accent">Stop</button>
+            <button type="button" onClick={onStop} className="nav-pill nav-pill--accent" style={{ color: "var(--color-green-900)" }}>Stop</button>
             <button type="button" onClick={() => onStartBreak(5)} className="nav-pill nav-pill--cyan">Break 5m</button>
           </div>
         )}
@@ -507,7 +532,7 @@ export default function FooterFocusBar() {
 
       {/* Helper text when extension not detected */}
       {!hasExtensionRef.current && (
-        <div className="mt-1 text-center text-[11px] text-neutral-600">Install/enable the MindShift extension to enforce blocks and run the timer in the background.</div>
+        <div className="mt-1 text-center text-[11px] text-neutral-600">Install/enable the Nudge extension to enforce blocks and run the timer in the background.</div>
       )}
 
       {/* Desktop instructions modal for enabling blocking */}

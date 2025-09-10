@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { getCharacterDialogue } from "@/lib/characterDialogue";
 import { themeUtils } from "@/lib/mbtiThemes";
+import HelpBulb from "./HelpBulb";
 
 // No localStorage. Graph uses mock data only.
 
@@ -125,6 +126,7 @@ export default function ProductivityGraph({ maxMinutes = 120, personalityType = 
   return (
     <div className="w-full max-w-md mx-auto">
       <div 
+        data-tutorial="productivity-analytics"
         className="rounded-xl p-4 backdrop-blur-sm"
         style={{
           background: "rgba(249, 248, 244, 0.85)",
@@ -133,7 +135,15 @@ export default function ProductivityGraph({ maxMinutes = 120, personalityType = 
         }}
       >
         <div className="mb-4">
-          <div className="text-center">
+          <div className="text-center relative">
+            <div className="flex justify-between items-start mb-2">
+              <div className="flex-1"></div>
+              <HelpBulb 
+                tutorialId="productivity_tracking" 
+                title="Learn about productivity analytics"
+                variant="subtle"
+              />
+            </div>
             <h2 className="text-base md:text-lg font-semibold" style={{ fontFamily: "Tanker, sans-serif" }}>
               {personalityContext.title}
             </h2>

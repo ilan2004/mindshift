@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import SlideMenu from "./SlideMenu";
 import { useTheme } from '@/contexts/ThemeContext';
+import { Sun, Palette } from 'lucide-react';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -56,11 +57,16 @@ export default function Navbar() {
           <div className="flex-1">
             <Link
               href="/"
-              className="font-tanker font-semibold text-3xl sm:text-4xl md:text-5xl leading-none tracking-widest transition-colors"
+              className="transition-colors"
               style={{ color: 'var(--mbti-text-primary)' }}
               aria-label="Go to Home"
             >
-              MindShift
+              <div className="font-tanker font-semibold text-3xl sm:text-4xl md:text-5xl leading-none tracking-widest">
+                Nudge
+              </div>
+              <div className="text-xs sm:text-sm text-neutral-500 mt-1 tracking-wide font-normal">
+                Gentle Guidance. Better Habits.
+              </div>
             </Link>
           </div>
 
@@ -69,16 +75,16 @@ export default function Navbar() {
             {/* Theme Toggle Button */}
             <button
               type="button"
-              className="nav-pill nav-pill--compact transition-all duration-200 hover:scale-105"
+              className="nav-pill nav-pill--compact transition-all duration-200 hover:scale-105 flex items-center justify-center"
               onClick={toggleTheme}
               style={{
                 background: 'var(--color-amber-400)',
                 color: 'var(--color-green-900)',
                 borderColor: 'var(--color-green-900)'
               }}
-              title={`Switch to ${themeMode === 'personality' ? 'standard' : 'premium'} theme`}
+              title={`Switch to ${themeMode === 'personality' ? 'standard' : 'personality'} theme`}
             >
-              {themeMode === 'personality' ? 'STD' : 'PRO'}
+              {themeMode === 'personality' ? <Sun size={16} /> : <Palette size={16} />}
             </button>
             
             {/* Menu button */}

@@ -6,12 +6,14 @@ import Navbar from "../components/Navbar";
 import ClientLayout from "../components/ClientLayout";
 import NotificationManager from "../components/NotificationManager";
 import { ThemeProvider } from "../contexts/ThemeContext";
+import { TutorialProvider } from "../contexts/TutorialContext";
+import TutorialManager from "../components/TutorialManager";
 import "./globals.css";
 import "../styles/personality-colors.css";
 
 export const metadata = {
-  title: "MindShift",
-  description: "MindShift app",
+  title: "Nudge – Gentle Guidance. Better Habits.",
+  description: "Nudge - Your personality-driven focus toolkit. Gentle nudges toward better productivity habits with AI-driven insights and smart blocking tools.",
 };
 
 // Load Tanker font and expose as CSS variable --font-tanker
@@ -46,22 +48,25 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`antialiased ${tanker.variable}`}>
         <ThemeProvider>
-          <NotificationManager>
-            <ClientLayout>
-              <Navbar />
-              {/* Global SVG symbols (placed once) */}
-              <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
-                <defs>
-                  <symbol id="chev-down" viewBox="0 0 24 24">
-                    <polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </symbol>
-                </defs>
-              </svg>
-              <main className="min-h-screen mx-auto px-4 md:px-6 py-6">{children}</main>
-              <Footer />
-              <FooterFocusBar />
-            </ClientLayout>
-          </NotificationManager>
+          <TutorialProvider>
+            <NotificationManager>
+              <ClientLayout>
+                <Navbar />
+                {/* Global SVG symbols (placed once) */}
+                <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
+                  <defs>
+                    <symbol id="chev-down" viewBox="0 0 24 24">
+                      <polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </symbol>
+                  </defs>
+                </svg>
+                <main className="min-h-screen mx-auto px-4 md:px-6 py-6">{children}</main>
+                <Footer />
+                <FooterFocusBar />
+                <TutorialManager />
+              </ClientLayout>
+            </NotificationManager>
+          </TutorialProvider>
         </ThemeProvider>
       </body>
     </html>

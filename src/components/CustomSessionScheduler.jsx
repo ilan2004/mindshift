@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import HelpBulb from "./HelpBulb";
 
 const DAYS_OF_WEEK = [
   { key: 'mon', label: 'Mon', full: 'Monday' },
@@ -162,13 +163,19 @@ export default function CustomSessionScheduler({ personalityType }) {
   return (
     <div className="w-full max-w-4xl reveal-on-scroll">
       <div 
-        className="rounded-xl p-4"
+        data-tutorial="blocking-demo"
+        className="relative rounded-xl p-4"
         style={{
           background: "var(--surface)",
           border: "2px solid var(--color-green-900)",
           boxShadow: "0 2px 0 var(--color-green-900)"
         }}
       >
+        <HelpBulb 
+          tutorialId="focus_sessions" 
+          title="Smart Distraction Blocking & Session Scheduling"
+          position="top-2 right-2"
+        />
         <div className="flex items-center justify-between mb-4">
           <div className="text-center flex-1">
             <div className="font-tanker text-xl text-green tracking-widest">CUSTOM SESSIONS</div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import HelpBulb from "./HelpBulb";
 
 const LS_KEY = "mindshift_challenges";
 
@@ -207,6 +208,7 @@ export default function CommunityChallenges({ personalityType }) {
 
   return (
     <div
+      data-tutorial="challenges"
       className="rounded-xl p-3 overflow-hidden w-full max-w-md mx-auto backdrop-blur-sm"
       style={{
         background: "rgba(249, 248, 244, 0.85)",
@@ -232,7 +234,14 @@ export default function CommunityChallenges({ personalityType }) {
             </span>
           )}
         </div>
-        <span className="text-xs text-neutral-600">{sorted.length} available</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-neutral-600">{sorted.length} available</span>
+          <HelpBulb 
+            tutorialId="community_challenges" 
+            title="Learn about community challenges"
+            variant="subtle"
+          />
+        </div>
       </div>
       <ul className="grid gap-3 w-full">
         {sorted.map((c, index) => {

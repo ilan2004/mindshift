@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { getGeneralQuestions, getQuestions, postAnswers, postHistory } from "../lib/backend";
 import { getUserId } from "../lib/backend";
 import { getSupabaseClient } from "../lib/supabase";
+import { HelpCircle, ChevronDown, ChevronUp, Monitor, Smartphone, Clock, Download, X } from "lucide-react";
 
 const PAGE_SIZE = 6;
 const SCALE = [1, 2, 3, 4, 5];
@@ -24,6 +25,7 @@ export default function TestRunner({ mode = "general", onComplete }) {
   const [answers, setAnswers] = useState({}); // id -> 1..5
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   // Fetch questions
   useEffect(() => {
@@ -282,13 +284,143 @@ export default function TestRunner({ mode = "general", onComplete }) {
   // History mode: show upload UI until we have questions
   if (mode === "history" && items.length === 0) {
     return (
-      <div className="fixed inset-0 z-[95]" style={{ background: "var(--surface)", color: "var(--text)" }}>
-        <div className="absolute inset-0 flex items-center justify-center px-6">
+      <div className="fixed inset-0 z-[95] overflow-y-auto" style={{ background: "var(--surface)", color: "var(--text)" }}>
+        <div className="min-h-full flex items-center justify-center px-6 py-8">
           <div className="w-full max-w-2xl">
             <div className="text-center mb-6" style={{ fontFamily: "Tanker, sans-serif" }}>
               <h2 className="text-3xl md:text-4xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Upload ChatGPT JSON</h2>
-              <p className="mt-2 text-neutral-500 text-sm">We’ll extract message text and generate tailored questions.</p>
+              <p className="mt-2 text-neutral-500 text-sm">We'll extract message text and generate tailored questions.</p>
+              
+              {/* Help Toggle Button */}
+              <button
+                onClick={() => setShowHelp(!showHelp)}
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm border-2 transition-all duration-200 hover:scale-105"
+                style={{ 
+                  borderColor: "var(--color-green-900)", 
+                  color: "var(--color-green-900)",
+                  background: showHelp ? "var(--color-green-900-10)" : "transparent"
+                }}
+              >
+                <HelpCircle size={16} />
+                {showHelp ? "Hide" : "Show"} export guide
+                {showHelp ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </button>
             </div>
+            
+            {/* Expandable Help Section */}
+            {showHelp && (
+              <div className="mb-8 rounded-2xl p-6 border-2 border-dashed" style={{ borderColor: "var(--color-green-900-30)", background: "var(--color-green-900-05)" }}>
+                <div className="space-y-6">
+                  <div className="text-center relative">
+                    <button
+                      onClick={() => setShowHelp(false)}
+                      className="absolute top-0 right-0 p-2 rounded-full hover:bg-gray-200 transition-colors border border-gray-300"
+                      style={{ background: "white" }}
+                      aria-label="Close help"
+                    >
+                      <X size={16} className="text-gray-600" />
+                    </button>
+                    <h3 className="text-lg font-semibold mb-2" style={{ color: "var(--color-green-900)" }}>How to Export Your ChatGPT History</h3>
+                    <p className="text-sm text-neutral-600">Follow these steps to get your conversation data from OpenAI</p>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Web Instructions */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-emerald-700">
+                        <Monitor size={20} />
+                        <h4 className="font-semibold">On Web (Desktop/Laptop)</h4>
+                      </div>
+                      <ol className="space-y-2 text-sm text-neutral-700 pl-4">
+                        <li className="flex items-start gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mt-0.5">1</span>
+                          <span>Click on your <strong>profile/username</strong> in the bottom-left corner</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mt-0.5">2</span>
+                          <span>Go to <strong>Settings → Data controls</strong></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mt-0.5">3</span>
+                          <span>Select <strong>Export data</strong></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mt-0.5">4</span>
+                          <span>OpenAI will prepare your file and send a download link to your email</span>
+                        </li>
+                      </ol>
+                    </div>
+                    
+                    {/* Mobile Instructions */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-blue-700">
+                        <Smartphone size={20} />
+                        <h4 className="font-semibold">On Mobile App (iOS/Android)</h4>
+                      </div>
+                      <ol className="space-y-2 text-sm text-neutral-700 pl-4">
+                        <li className="flex items-start gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold mt-0.5">1</span>
+                          <span>Tap on your <strong>profile picture</strong> or the <strong>three dots</strong> in the corner</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold mt-0.5">2</span>
+                          <span>Go to <strong>Settings → Data Controls</strong></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold mt-0.5">3</span>
+                          <span>Tap <strong>Export data</strong></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold mt-0.5">4</span>
+                          <span>You'll receive an email with the export link</span>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                  
+                  {/* Important Notes */}
+                  <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border border-amber-200">
+                    <Clock size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-amber-800 text-sm">⚠️ Important Notes:</h4>
+                      <ul className="mt-2 space-y-1 text-sm text-amber-700">
+                        <li>• Export can take <strong>few minutes to hours</strong> depending on your chat history size</li>
+                        <li>• You'll receive a <strong>.zip file</strong> containing .json and .html files of your chats</li>
+                        <li>• Look for <strong>conversations.json</strong> in the downloaded file</li>
+                        <li>• Your data is processed <strong>client-side</strong> - we only receive generated questions</li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  {/* What to Upload */}
+                  <div className="flex items-start gap-3 p-4 rounded-lg bg-emerald-50 border border-emerald-200">
+                    <Download size={20} className="text-emerald-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-emerald-800 text-sm">What to Upload:</h4>
+                      <p className="mt-2 text-sm text-emerald-700">
+                        Upload the <strong>conversations.json</strong> file from your downloaded export. 
+                        This contains your chat history in a format we can analyze to create personalized questions.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Bottom Close Button */}
+                  <div className="text-center">
+                    <button
+                      onClick={() => setShowHelp(false)}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 bg-white hover:bg-gray-50 transition-all duration-200 hover:scale-105"
+                      style={{ 
+                        borderColor: "var(--color-green-900)", 
+                        color: "var(--color-green-900)"
+                      }}
+                    >
+                      <ChevronUp size={16} />
+                      Got it, close guide
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             <div
               onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
               onDragLeave={() => setDragging(false)}
@@ -298,7 +430,7 @@ export default function TestRunner({ mode = "general", onComplete }) {
                 const f = e.dataTransfer.files?.[0];
                 if (f) handleHistoryFile(f);
               }}
-              className={`relative border-2 border-dashed rounded-2xl p-8 md:p-12 text-center transition-colors ${dragging ? "border-emerald-500 bg-emerald-50/40" : "border-[color:var(--color-green-900)]"}`}
+              className={`relative border-2 border-dashed rounded-2xl p-6 md:p-8 text-center transition-colors ${dragging ? "border-emerald-500 bg-emerald-50/40" : "border-[color:var(--color-green-900)]"}`}
               style={{ boxShadow: "0 4px 0 var(--color-green-900-20)" }}
             >
               <div className="flex flex-col items-center gap-3">

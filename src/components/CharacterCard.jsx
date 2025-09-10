@@ -11,6 +11,7 @@ import {
   postAnswers,
 } from "@/lib/backend";
 import { getCharacterDialogue } from "@/lib/characterDialogue";
+import HelpBulb from "./HelpBulb";
 
 // Asset path resolver imported from src/lib/assets
 
@@ -45,7 +46,7 @@ function normalizeType(type) {
   return String(type).trim().toUpperCase();
 }
 
-// Personality-specific colors using only your existing CSS variables
+// Enhanced personality-specific colors and styling
 function getPersonalityColor(type) {
   const colors = {
     INTJ: 'var(--color-purple-400)',
@@ -68,9 +69,105 @@ function getPersonalityColor(type) {
   return colors[type.toUpperCase()] || 'var(--color-green-900)';
 }
 
+// Get personality group and description for enhanced display
+function getPersonalityInfo(type) {
+  const groups = {
+    // Analysts (NT)
+    INTJ: { group: 'Analyst', name: 'Architect', color: 'var(--color-purple-400)' },
+    INTP: { group: 'Analyst', name: 'Thinker', color: 'var(--color-cyan-200)' },
+    ENTJ: { group: 'Analyst', name: 'Commander', color: 'var(--color-orange-500)' },
+    ENTP: { group: 'Analyst', name: 'Debater', color: 'var(--color-pink-500)' },
+    
+    // Diplomats (NF)
+    INFJ: { group: 'Diplomat', name: 'Advocate', color: 'var(--color-blue-400)' },
+    INFP: { group: 'Diplomat', name: 'Mediator', color: 'var(--color-pink-200)' },
+    ENFJ: { group: 'Diplomat', name: 'Protagonist', color: 'var(--color-teal-300)' },
+    ENFP: { group: 'Diplomat', name: 'Campaigner', color: 'var(--color-amber-400)' },
+    
+    // Sentinels (SJ)
+    ISTJ: { group: 'Sentinel', name: 'Logistician', color: 'var(--color-blue-400)' },
+    ISFJ: { group: 'Sentinel', name: 'Protector', color: 'var(--color-pink-200)' },
+    ESTJ: { group: 'Sentinel', name: 'Executive', color: 'var(--color-orange-500)' },
+    ESFJ: { group: 'Sentinel', name: 'Consul', color: 'var(--color-pink-500)' },
+    
+    // Explorers (SP)
+    ISTP: { group: 'Explorer', name: 'Virtuoso', color: 'var(--color-teal-300)' },
+    ISFP: { group: 'Explorer', name: 'Adventurer', color: 'var(--color-lilac-300)' },
+    ESTP: { group: 'Explorer', name: 'Entrepreneur', color: 'var(--color-amber-400)' },
+    ESFP: { group: 'Explorer', name: 'Entertainer', color: 'var(--color-yellow-200)' }
+  };
+  return groups[type?.toUpperCase()] || { group: 'Unknown', name: 'Type', color: 'var(--color-green-900)' };
+}
+
 // Messaging keys (align with FooterFocusBar and extension)
-const MSG_REQUEST = "mindshift:focus";
-const MSG_RESPONSE = "mindshift:focus:status";
+const MSG_REQUEST = "nudge:focus";
+const MSG_RESPONSE = "nudge:focus:status";
+
+// PersonalityBadge Component - Enhanced personality type display
+function PersonalityBadge({ type, gender }) {
+  const personalityInfo = getPersonalityInfo(type);
+  const primaryColor = getPersonalityColor(type);
+  
+  // Create a contrasting text color based on the background
+  const isDarkBackground = ['var(--color-green-900)', 'var(--color-purple-400)', 'var(--color-blue-400)'].includes(primaryColor);
+  const textColor = isDarkBackground ? 'white' : 'var(--color-green-900)';
+  
+  // Helper to create color with opacity (works with CSS variables)
+  const colorWithOpacity = (color, opacity) => {
+    // For CSS variables, we'll use a fallback approach
+    if (color.startsWith('var(')) {
+      return `color-mix(in srgb, ${color} ${opacity * 100}%, transparent)`;
+    }
+    return color + Math.floor(opacity * 255).toString(16).padStart(2, '0');
+  };
+  
+  return (
+    <div className="mt-6">
+      <div className="retro-console rounded-2xl px-6 py-3 transition-all duration-200 hover:transform hover:translateY(-1px)">
+        <div className="flex items-center justify-center gap-4">
+          {/* Main MBTI Badge - using nav-pill style */}
+          <div 
+            className="nav-pill font-tanker text-lg font-bold uppercase tracking-wider cursor-pointer transition-all duration-200"
+            style={{ 
+              backgroundColor: primaryColor,
+              color: textColor,
+              borderColor: 'var(--color-green-900)',
+              boxShadow: `0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)`,
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.boxShadow = `0 5px 0 var(--color-green-900), 0 10px 28px var(--color-green-900-20)`;
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.boxShadow = `0 4px 0 var(--color-green-900), 0 8px 24px var(--color-green-900-20)`;
+            }}
+          >
+            {type}
+          </div>
+          
+          {/* Personality Group on same line */}
+          <div className="component-surface rounded-xl px-4 py-2 text-sm font-medium uppercase tracking-wider">
+            {personalityInfo.group}
+          </div>
+          
+          {/* Decorative DNA-style elements */}
+          <div className="flex items-center gap-1 opacity-70" aria-hidden="true">
+            {[...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="dna-node transition-all duration-300"
+                style={{ 
+                  backgroundColor: primaryColor,
+                  borderColor: 'var(--color-green-900)',
+                  animationDelay: `${i * 0.3}s`
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function CharacterCard({ personalityType, title = null, size = 0 }) {
   // Allow dynamic personality using localStorage as fallback source
@@ -450,7 +547,7 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
   }
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4">
+    <div className="relative flex flex-col items-center justify-center gap-4" data-tutorial="personality-card">
       <div className="flex items-center gap-2">
         <h1 className="font-tanker text-5xl leading-none text-center" style={{ color: 'var(--mbti-text-primary)' }}>{heading}</h1>
         <button
@@ -512,8 +609,10 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
         )}
       </div>
       {type ? (
-        <div className="text-center space-y-2">
-          <div className="font-tanker text-sm text-white">{type}</div>
+        <div className="text-center space-y-3">
+          {/* Enhanced Personality Badge */}
+          <PersonalityBadge type={type} gender={gender} />
+          
           {/* Personality Dialogue */}
           {dialogue.greeting && (
             <div className="max-w-xs mx-auto px-3 py-2 rounded-lg bg-white/90 text-green text-sm font-medium text-center backdrop-blur-sm border border-green/20">
