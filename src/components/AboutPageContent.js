@@ -14,6 +14,7 @@ import {
   getImagePath,
   TRAIT_DESCRIPTIONS 
 } from '@/lib/personalityData';
+import { getVideoPath } from '@/lib/assets';
 import PersonalityGrid from '@/components/PersonalityGrid';
 import PersonalityComparison from '@/components/PersonalityComparison';
 import RetakeQuizModal from '@/components/RetakeQuizModal';
@@ -28,6 +29,8 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
   const [showComparison, setShowComparison] = useState(false);
   const [showRetakeQuiz, setShowRetakeQuiz] = useState(false);
   const [comparisonType, setComparisonType] = useState('');
+  const [showVideo, setShowVideo] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
   
   // Personalization system
   const { profile, idealSessionLength, guardrailsEnabled, setPersonalityType } = usePersonalizationProfile();
@@ -187,6 +190,8 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
   const clusterInfo = getClusterInfo(personalityData.cluster);
   const clusterTypes = getClusterTypes(personalityData.cluster).filter(t => t.type !== personalityData.type);
   const imagePath = getImagePath(personalityData.type, genderPreference);
+  const videoPath = getVideoPath(personalityData.type, genderPreference === 'female' ? 'W' : 'M');
+  const hasVideo = videoPath !== null;
 
   return (
     <section className="w-full min-h-screen" >
@@ -211,14 +216,92 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
               {/* Left: Character Image & Controls */}
               <div className="flex flex-col items-center">
                 <div className="relative mb-4">
-                  <div className="w-48 h-48 md:w-64 md:h-64 relative rounded-2xl overflow-hidden">
-                    <Image
-                      src={imagePath}
-                      alt={`${personalityData.type} character`}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
+                  <div className="w-48 h-48 md:w-64 md:h-64 relative rounded-2xl overflow-hidden bg-gradient-to-br from-neutral-100 to-neutral-200">
+                    {/* Image Layer */}
+                    <div className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+                      showVideo && hasVideo && videoPath ? 'opacity-0' : 'opacity-100'
+                    }`}>
+                      <Image
+                        src={imagePath}
+                        alt={`${personalityData.type} character`}
+                        fill
+                        className="object-cover"
+                        priority
+                      />
+                    </div>
+                    
+                    {/* Video Layer */}
+                    {hasVideo && videoPath && (
+                      <div className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+                        showVideo ? 'opacity-100' : 'opacity-0'
+                      }`}>
+                        <video
+                          src={videoPath}
+                          className="w-full h-full object-cover"
+                          autoPlay={showVideo}
+                          muted
+                          playsInline
+                          onPlay={() => setVideoPlaying(true)}
+                          onEnded={() => {
+                            setVideoPlaying(false);
+                            setTimeout(() => setShowVideo(false), 300); // Delay for smooth transition
+                          }}
+                          onError={() => {
+                            console.warn('Video failed to load:', videoPath);
+                            setShowVideo(false);
+                          }}
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Video Play Button Overlay - Smaller Size */}
+                    {hasVideo && !showVideo && !videoPlaying && (
+                      <button
+                        onClick={() => setShowVideo(true)}
+                        className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 hover:opacity-100 transition-all duration-300 group"
+                        aria-label="Play character animation"
+                      >
+                        <div className="w-12 h-12 md:w-14 md:h-14 bg-white/95 rounded-full flex items-center justify-center shadow-lg group-hover:scale-105 group-hover:shadow-xl transition-all duration-200 border-2 border-white/50">
+                          <svg 
+                            width="16" 
+                            height="16" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            className="ml-0.5 text-green-900"
+                          >
+                            <path 
+                              d="M8 5v14l11-7z" 
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </div>
+                      </button>
+                    )}
+                    
+                    {/* Video Status Indicator - Smaller and More Subtle */}
+                    {hasVideo && (
+                      <div className="absolute top-2 right-2">
+                        <div className={`transition-all duration-300 ${
+                          showVideo ? 'opacity-30' : 'opacity-70 hover:opacity-100'
+                        }`}>
+                          <div className="flex items-center gap-1 px-2 py-1 bg-black/40 backdrop-blur-sm rounded-full">
+                            <div className={`w-2 h-2 rounded-full ${
+                              videoPlaying ? 'bg-red-400 animate-pulse' : 'bg-green-400'
+                            }`}></div>
+                            <span className="text-white text-xs font-medium">
+                              {videoPlaying ? 'Playing' : 'Video'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Loading State for Video */}
+                    {showVideo && !videoPlaying && hasVideo && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 

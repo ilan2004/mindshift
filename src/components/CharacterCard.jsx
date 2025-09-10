@@ -577,7 +577,9 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
         ) : (
           <div className="absolute inset-0 overflow-hidden rounded-full">
             {/* Base static image per MBTI+gender */}
-            <div className="absolute inset-0">
+            <div className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+              showAnim && videoSrc ? 'opacity-0' : 'opacity-100'
+            }`}>
               <Image
                 src={getAssetPath(type, gender || "M")}
                 alt={type}
@@ -586,25 +588,44 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
                 className={`w-full h-full object-contain object-bottom select-none`}
               />
             </div>
+            
             {/* Video overlay for character animation */}
-            {showAnim && videoSrc ? (
-              <div className="absolute inset-0 bg-transparent">
+            {videoSrc && (
+              <div className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+                showAnim ? 'opacity-100' : 'opacity-0'
+              }`}>
                 <video
                   key={videoNonce}
                   ref={videoRef}
                   src={videoSrc}
                   className="w-full h-full object-contain object-bottom"
-                  autoPlay
+                  autoPlay={showAnim}
                   muted
                   playsInline
-                  onEnded={() => setShowAnim(false)}
+                  onEnded={() => {
+                    // Delay hiding to allow smooth transition
+                    setTimeout(() => setShowAnim(false), 200);
+                  }}
                   onError={() => setShowAnim(false)}
                   onLoadedMetadata={() => {
-                    try { videoRef.current && videoRef.current.play && videoRef.current.play(); } catch {}
+                    if (showAnim) {
+                      try { videoRef.current && videoRef.current.play && videoRef.current.play(); } catch {}
+                    }
                   }}
                 />
               </div>
-            ) : null}
+            )}
+            
+            {/* Subtle video indicator for character cards with animations */}
+            {videoSrc && (
+              <div className="absolute bottom-2 right-2">
+                <div className={`transition-opacity duration-300 ${
+                  showAnim ? 'opacity-100' : 'opacity-0'
+                }`}>
+                  <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

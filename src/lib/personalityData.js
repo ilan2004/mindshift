@@ -29,7 +29,6 @@ export const PERSONALITY_TYPES = {
       "May neglect breaks during intense focus",
       "Can become isolated during long work sessions"
     ],
-    imageKeys: { male: "INTJM.475Z.png", female: "INTJW.png" },
     tone: "logic"
   },
 
@@ -60,7 +59,6 @@ export const PERSONALITY_TYPES = {
       "May abandon projects when they become routine",
       "Struggles with rigid scheduling and deadlines"
     ],
-    imageKeys: { male: "INTPM.896Z.png", female: "INTPW.512Z.png" },
     tone: "logic"
   },
 
@@ -91,7 +89,6 @@ export const PERSONALITY_TYPES = {
       "Can become impatient with detailed work",
       "Might neglect personal needs for achievement"
     ],
-    imageKeys: { male: "ENTJM.jpeg", female: "ENTJW.jpeg" },
     tone: "logic"
   },
 
@@ -122,7 +119,6 @@ export const PERSONALITY_TYPES = {
       "May start too many projects without finishing them",
       "Struggles with detailed follow-through"
     ],
-    imageKeys: { male: "ENTPM.364Z.png", female: "ENTPW.982Z.png" },
     tone: "logic"
   },
 
@@ -153,7 +149,6 @@ export const PERSONALITY_TYPES = {
       "May neglect practical details while pursuing ideals",
       "Prone to perfectionism and self-criticism"
     ],
-    imageKeys: { male: "INFJM.984Z.png", female: "INFJW.285Z.png" },
     tone: "meaningful"
   },
 
@@ -184,7 +179,6 @@ export const PERSONALITY_TYPES = {
       "May procrastinate on practical or mundane tasks",
       "Sensitive to criticism and conflict"
     ],
-    imageKeys: { male: "INFPM.716Z.png", female: "INFPW.504Z.png" },
     tone: "meaningful"
   },
 
@@ -215,7 +209,6 @@ export const PERSONALITY_TYPES = {
       "Can become overwhelmed by others' problems", 
       "Struggles to maintain boundaries around time and energy"
     ],
-    imageKeys: { male: "ENFJM.png", female: "ENFJW.439Z.png" },
     tone: "meaningful"
   },
 
@@ -246,7 +239,6 @@ export const PERSONALITY_TYPES = {
       "May struggle with routine implementation tasks",
       "Sensitive to criticism and negative feedback"
     ],
-    imageKeys: { male: "ENFPM.357Z.png", female: "ENFPW.964Z.png" },
     tone: "meaningful"
   },
 
@@ -277,7 +269,6 @@ export const PERSONALITY_TYPES = {
       "May get stuck in perfectionism on details",
       "Struggles with ambiguous or rapidly changing priorities"
     ],
-    imageKeys: { male: "ISTJM.502Z.png", female: "ISTJW.369Z.png" },
     tone: "social"
   },
 
@@ -308,7 +299,6 @@ export const PERSONALITY_TYPES = {
       "Can become overwhelmed by trying to help everyone",
       "Struggles with self-promotion and celebrating achievements"
     ],
-    imageKeys: { male: "ISFJM.077Z.png", female: "ISFJW.211Z.png" },
     tone: "social"
   },
 
@@ -339,7 +329,6 @@ export const PERSONALITY_TYPES = {
       "May push too hard and neglect work-life balance",
       "Struggles with ambiguous or constantly changing priorities"
     ],
-    imageKeys: { male: "ESTJM.161Z.png", female: "ESTJW.604Z.png" },
     tone: "social"
   },
 
@@ -370,7 +359,6 @@ export const PERSONALITY_TYPES = {
       "Can become distracted by social interactions during focus time",
       "Struggles with conflict and difficult feedback conversations"
     ],
-    imageKeys: { male: "ESFJM.978Z.png", female: "ESFJW.059Z.png" },
     tone: "social"
   },
 
@@ -401,7 +389,6 @@ export const PERSONALITY_TYPES = {
       "May procrastinate on tasks without immediate practical value",
       "Struggles with long-term planning and abstract goals"
     ],
-    imageKeys: { male: "ISTPM.560Z.png", female: "ISTPW.866Z.png" },
     tone: "fun"
   },
 
@@ -432,7 +419,6 @@ export const PERSONALITY_TYPES = {
       "May procrastinate on tasks that feel inauthentic or ugly",
       "Sensitive to stress and negative work environments"
     ],
-    imageKeys: { male: "ISFPM.696Z.png", female: "ISFPW.131Z.png" },
     tone: "fun"
   },
 
@@ -463,7 +449,6 @@ export const PERSONALITY_TYPES = {
       "May rush through details in favor of quick action",
       "Struggles with extensive planning and preparation phases"
     ],
-    imageKeys: { male: "ESTPM.258Z.png", female: "ESTPW.031Z.png" },
     tone: "fun"
   },
 
@@ -494,7 +479,6 @@ export const PERSONALITY_TYPES = {
       "May struggle with criticism or negative feedback",
       "Difficulty with long-term planning and abstract goals"
     ],
-    imageKeys: { male: "ESFPM.jpeg", female: "ESFPW.png" },
     tone: "fun"
   }
 };
@@ -543,12 +527,15 @@ export function getClusterInfo(cluster) {
   return clusterData[cluster] || null;
 }
 
+// Import the asset mapping functions from the centralized asset system
+import { getAssetPath } from './assets';
+
 export function getImagePath(type, gender = 'male') {
-  const data = getPersonalityData(type);
-  if (!data) return null;
+  if (!type) return null;
   
-  const genderKey = gender === 'female' ? 'female' : 'male';
-  return `/images/${data.imageKeys[genderKey]}`;
+  // Use the centralized asset mapping system
+  const genderCode = gender === 'female' ? 'W' : 'M';
+  return getAssetPath(type.toUpperCase(), genderCode);
 }
 
 // MBTI trait mappings
