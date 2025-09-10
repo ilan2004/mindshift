@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useTutorial } from '../contexts/TutorialContext';
 
 const personalityData = {
   analysts: {
@@ -44,6 +45,7 @@ const personalityData = {
 
 export default function PersonalityProfile({ cluster, onDone }) {
   const [isVisible, setIsVisible] = useState(false);
+  const { markProfileDismissed } = useTutorial();
   const data = personalityData[cluster] || personalityData.achievers;
 
   useEffect(() => {
@@ -55,6 +57,8 @@ export default function PersonalityProfile({ cluster, onDone }) {
 
   const handleClose = () => {
     setIsVisible(false);
+    // Mark profile as dismissed to trigger tutorial
+    markProfileDismissed();
     // Delay closing to allow for animation
     setTimeout(() => {
       if (onDone) {

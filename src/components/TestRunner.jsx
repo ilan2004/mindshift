@@ -160,7 +160,6 @@ export default function TestRunner({ mode = "general", onComplete }) {
   const totalPages = useMemo(() => (items.length ? Math.ceil(items.length / PAGE_SIZE) : 0), [items.length]);
   const pageItems = useMemo(() => items.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE), [items, page]);
 
-  const canNext = useMemo(() => pageItems.length > 0 && pageItems.every((q) => !!answers[q.id]), [pageItems, answers]);
 
   const containerRef = useRef(null);
   const questionRefs = useRef({});
@@ -213,14 +212,64 @@ export default function TestRunner({ mode = "general", onComplete }) {
     });
   };
 
+  const findFirstUnansweredQuestion = () => {
+    // Check all questions across all pages for the first unanswered one
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (!answers[item.id]) {
+        return {
+          question: item,
+          pageIndex: Math.floor(i / PAGE_SIZE),
+          questionIndex: i % PAGE_SIZE
+        };
+      }
+    }
+    return null;
+  };
+
   const onNext = async () => {
+    // Check if current page is complete
+    const currentPageComplete = pageItems.length > 0 && pageItems.every((q) => !!answers[q.id]);
+    
     if (page < totalPages - 1) {
-      setPage((p) => p + 1);
-      // scroll to top of page
-      const el = containerRef.current;
-      if (el) el.scrollTo({ top: 0, behavior: "smooth" });
+      if (currentPageComplete) {
+        // Move to next page if current page is complete
+        setPage((p) => p + 1);
+        const el = containerRef.current;
+        if (el) el.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        // Find first unanswered question on current page and scroll to it
+        const unansweredOnPage = pageItems.find(q => !answers[q.id]);
+        if (unansweredOnPage) {
+          scrollToQuestion(unansweredOnPage.id);
+          // Optional: Add visual feedback
+          const questionEl = questionRefs.current[unansweredOnPage.id];
+          if (questionEl) {
+            questionEl.classList.add('highlight-required');
+            setTimeout(() => questionEl.classList.remove('highlight-required'), 2000);
+          }
+        }
+      }
     } else {
-      // Submit
+      // Final submit attempt
+      const firstUnanswered = findFirstUnansweredQuestion();
+      if (firstUnanswered) {
+        // Navigate to the page with unanswered question
+        setPage(firstUnanswered.pageIndex);
+        // Wait for page change, then scroll to question
+        setTimeout(() => {
+          scrollToQuestion(firstUnanswered.question.id);
+          // Add visual feedback
+          const questionEl = questionRefs.current[firstUnanswered.question.id];
+          if (questionEl) {
+            questionEl.classList.add('highlight-required');
+            setTimeout(() => questionEl.classList.remove('highlight-required'), 2000);
+          }
+        }, 100);
+        return;
+      }
+      
+      // All questions answered, proceed with submit
       const user_id = getUserId();
       // Convert map back to {question: numericValue}
       const payload = {};
@@ -234,7 +283,15 @@ export default function TestRunner({ mode = "general", onComplete }) {
         const res = await postAnswers({ user_id, answers: payload });
         const mbti = (res?.profile || "").toUpperCase();
         try {
-          if (mbti) localStorage.setItem("mindshift_personality_type", mbti);
+          if (mbti) {
+            localStorage.setItem("mindshift_personality_type", mbti);
+            // Immediately refresh theme with new personality type
+            try {
+              window.dispatchEvent(new CustomEvent('personality-updated', { 
+                detail: { personalityType: mbti } 
+              }));
+            } catch {}
+          }
           localStorage.setItem("ms_intro_complete", "1");
           // Persist completion to Supabase profile if available (non-blocking)
           try {
@@ -530,7 +587,7 @@ export default function TestRunner({ mode = "general", onComplete }) {
             <button type="button" onClick={onBack} disabled={page === 0} className={`nav-pill ${page === 0 ? "opacity-60" : "nav-pill--accent"}`}>
               Back
             </button>
-            <button type="button" onClick={onNext} disabled={!canNext} className={`nav-pill ${canNext ? "nav-pill--primary" : "opacity-60"}`}>
+            <button type="button" onClick={onNext} className="nav-pill nav-pill--primary">
               {page === totalPages - 1 ? "Submit" : "Next"}
             </button>
           </div>
@@ -542,6 +599,16 @@ export default function TestRunner({ mode = "general", onComplete }) {
         .question-text { color: var(--neutral-500, #8a8a8a); }
         [data-question]:not(.is-centered) .question-text { color: #9ca3af; } /* gray-400 */
         [data-question].is-centered .question-text { color: var(--color-green-900); }
+        .highlight-required {
+          animation: pulse-highlight 2s ease-in-out;
+          background-color: rgba(239, 68, 68, 0.1);
+          border-radius: 1rem;
+          padding: 1rem;
+        }
+        @keyframes pulse-highlight {
+          0%, 100% { background-color: rgba(239, 68, 68, 0.1); }
+          50% { background-color: rgba(239, 68, 68, 0.2); }
+        }
       `}</style>
     </div>
   );

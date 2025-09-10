@@ -252,6 +252,7 @@ export function TutorialProvider({ children }) {
     autoStart: true,
     pauseOnDistraction: true
   });
+  const [profileDismissed, setProfileDismissed] = useState(false);
 
   // Load saved state from localStorage
   useEffect(() => {
@@ -288,14 +289,27 @@ export function TutorialProvider({ children }) {
 
   // Check if user should see onboarding tutorial on first visit
   useEffect(() => {
-    if (userPreferences.autoStart && !completedTutorials.has('onboarding') && !skippedTutorials.has('onboarding')) {
+    // Only check for profile dismissal if it hasn't been set yet
+    if (!profileDismissed) {
+      const profileSeen = localStorage.getItem('mindshift_profile_seen');
+      if (profileSeen === 'true') {
+        setProfileDismissed(true);
+      }
+    }
+  }, [profileDismissed]);
+  
+  useEffect(() => {
+    if (userPreferences.autoStart && 
+        profileDismissed && 
+        !completedTutorials.has('onboarding') && 
+        !skippedTutorials.has('onboarding')) {
       // Small delay to ensure UI is ready
       const timer = setTimeout(() => {
         startTutorial('onboarding');
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [userPreferences.autoStart, completedTutorials, skippedTutorials]);
+  }, [userPreferences.autoStart, profileDismissed, completedTutorials, skippedTutorials]);
 
   const startTutorial = useCallback((tutorialId) => {
     const tutorial = TUTORIAL_CONFIG[tutorialId];
@@ -360,6 +374,10 @@ export function TutorialProvider({ children }) {
   const updatePreferences = useCallback((newPrefs) => {
     setUserPreferences(prev => ({ ...prev, ...newPrefs }));
   }, []);
+  
+  const markProfileDismissed = useCallback(() => {
+    setProfileDismissed(true);
+  }, []);
 
   const getAvailableTutorials = useCallback(() => {
     return Object.values(TUTORIAL_CONFIG)
@@ -403,6 +421,7 @@ export function TutorialProvider({ children }) {
     completeTutorial,
     restartTutorial,
     updatePreferences,
+    markProfileDismissed,
     
     // Utilities
     getAvailableTutorials,

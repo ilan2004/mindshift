@@ -8,7 +8,6 @@ import { Sun, Palette } from 'lucide-react';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [forceUpdate, setForceUpdate] = useState(0);
   const { themeMode, toggleTheme, getCSSVariables } = useTheme();
   
   // Close menu on route change/hash change
@@ -21,34 +20,18 @@ export default function Navbar() {
       window.removeEventListener("popstate", close);
     };
   }, []);
-  
-  // Force navbar to re-render when theme changes to ensure color sync
-  useEffect(() => {
-    const handleThemeChange = () => {
-      setForceUpdate(prev => prev + 1);
-    };
-    
-    window.addEventListener('theme-changed', handleThemeChange);
-    window.addEventListener('personality-changed', handleThemeChange);
-    
-    return () => {
-      window.removeEventListener('theme-changed', handleThemeChange);
-      window.removeEventListener('personality-changed', handleThemeChange);
-    };
-  }, []);
 
-  // Get current CSS variables and force refresh
+  // Get current CSS variables - this will automatically update when theme context changes
   const cssVars = getCSSVariables();
   
   return (
     <header 
-      key={`navbar-${forceUpdate}-${themeMode}`}
       className="sticky top-0 z-30 w-full border-b-2"
       style={{
         ...cssVars,
         background: 'var(--mbti-bg-pattern, var(--bg-default))',
         borderColor: 'var(--mbti-primary)',
-        transition: 'background 0.3s ease, border-color 0.3s ease',
+        transition: 'all 0.2s ease-in-out',
       }}
     >
       <nav className="max-w-7xl mx-auto px-4 py-3 md:px-6 md:py-4">

@@ -2,6 +2,14 @@
 
 /* Maggie Theme – Fonts, Colors, Utilities */
 :root {
+  /* Theme fallback variables to prevent FOUC */
+  --mbti-primary: var(--color-mint-500);
+  --mbti-secondary: var(--color-green-900);
+  --mbti-accent: var(--color-pink-500);
+  --mbti-text-primary: var(--color-green-900);
+  --mbti-surface: var(--color-cream);
+  --mbti-progress: var(--color-mint-500);
+  --mbti-bg-pattern: var(--color-mint-500);
   /* Fonts */
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   --font-accent: "Homemade Apple", cursive;

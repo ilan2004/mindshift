@@ -146,9 +146,9 @@ export default function Footer() {
                   { href: '#', label: 'Privacy Policy' },
                   { href: '#', label: 'Terms of Service' },
                   { href: '#', label: 'Contact Us' },
-                ].map((link) => (
+                ].map((link, index) => (
                   <Link
-                    key={link.href}
+                    key={`resource-${index}-${link.label}`}
                     href={link.href}
                     className="block text-sm opacity-80 hover:opacity-100 transition-opacity"
                     style={{ color: 'var(--color-green-900)' }}

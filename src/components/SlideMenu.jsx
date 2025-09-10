@@ -88,7 +88,10 @@ export default function SlideMenu({ isOpen, onClose }) {
       }
       
       // Notify app shell to show auth overlay immediately and redirect home
-      try { window.dispatchEvent(new Event('nudge:auth:signed_out')); } catch {}
+      try { window.dispatchEvent(new Event('mindshift:auth:signed_out')); } catch {}
+      
+      // Reset loading state after successful logout
+      setLoggingOut(false);
       onClose();
       router.push('/');
     } catch (error) {

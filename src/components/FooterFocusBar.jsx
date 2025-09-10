@@ -537,23 +537,159 @@ export default function FooterFocusBar() {
 
       {/* Desktop instructions modal for enabling blocking */}
       {showEnablePrompt && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" role="dialog" aria-modal="true">
-          <div className="w-full max-w-md rounded-2xl bg-white border p-4 shadow-lg" style={{ borderColor: "var(--color-green-900)", boxShadow: "0 6px 0 var(--color-green-900)" }}>
-            <h3 className="text-lg font-semibold mb-2">Enable blocking in your browser</h3>
-            <ol className="list-decimal ml-5 space-y-1 text-sm text-neutral-700 mb-3">
-              <li>Open <span className="font-mono">chrome://extensions</span> (or your browser’s extensions page).</li>
-              <li>Turn on <b>Developer mode</b>.</li>
-              <li>Click <b>Load unpacked</b> and select the <span className="font-mono">extension/</span> folder from this project.</li>
-              <li>Refresh this page; the controls will appear when detected.</li>
-            </ol>
-            <div className="text-xs text-neutral-500 mb-3">Alternatively, subscribe via your ad blocker (browser-only blocking):</div>
-            <div className="flex flex-wrap gap-2 mb-3">
-              <a className={`nav-pill ${extensionInstallHref ? "" : "opacity-60 pointer-events-none"}`} href={extensionInstallHref || undefined} target="_blank" rel="noreferrer" onClick={() => setShowEnablePrompt(false)}>Install from store</a>
-              <a className={`nav-pill ${abpSubscribeHref ? "" : "opacity-60 pointer-events-none"}`} href={abpSubscribeHref || undefined} onClick={() => setShowEnablePrompt(false)}>Add to uBlock/ABP</a>
-              <a className={`nav-pill ${adguardSubscribeHref ? "" : "opacity-60 pointer-events-none"}`} href={adguardSubscribeHref || undefined} onClick={() => setShowEnablePrompt(false)}>Add to AdGuard</a>
-            </div>
-            <div className="flex items-center justify-end gap-2">
-              <button className="nav-pill" onClick={() => setShowEnablePrompt(false)}>Close</button>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowEnablePrompt(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="relative w-full max-w-2xl mx-auto">
+            {/* Main Modal Card using MindShift retro-console style */}
+            <div 
+              className="retro-console rounded-3xl p-6 md:p-8 max-h-[90vh] overflow-y-auto relative"
+              style={{
+                background: "var(--surface)",
+                border: "2px solid var(--color-green-900)",
+                boxShadow: "0 4px 20px rgba(3, 89, 77, 0.25)"
+              }}
+            >
+              {/* Close Button - Top Right */}
+              <button
+                onClick={() => setShowEnablePrompt(false)}
+                className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 transition-colors z-10"
+                style={{ color: 'var(--text-default)' }}
+                aria-label="Close blocking setup"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m18 6-12 12"/>
+                  <path d="m6 6 12 12"/>
+                </svg>
+              </button>
+              
+              {/* Header */}
+              <div className="mb-6 pr-12">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="nav-pill nav-pill--cyan text-xs font-bold uppercase tracking-wider">
+                    Setup
+                  </div>
+                  <div className="nav-pill nav-pill--outline text-xs">
+                    Browser Extension
+                  </div>
+                </div>
+                
+                <h3 
+                  className="text-xl md:text-2xl font-tanker text-mbti-primary mb-2 leading-tight"
+                  style={{ color: "var(--color-green-900)" }}
+                >
+                  Enable Blocking in Your Browser
+                </h3>
+                
+                <p className="text-mbti-secondary text-sm opacity-75">
+                  Install the extension to start distraction-blocking focus sessions
+                </p>
+              </div>
+
+              {/* Content */}
+              <div className="mb-6">
+                <div 
+                  className="component-surface rounded-2xl p-6"
+                  style={{ backgroundColor: 'rgba(249, 248, 244, 0.8)' }}
+                >
+                  <h4 className="font-semibold text-base mb-4" style={{ color: "var(--color-green-900)" }}>
+                    📦 Developer Installation (Recommended)
+                  </h4>
+                  <ol className="list-decimal ml-5 space-y-2 text-sm mb-4" style={{ color: "var(--text-default)" }}>
+                    <li>Open <code className="px-2 py-1 bg-gray-100 rounded font-mono text-xs">chrome://extensions</code> (or your browser's extensions page)</li>
+                    <li>Turn on <strong className="font-semibold">Developer mode</strong> (toggle in top right)</li>
+                    <li>Click <strong className="font-semibold">Load unpacked</strong> and select the <code className="px-2 py-1 bg-gray-100 rounded font-mono text-xs">extension/</code> folder from this project</li>
+                    <li>Refresh this page - the focus controls will appear when detected ✨</li>
+                  </ol>
+                  
+                  <div className="mt-4 p-4 rounded-xl" style={{ background: "var(--color-cyan-200)", border: "2px solid var(--color-cyan-500)" }}>
+                    <p className="text-xs font-medium" style={{ color: "var(--color-green-900)" }}>
+                      💡 <strong>Pro Tip:</strong> Once installed, you'll see focus session controls right here in the footer bar!
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Alternative Methods */}
+              <div className="mb-6">
+                <h4 className="font-semibold text-base mb-4" style={{ color: "var(--color-green-900)" }}>
+                  🌐 Alternative: Browser-only Blocking
+                </h4>
+                <p className="text-sm mb-4 opacity-75">Subscribe via your ad blocker for browser-only blocking (less powerful but easier):</p>
+                
+                <div className="flex flex-wrap gap-3 mb-4">
+                  <a 
+                    className={`nav-pill nav-pill--primary flex items-center gap-2 ${extensionInstallHref ? "" : "opacity-60 pointer-events-none"}`} 
+                    href={extensionInstallHref || undefined} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    onClick={() => setShowEnablePrompt(false)}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                      <polyline points="3.29 7 12 12 20.71 7"/>
+                      <line x1="12" y1="22" x2="12" y2="12"/>
+                    </svg>
+                    Install from Store
+                  </a>
+                  <a 
+                    className={`nav-pill nav-pill--cyan ${abpSubscribeHref ? "" : "opacity-60 pointer-events-none"}`} 
+                    href={abpSubscribeHref || undefined} 
+                    onClick={() => setShowEnablePrompt(false)}
+                  >
+                    Add to uBlock/ABP
+                  </a>
+                  <a 
+                    className={`nav-pill nav-pill--accent ${adguardSubscribeHref ? "" : "opacity-60 pointer-events-none"}`} 
+                    href={adguardSubscribeHref || undefined} 
+                    onClick={() => setShowEnablePrompt(false)}
+                  >
+                    Add to AdGuard
+                  </a>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between gap-4 pt-4 border-t" style={{ borderColor: "rgba(3, 89, 77, 0.1)" }}>
+                <div className="text-xs text-neutral-500">
+                  Need help? Check out our setup guide for more details.
+                </div>
+                <div className="flex items-center gap-3">
+                  <button 
+                    className="nav-pill nav-pill--outline"
+                    onClick={() => setShowEnablePrompt(false)}
+                  >
+                    Maybe Later
+                  </button>
+                  <button 
+                    className="nav-pill nav-pill--primary"
+                    onClick={() => setShowEnablePrompt(false)}
+                  >
+                    Got It!
+                  </button>
+                </div>
+              </div>
+
+              {/* Decorative DNA Elements */}
+              <div className="flex justify-center items-center mt-6 w-full opacity-60" aria-hidden="true">
+                <div className="flex items-center justify-center w-full gap-3 px-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-2 h-2 rounded-full animate-pulse"
+                      style={{ 
+                        backgroundColor: 'var(--color-green-900)',
+                        animationDelay: `${i * 0.3}s`
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>, document.body)
