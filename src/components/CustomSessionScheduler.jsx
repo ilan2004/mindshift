@@ -44,7 +44,7 @@ export default function CustomSessionScheduler({ personalityType }) {
   // Load saved sessions
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('mindshift_scheduled_sessions');
+      const saved = localStorage.getItem('Nudge_scheduled_sessions');
       if (saved) {
         setSessions(JSON.parse(saved));
       }
@@ -56,7 +56,7 @@ export default function CustomSessionScheduler({ personalityType }) {
   // Save sessions
   const saveSessions = (sessionList) => {
     try {
-      localStorage.setItem('mindshift_scheduled_sessions', JSON.stringify(sessionList));
+      localStorage.setItem('Nudge_scheduled_sessions', JSON.stringify(sessionList));
     } catch {}
   };
 
@@ -143,15 +143,15 @@ export default function CustomSessionScheduler({ personalityType }) {
         scheduled: true,
         scheduleId: session.id
       };
-      localStorage.setItem("mindshift_last_template", JSON.stringify(payload));
-      window.dispatchEvent(new CustomEvent("mindshift:focus:start_template", { detail: payload }));
+      localStorage.setItem("Nudge_last_template", JSON.stringify(payload));
+      window.dispatchEvent(new CustomEvent("Nudge:focus:start_template", { detail: payload }));
     } catch {}
   };
 
   const testSessionQuiz = (session) => {
     if (!session.url.trim()) return;
     try {
-      window.dispatchEvent(new CustomEvent("mindshift:blocker:quiz", { detail: { url: session.url } }));
+      window.dispatchEvent(new CustomEvent("Nudge:blocker:quiz", { detail: { url: session.url } }));
     } catch {}
   };
 

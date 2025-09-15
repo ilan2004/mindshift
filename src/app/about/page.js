@@ -13,7 +13,7 @@ export default function AboutMainPage() {
     // Check if user has a stored personality type
     if (typeof window !== 'undefined') {
       try {
-        const storedType = localStorage.getItem('mindshift_personality_type');
+        const storedType = localStorage.getItem('Nudge_personality_type');
         if (storedType && storedType.trim()) {
           // User has a type - redirect to their specific page
           router.replace(`/about/${storedType.toLowerCase()}`);

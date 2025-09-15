@@ -1,4 +1,4 @@
-# MindShift Backend (FastAPI)
+# Nudge Backend (FastAPI)
 
 ## Quick start
 
@@ -24,7 +24,7 @@ We use Supabase (Postgres) to store focus sessions and blocked domains. Create a
 
 1) Environment variables (Next.js)
 
-Create a `.env.local` at the repo root (`mindshift/`) with:
+Create a `.env.local` at the repo root (`nudge/`) with:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=your-project-url

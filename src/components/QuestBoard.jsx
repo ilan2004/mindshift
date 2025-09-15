@@ -112,7 +112,7 @@ function todayKey() {
 
 function loadDayState(key) {
   try {
-    const raw = localStorage.getItem(`mindshift_quests_${key}`);
+    const raw = localStorage.getItem(`Nudge_quests_${key}`);
     return raw ? JSON.parse(raw) : {};
   } catch {
     return {};
@@ -121,7 +121,7 @@ function loadDayState(key) {
 
 function saveDayState(key, state) {
   try {
-    localStorage.setItem(`mindshift_quests_${key}`, JSON.stringify(state));
+    localStorage.setItem(`Nudge_quests_${key}`, JSON.stringify(state));
   } catch {}
 }
 
@@ -141,7 +141,7 @@ function setNumber(key, value) {
 
 function dispatchCountersUpdate() {
   try {
-    window.dispatchEvent(new Event("mindshift:counters:update"));
+    window.dispatchEvent(new Event("Nudge:counters:update"));
   } catch {}
 }
 
@@ -168,7 +168,7 @@ export default function QuestBoard({ quests, personalityType }) {
     setState(loadDayState(key));
     // load custom quests for the day
     try {
-      const raw = localStorage.getItem(`mindshift_custom_quests_${key}`);
+      const raw = localStorage.getItem(`Nudge_custom_quests_${key}`);
       setCustomQuests(raw ? JSON.parse(raw) : []);
     } catch {
       setCustomQuests([]);
@@ -183,7 +183,7 @@ export default function QuestBoard({ quests, personalityType }) {
         setDay(key);
         setState(loadDayState(key));
         try {
-          const raw = localStorage.getItem(`mindshift_custom_quests_${key}`);
+          const raw = localStorage.getItem(`Nudge_custom_quests_${key}`);
           setCustomQuests(raw ? JSON.parse(raw) : []);
         } catch {
           setCustomQuests([]);
@@ -211,22 +211,22 @@ export default function QuestBoard({ quests, personalityType }) {
     saveDayState(key, nextState);
 
     // Update points based on transition
-    let points = getNumber("mindshift_points", 0);
+    let points = getNumber("Nudge_points", 0);
     if (next && !prev) points += quest.points;
     if (!next && prev) points = Math.max(0, points - quest.points);
-    setNumber("mindshift_points", points);
+    setNumber("Nudge_points", points);
 
     // Update streak if this is the first completion of the day
     if (next && !prev) maybeUpdateStreakOnFirstCompletionOfDay(key);
 
     dispatchCountersUpdate();
     // Ask badge system to re-evaluate (points/streak may have changed)
-    try { window.dispatchEvent(new Event("mindshift:badges:check")); } catch {}
+    try { window.dispatchEvent(new Event("Nudge:badges:check")); } catch {}
   };
 
   const saveCustomQuests = (key, list) => {
     try {
-      localStorage.setItem(`mindshift_custom_quests_${key}`, JSON.stringify(list));
+      localStorage.setItem(`Nudge_custom_quests_${key}`, JSON.stringify(list));
     } catch {}
   };
 
@@ -243,18 +243,18 @@ export default function QuestBoard({ quests, personalityType }) {
     setNewTitle("");
     setNewPoints(5);
     // Trigger badge evaluation for 'Quest Maker'
-    try { window.dispatchEvent(new Event("mindshift:badges:check")); } catch {}
+    try { window.dispatchEvent(new Event("Nudge:badges:check")); } catch {}
   };
 
   const resetToday = () => {
     const key = day;
     // Calculate points to subtract for any completed quests (base + custom)
     const questsCompleted = allQuests.filter((q) => !!state[q.id]);
-    let points = getNumber("mindshift_points", 0);
+    let points = getNumber("Nudge_points", 0);
     for (const q of questsCompleted) {
       points = Math.max(0, points - (Number(q.points) || 0));
     }
-    setNumber("mindshift_points", points);
+    setNumber("Nudge_points", points);
 
     // Clear completion state for the day
     const cleared = {};
@@ -262,7 +262,7 @@ export default function QuestBoard({ quests, personalityType }) {
     saveDayState(key, cleared);
 
     // Allow streak to re-trigger by clearing the first-completion flag
-    try { localStorage.removeItem(`mindshift_completed_any_${key}`); } catch {}
+    try { localStorage.removeItem(`Nudge_completed_any_${key}`); } catch {}
 
     dispatchCountersUpdate();
   };
@@ -419,7 +419,7 @@ export default function QuestBoard({ quests, personalityType }) {
 
 function maybeUpdateStreakOnFirstCompletionOfDay(today) {
   // Guard: only once per day
-  const flagKey = `mindshift_completed_any_${today}`;
+  const flagKey = `Nudge_completed_any_${today}`;
   try {
     if (localStorage.getItem(flagKey)) return;
     localStorage.setItem(flagKey, "1");
@@ -429,13 +429,13 @@ function maybeUpdateStreakOnFirstCompletionOfDay(today) {
 
   const last = (() => {
     try {
-      return localStorage.getItem("mindshift_last_active_date") || "";
+      return localStorage.getItem("Nudge_last_active_date") || "";
     } catch {
       return "";
     }
   })();
 
-  const currentStreak = getNumber("mindshift_streak", 0);
+  const currentStreak = getNumber("Nudge_streak", 0);
 
   const prevDate = last;
   const todayDate = today;
@@ -453,8 +453,8 @@ function maybeUpdateStreakOnFirstCompletionOfDay(today) {
     nextStreak = 1; // reset
   }
 
-  setNumber("mindshift_streak", nextStreak);
-  try { localStorage.setItem("mindshift_last_active_date", todayDate); } catch {}
+  setNumber("Nudge_streak", nextStreak);
+  try { localStorage.setItem("Nudge_last_active_date", todayDate); } catch {}
 }
 
 function computeRelativeDate(baseYYYYMMDD, deltaDays) {

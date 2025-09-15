@@ -1,4 +1,4 @@
 export const metadata = {
-  title: "Game • MindShift",
-  description: "Play the MindShift focus game (WIP)",
+  title: "Game • Nudge",
+  description: "Play the Nudge focus game (WIP)",
 };

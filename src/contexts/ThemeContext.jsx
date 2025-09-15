@@ -109,7 +109,7 @@ export function ThemeProvider({ children }) {
   // Get personality type from localStorage
   const getPersonalityType = () => {
     try {
-      return localStorage.getItem("mindshift_personality_type") || "INFP";
+      return localStorage.getItem("Nudge_personality_type") || "INFP";
     } catch {
       return "INFP";
     }

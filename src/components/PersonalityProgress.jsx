@@ -7,7 +7,7 @@ import { getProgressFraming } from '../lib/characterDialogue';
 // Get personality type from localStorage
 function getPersonalityType() {
   try {
-    const profile = JSON.parse(localStorage.getItem('mindshift_user_profile') || '{}');
+    const profile = JSON.parse(localStorage.getItem('Nudge_user_profile') || '{}');
     return profile.personalityType || 'INFP';
   } catch {
     return 'INFP';
@@ -17,8 +17,8 @@ function getPersonalityType() {
 // Get current progress data
 function getProgressData() {
   try {
-    const streak = Number(localStorage.getItem('mindshift_streak')) || 0;
-    const sessions = JSON.parse(localStorage.getItem('mindshift_focus_sessions') || '[]');
+    const streak = Number(localStorage.getItem('Nudge_streak')) || 0;
+    const sessions = JSON.parse(localStorage.getItem('Nudge_focus_sessions') || '[]');
     const totalMinutes = sessions.reduce((sum, session) => sum + (session.minutes || 0), 0);
     const totalHours = Math.round(totalMinutes / 60 * 10) / 10;
     const completedSessions = sessions.length;

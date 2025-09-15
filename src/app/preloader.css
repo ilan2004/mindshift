@@ -1,4 +1,4 @@
-/* Preloader styles adapted from Terrene for Mindshift */
+/* Preloader styles adapted from Terrene for Nudge */
 .loader {
   position: fixed;
   top: 0;
@@ -8,7 +8,7 @@
   overflow: hidden;
   z-index: 100000;
   pointer-events: all;
-  /* Define local color variables mapped to Mindshift theme */
+  /* Define local color variables mapped to Nudge theme */
   --loader-bg: var(--color-green-900);
   --loader-text: var(--color-cream);
   --loader-text-muted: var(--color-teal-300);

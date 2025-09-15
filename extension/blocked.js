@@ -27,7 +27,7 @@
         const tab = (tabs && tabs[0]) || null;
         currentTabId = tab ? tab.id : null;
         const res = await chrome.runtime.sendMessage({
-          type: 'mindshift:focus',
+          type: 'Nudge:focus',
           action: 'getLastBlocked',
           payload: { tabId: currentTabId }
         });
@@ -62,7 +62,7 @@
 
   async function renderPersonalized() {
     try {
-      const res = await chrome.runtime.sendMessage({ type: 'mindshift:focus', action: 'getProfile', payload: {} });
+      const res = await chrome.runtime.sendMessage({ type: 'Nudge:focus', action: 'getProfile', payload: {} });
       const profile = res && res.payload ? res.payload.profile : null;
       const msg = copyFor(profile?.mbti);
       if (personalEl) personalEl.textContent = msg;
@@ -123,7 +123,7 @@
 
     async function refreshStatus() {
       try {
-        const res = await chrome.runtime.sendMessage({ type: 'mindshift:focus', action: 'getStatus', payload: {} });
+        const res = await chrome.runtime.sendMessage({ type: 'Nudge:focus', action: 'getStatus', payload: {} });
         const st = res && res.payload ? res.payload : null;
         const active = !!st?.active;
         const mode = st?.mode || 'idle';
@@ -163,7 +163,7 @@
           try {
             if (currentTabId != null) {
               await chrome.runtime.sendMessage({
-                type: 'mindshift:focus',
+                type: 'Nudge:focus',
                 action: 'goBack',
                 payload: { tabId: currentTabId }
               });
@@ -184,14 +184,14 @@
       const domain = u.hostname.replace(/^www\./, '');
 
       await chrome.runtime.sendMessage({
-        type: 'mindshift:focus',
+        type: 'Nudge:focus',
         action: 'temporaryAllow',
         payload: { domain, minutes }
       });
 
       // Also start a break so UI reflects state
       await chrome.runtime.sendMessage({
-        type: 'mindshift:focus',
+        type: 'Nudge:focus',
         action: 'startBreak',
         payload: { durationMinutes: minutes }
       });
@@ -261,7 +261,7 @@
 
     resumeBtn?.addEventListener('click', async () => {
       try {
-        await chrome.runtime.sendMessage({ type: 'mindshift:focus', action: 'resumeSession', payload: {} });
+        await chrome.runtime.sendMessage({ type: 'Nudge:focus', action: 'resumeSession', payload: {} });
         await new Promise((r)=>setTimeout(r,200));
         refreshStatus();
       } catch {}

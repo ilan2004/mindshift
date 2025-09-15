@@ -267,7 +267,7 @@ export const MBTI_THEMES = {
 // Get personality type from localStorage
 function getPersonalityType() {
   try {
-    return localStorage.getItem('mindshift_personality_type') || 'INFP';
+    return localStorage.getItem('Nudge_personality_type') || 'INFP';
   } catch {
     return 'INFP';
   }
@@ -365,7 +365,7 @@ function getGenderAwareColors(personalityType, gender) {
 // Get current theme preference (personality vs mint)
 export function getThemePreference() {
   try {
-    return localStorage.getItem('mindshift_theme_mode') || 'personality';
+    return localStorage.getItem('Nudge_theme_mode') || 'personality';
   } catch {
     return 'personality';
   }
@@ -374,7 +374,7 @@ export function getThemePreference() {
 // Set theme preference (personality vs mint)
 export function setThemePreference(mode) {
   try {
-    localStorage.setItem('mindshift_theme_mode', mode);
+    localStorage.setItem('Nudge_theme_mode', mode);
   } catch {
     console.warn('Could not save theme preference');
   }
@@ -389,7 +389,7 @@ export function getCurrentPersonalityTheme() {
   if (themeMode === 'mint') {
     // Return mint theme
     return {
-      name: 'MindShift Default',
+      name: 'Nudge Default',
       group: 'default',
       currentMode: 'mint',
       colors: {

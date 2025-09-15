@@ -96,8 +96,8 @@ export default function RetakeQuizModal({ onClose }) {
 
     // Save to localStorage
     try {
-      localStorage.setItem('mindshift_personality_type', result);
-      localStorage.setItem('mindshift_profile_seen', 'false'); // Show profile again
+      localStorage.setItem('Nudge_personality_type', result);
+      localStorage.setItem('Nudge_profile_seen', 'false'); // Show profile again
       
       // Navigate to new type page
       setTimeout(() => {

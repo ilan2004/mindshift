@@ -1,7 +1,7 @@
 // Personalization Profile System
 // Manages user preferences, learned behaviors, and personalization data
 
-const STORAGE_KEY = 'mindshift_personalization_profile';
+const STORAGE_KEY = 'Nudge_personalization_profile';
 
 // Default personalization profile structure
 export const DEFAULT_PROFILE = {

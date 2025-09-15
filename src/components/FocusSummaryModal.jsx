@@ -34,8 +34,8 @@ export default function FocusSummaryModal() {
 
   const computeToday = () => {
     const key = todayKey();
-    const state = readJSON(`mindshift_quests_${key}`, {});
-    const custom = readJSON(`mindshift_custom_quests_${key}`, []);
+    const state = readJSON(`Nudge_quests_${key}`, {});
+    const custom = readJSON(`Nudge_custom_quests_${key}`, []);
     const all = [...DEFAULT_QUESTS, ...(Array.isArray(custom) ? custom : [])];
     const completedIds = new Set(Object.keys(state).filter((k) => !!state[k]));
     let total = 0;
@@ -56,14 +56,14 @@ export default function FocusSummaryModal() {
       setSessionMinutes(m);
       // Read current counters
       try {
-        setPoints(readNumber("mindshift_points", 0));
-        setStreak(readNumber("mindshift_streak", 0));
+        setPoints(readNumber("Nudge_points", 0));
+        setStreak(readNumber("Nudge_streak", 0));
       } catch {}
       computeToday();
       setOpen(true);
     };
-    window.addEventListener("mindshift:session:completed", onDone);
-    return () => window.removeEventListener("mindshift:session:completed", onDone);
+    window.addEventListener("Nudge:session:completed", onDone);
+    return () => window.removeEventListener("Nudge:session:completed", onDone);
   }, []);
 
   const close = () => setOpen(false);

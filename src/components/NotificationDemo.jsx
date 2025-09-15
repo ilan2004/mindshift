@@ -19,7 +19,7 @@ export default function NotificationDemo() {
       title: 'Test Basic Notification',
       action: () => addNotification({
         type: NOTIFICATION_TYPES.INFO,
-        title: 'Hello MindShift!',
+        title: 'Hello Nudge!',
         message: 'This is a basic info notification with the box-shadow UI style.'
       })
     },
@@ -88,7 +88,7 @@ export default function NotificationDemo() {
           🔔 Notification System Demo
         </h2>
         <p className="text-sm text-neutral-600">
-          Test the MindShift notification system with different types of alerts, nudges, and peer activities.
+          Test the Nudge notification system with different types of alerts, nudges, and peer activities.
         </p>
       </div>
 
@@ -113,7 +113,7 @@ export default function NotificationDemo() {
       <div className="mt-6 p-4 rounded-lg" style={{ background: 'rgba(0,0,0,0.05)' }}>
         <h3 className="text-sm font-semibold mb-2">💡 Features:</h3>
         <ul className="text-xs text-neutral-600 space-y-1">
-          <li>• Box-shadow UI styling matching MindShift design</li>
+          <li>• Box-shadow UI styling matching Nudge design</li>
           <li>• Smooth animations and hover effects</li>
           <li>• Auto-dismiss with progress bar</li>
           <li>• Actionable notifications with callbacks</li>

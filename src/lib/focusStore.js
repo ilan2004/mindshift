@@ -1,6 +1,6 @@
 import { getSupabaseClient } from "./supabase";
 
-const KEY_LOCAL_USER = "mindshift_user_id";
+const KEY_LOCAL_USER = "nudge_user_id";
 
 export function getLocalUserId() {
   if (typeof window === "undefined") return null;

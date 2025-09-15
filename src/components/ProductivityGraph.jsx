@@ -76,7 +76,7 @@ function mockSessions(personalityType = null) {
 export default function ProductivityGraph({ maxMinutes = 120, personalityType = null }) {
   // Get personality type from localStorage or props
   const mbti = personalityType || (() => {
-    try { return localStorage.getItem("mindshift_personality_type") || ""; } catch { return ""; }
+    try { return localStorage.getItem("Nudge_personality_type") || ""; } catch { return ""; }
   })();
   
   // Personality-specific messaging

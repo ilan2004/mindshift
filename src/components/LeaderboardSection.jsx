@@ -27,9 +27,9 @@ function useStats() {
   const [stats, setStats] = useState({ points: 0, streak: 0, focusHours: 0 });
   useEffect(() => {
     const recalc = () => {
-      const points = readNumber("mindshift_points", 0);
-      const streak = readNumber("mindshift_streak", 0);
-      const sessions = readJSON("mindshift_focus_sessions", []);
+      const points = readNumber("Nudge_points", 0);
+      const streak = readNumber("Nudge_streak", 0);
+      const sessions = readJSON("Nudge_focus_sessions", []);
       const totalMinutes = Array.isArray(sessions) ? sessions.reduce((sum, s) => sum + (Number(s?.minutes) || 0), 0) : 0;
       const focusHours = +(totalMinutes / 60).toFixed(1);
       setStats({ points, streak, focusHours });
@@ -37,16 +37,16 @@ function useStats() {
     recalc();
     const onStorage = (e) => {
       if (!e || !e.key) return;
-      if (["mindshift_points", "mindshift_streak", "mindshift_focus_sessions"].includes(e.key)) recalc();
+      if (["Nudge_points", "Nudge_streak", "Nudge_focus_sessions"].includes(e.key)) recalc();
     };
     const onCustom = () => recalc();
     window.addEventListener("storage", onStorage);
-    window.addEventListener("mindshift:counters:update", onCustom);
-    window.addEventListener("mindshift:session:completed", onCustom);
+    window.addEventListener("Nudge:counters:update", onCustom);
+    window.addEventListener("Nudge:session:completed", onCustom);
     return () => {
       window.removeEventListener("storage", onStorage);
-      window.removeEventListener("mindshift:counters:update", onCustom);
-      window.removeEventListener("mindshift:session:completed", onCustom);
+      window.removeEventListener("Nudge:counters:update", onCustom);
+      window.removeEventListener("Nudge:session:completed", onCustom);
     };
   }, []);
   return stats;
@@ -60,7 +60,7 @@ export default function LeaderboardSection({ personalityType }) {
 
   // Decide which two tabs to show based on personality cluster
   useEffect(() => {
-    const mbti = personalityType || readString("mindshift_personality_type", "");
+    const mbti = personalityType || readString("Nudge_personality_type", "");
     setUserPersonality(mbti);
     const cluster = mbtiToCluster(mbti);
     let tabs = ["points", "streak"]; // default

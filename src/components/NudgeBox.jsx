@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-const MSG_REQUEST = "mindshift:focus";
-const MSG_RESPONSE = "mindshift:focus:status";
+const MSG_REQUEST = "Nudge:focus";
+const MSG_RESPONSE = "Nudge:focus:status";
 
 function useFocusStatus() {
   const [status, setStatus] = useState({ active: false, mode: "idle", remainingMs: 0 });
@@ -47,23 +47,23 @@ export default function NudgeBox({ tone }) {
 
   useEffect(() => {
     const read = () => {
-      setPoints(readNumber("mindshift_points"));
-      setStreak(readNumber("mindshift_streak"));
-      setPersonality((readString("mindshift_personality_type", "ENFJ") || "ENFJ").toUpperCase());
+      setPoints(readNumber("Nudge_points"));
+      setStreak(readNumber("Nudge_streak"));
+      setPersonality((readString("Nudge_personality_type", "ENFJ") || "ENFJ").toUpperCase());
     };
     read();
     const onStorage = (e) => {
       if (!e || !e.key) return;
-      if (["mindshift_points", "mindshift_streak", "mindshift_personality_type"].includes(e.key)) read();
+      if (["Nudge_points", "Nudge_streak", "Nudge_personality_type"].includes(e.key)) read();
     };
     const onCustom = () => read();
     window.addEventListener("storage", onStorage);
-    window.addEventListener("mindshift:counters:update", onCustom);
-    window.addEventListener("mindshift:session:completed", onCustom);
+    window.addEventListener("Nudge:counters:update", onCustom);
+    window.addEventListener("Nudge:session:completed", onCustom);
     return () => {
       window.removeEventListener("storage", onStorage);
-      window.removeEventListener("mindshift:counters:update", onCustom);
-      window.removeEventListener("mindshift:session:completed", onCustom);
+      window.removeEventListener("Nudge:counters:update", onCustom);
+      window.removeEventListener("Nudge:session:completed", onCustom);
     };
   }, []);
 
@@ -156,7 +156,7 @@ export default function NudgeBox({ tone }) {
             // prompt a status refresh and focus start intent
             window.postMessage({ type: MSG_REQUEST, action: "getStatus", payload: {} }, "*");
             // Consumers can listen to this to open timer UI or prompt intent entry
-            window.dispatchEvent(new CustomEvent("mindshift:nudge:cta", { detail: { action: "focus_or_intent" } }));
+            window.dispatchEvent(new CustomEvent("Nudge:nudge:cta", { detail: { action: "focus_or_intent" } }));
           }}>
             {nudge.cta}
           </button>

@@ -56,29 +56,29 @@ export default function ContractTracker({ onSelect }) {
       if (d.status !== undefined) setStatusFilters(new Set(d.status ? d.status.split(",") : []));
       if (d.type !== undefined) setTypeFilters(new Set(d.type ? d.type.split(",") : []));
     };
-    window.addEventListener("mindshift:stakes:update", onUpdate);
+    window.addEventListener("Nudge:stakes:update", onUpdate);
     window.addEventListener("popstate", onPop);
-    window.addEventListener("mindshift:filters:set", onFilterSet);
+    window.addEventListener("Nudge:filters:set", onFilterSet);
     return () => {
-      window.removeEventListener("mindshift:stakes:update", onUpdate);
+      window.removeEventListener("Nudge:stakes:update", onUpdate);
       window.removeEventListener("popstate", onPop);
-      window.removeEventListener("mindshift:filters:set", onFilterSet);
+      window.removeEventListener("Nudge:filters:set", onFilterSet);
     };
   }, []);
 
   const setStatus = async (id, status) => {
     await updateStakeStatus(id, status);
-    window.dispatchEvent(new Event("mindshift:stakes:update"));
+    window.dispatchEvent(new Event("Nudge:stakes:update"));
   };
 
   const remove = async (id) => {
     await deleteStake(id);
-    window.dispatchEvent(new Event("mindshift:stakes:update"));
+    window.dispatchEvent(new Event("Nudge:stakes:update"));
   };
 
   const togglePin = async (id, next) => {
     await updateStake(id, { pinned: next });
-    window.dispatchEvent(new Event("mindshift:stakes:update"));
+    window.dispatchEvent(new Event("Nudge:stakes:update"));
   };
 
   const filtered = useMemo(() => {

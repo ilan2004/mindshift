@@ -45,7 +45,7 @@ export default function RootLayout({ children }) {
               (function() {
                 'use strict';
                 function getPersonalityType() {
-                  try { return localStorage.getItem('mindshift_personality_type') || 'INFP'; } catch { return 'INFP'; }
+                  try { return localStorage.getItem('nudge_personality_type') || 'INFP'; } catch { return 'INFP'; }
                 }
                 function getGender() {
                   try {
@@ -54,7 +54,7 @@ export default function RootLayout({ children }) {
                   } catch { return null; }
                 }
                 function getThemePreference() {
-                  try { return localStorage.getItem('mindshift_theme_mode') || 'personality'; } catch { return 'personality'; }
+                  try { return localStorage.getItem('nudge_theme_mode') || 'personality'; } catch { return 'personality'; }
                 }
                 const MBTI_COLORS = {
                   'INTJ': { primary: 'var(--color-purple-400)', text: 'var(--color-green-900)' },

@@ -1,5 +1,5 @@
 /**
- * 🎨 MindShift Personality Color Utilities
+ * 🎨 Nudge Personality Color Utilities
  * Dynamic color selection based on MBTI personality and gender
  */
 

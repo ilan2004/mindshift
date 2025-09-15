@@ -49,7 +49,7 @@ function generateMockPeerActivities() {
 
 function getStoredActivities() {
   try {
-    const stored = localStorage.getItem("mindshift_activity_feed") || "[]";
+    const stored = localStorage.getItem("Nudge_activity_feed") || "[]";
     return JSON.parse(stored);
   } catch {
     return [];
@@ -60,7 +60,7 @@ function saveActivity(activity) {
   try {
     const activities = getStoredActivities();
     const updated = [activity, ...activities].slice(0, 50); // Keep last 50 activities
-    localStorage.setItem("mindshift_activity_feed", JSON.stringify(updated));
+    localStorage.setItem("Nudge_activity_feed", JSON.stringify(updated));
     return updated;
   } catch {
     return [];
@@ -143,9 +143,9 @@ export default function ActivityFeed() {
       setActivities(combined);
     };
 
-    window.addEventListener("mindshift:session:completed", handleSessionCompleted);
-    window.addEventListener("mindshift:focus:start_template", handleFocusStart);
-    window.addEventListener("mindshift:achievement:unlocked", handleAchievement);
+    window.addEventListener("Nudge:session:completed", handleSessionCompleted);
+    window.addEventListener("Nudge:focus:start_template", handleFocusStart);
+    window.addEventListener("Nudge:achievement:unlocked", handleAchievement);
 
     // Refresh peer activities every 30 seconds to simulate real-time
     const refreshInterval = setInterval(() => {
@@ -158,9 +158,9 @@ export default function ActivityFeed() {
     }, 30000);
 
     return () => {
-      window.removeEventListener("mindshift:session:completed", handleSessionCompleted);
-      window.removeEventListener("mindshift:focus:start_template", handleFocusStart);
-      window.removeEventListener("mindshift:achievement:unlocked", handleAchievement);
+      window.removeEventListener("Nudge:session:completed", handleSessionCompleted);
+      window.removeEventListener("Nudge:focus:start_template", handleFocusStart);
+      window.removeEventListener("Nudge:achievement:unlocked", handleAchievement);
       clearInterval(refreshInterval);
     };
   }, []);

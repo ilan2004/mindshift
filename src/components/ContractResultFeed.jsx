@@ -36,7 +36,7 @@ export default function ContractResultFeed() {
       }
     })();
     const onStorage = (e) => {
-      if (e?.key === "mindshift_stakes") {
+      if (e?.key === "Nudge_stakes") {
         try {
           const next = JSON.parse(e.newValue || "[]");
           setItems(next || []);

@@ -284,7 +284,7 @@ export default function TestRunner({ mode = "general", onComplete }) {
         const mbti = (res?.profile || "").toUpperCase();
         try {
           if (mbti) {
-            localStorage.setItem("mindshift_personality_type", mbti);
+            localStorage.setItem("Nudge_personality_type", mbti);
             // Immediately refresh theme with new personality type
             try {
               window.dispatchEvent(new CustomEvent('personality-updated', { 

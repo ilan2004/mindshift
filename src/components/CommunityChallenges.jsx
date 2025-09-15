@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import HelpBulb from "./HelpBulb";
 
-const LS_KEY = "mindshift_challenges";
+const LS_KEY = "Nudge_challenges";
 
 // Personality-specific challenges
 const PERSONALITY_CHALLENGES = {

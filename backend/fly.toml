@@ -1,6 +1,6 @@
-# Fly.io config for MindShift backend
-# Replace 'mindshift-backend' with your Fly app name after `fly launch`
-app = "mindshift-backend"
+# Fly.io config for Nudge backend
+# Replace 'Nudge-backend' with your Fly app name after `fly launch`
+app = "Nudge-backend"
 primary_region = "iad"
 kill_signal = "SIGINT"
 kill_timeout = "5s"
@@ -11,7 +11,7 @@ kill_timeout = "5s"
 [env]
   PORT = "8080"
   # Comma-separated list of allowed origins for CORS
-  # Example: https://mindshift.vercel.app,https://www.mindshift.app
+  # Example: https://Nudge.vercel.app,https://www.Nudge.app
   ALLOWED_ORIGINS = "http://localhost:3000,https://localhost"
 
 [http_service]

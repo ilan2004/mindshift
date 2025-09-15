@@ -8,7 +8,7 @@ import { getPersonalityTemplates, getTimeBasedTemplates } from '../lib/mbtiTempl
 // Get personality type from localStorage
 function getPersonalityType() {
   try {
-    const profile = JSON.parse(localStorage.getItem('mindshift_user_profile') || '{}');
+    const profile = JSON.parse(localStorage.getItem('Nudge_user_profile') || '{}');
     return profile.personalityType || 'INFP';
   } catch {
     return 'INFP';
@@ -18,8 +18,8 @@ function getPersonalityType() {
 // Get current user progress for context
 function getUserContext() {
   try {
-    const streak = Number(localStorage.getItem('mindshift_streak')) || 0;
-    const sessions = JSON.parse(localStorage.getItem('mindshift_focus_sessions') || '[]');
+    const streak = Number(localStorage.getItem('Nudge_streak')) || 0;
+    const sessions = JSON.parse(localStorage.getItem('Nudge_focus_sessions') || '[]');
     const todaySession = sessions.find(s => s.date === new Date().toLocaleDateString('en-CA'));
     const todayMinutes = todaySession?.minutes || 0;
     

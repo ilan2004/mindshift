@@ -1,7 +1,7 @@
-# MindShift – Personality-Aware Productivity Platform
+# Nudge – Personality-Aware Productivity Platform
 
 ## 1) Executive Summary
-MindShift combats digital distraction by combining AI-driven personality profiling with commitment mechanisms and an attention-aware experience across web and a browser extension. Instead of generic blockers, MindShift analyzes a user’s prior chat patterns to generate a personalized assessment, assigns a profile, and then adapts nudges, focus timers, and contracts to the user’s actual behavior. A dashboard and leaderboard turn productivity into a social and gamified habit.
+Nudge combats digital distraction by combining AI-driven personality profiling with commitment mechanisms and an attention-aware experience across web and a browser extension. Instead of generic blockers, Nudge analyzes a user’s prior chat patterns to generate a personalized assessment, assigns a profile, and then adapts nudges, focus timers, and contracts to the user’s actual behavior. A dashboard and leaderboard turn productivity into a social and gamified habit.
 
 - __Core proposition__: Personalized, adaptive focus system that aligns interventions to individual psychology.
 - __Primary users__: Students, indie builders, knowledge workers who want to reduce distraction and sustain deep work.
@@ -19,7 +19,7 @@ __Therefore__: Users need an intervention system that adapts to their psychology
 ---
 
 ## 3) Solution Overview
-MindShift delivers a personality-aware productivity loop:
+Nudge delivers a personality-aware productivity loop:
 1. __Import History__ – User provides ChatGPT conversation history (or seeded messages) to bootstrap a context-rich assessment.
 2. __Generate Questions__ – Backend turns history into 10–15 tailored questions (scale or free-form) that probe habits and values.
 3. __Assign Profile__ – Answers map to an archetype (e.g., Achiever, Explorer, Diplomat, Analyst) and trait scores.

@@ -430,7 +430,7 @@ export const MBTI_THEMES = {
 // Get personality type from localStorage
 function getPersonalityType() {
   try {
-    const profile = JSON.parse(localStorage.getItem('mindshift_user_profile') || '{}');
+    const profile = JSON.parse(localStorage.getItem('Nudge_user_profile') || '{}');
     return profile.personalityType || 'INFP';
   } catch {
     return 'INFP';
@@ -440,7 +440,7 @@ function getPersonalityType() {
 // Get current theme preference (light/dark)
 export function getThemePreference() {
   try {
-    return localStorage.getItem('mindshift_theme') || 'dark';
+    return localStorage.getItem('Nudge_theme') || 'dark';
   } catch {
     return 'dark';
   }
@@ -449,7 +449,7 @@ export function getThemePreference() {
 // Set theme preference
 export function setThemePreference(theme) {
   try {
-    localStorage.setItem('mindshift_theme', theme);
+    localStorage.setItem('Nudge_theme', theme);
     // Apply theme to document
     document.documentElement.classList.toggle('light', theme === 'light');
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -617,7 +617,7 @@ export const themeUtils = {
 export function initializeThemeSystem() {
   // Apply initial theme based on system preference if not set
   const savedTheme = getThemePreference();
-  if (!localStorage.getItem('mindshift_theme')) {
+  if (!localStorage.getItem('Nudge_theme')) {
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setThemePreference(systemPrefersDark ? 'dark' : 'light');
   }
@@ -627,7 +627,7 @@ export function initializeThemeSystem() {
   
   // Listen for system theme changes
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (!localStorage.getItem('mindshift_theme_user_set')) {
+    if (!localStorage.getItem('Nudge_theme_user_set')) {
       setThemePreference(e.matches ? 'dark' : 'light');
       applyPersonalityTheme();
     }

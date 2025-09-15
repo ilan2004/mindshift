@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 
 function getPersonalityType() {
   try {
-    return localStorage.getItem("mindshift_personality_type") || "";
+    return localStorage.getItem("Nudge_personality_type") || "";
   } catch {
     return "";
   }
@@ -12,7 +12,7 @@ function getPersonalityType() {
 
 function getRecentSessions() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_recent_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_recent_sessions") || "[]");
     return Array.isArray(sessions) ? sessions.slice(0, 3) : [];
   } catch {
     return [];
@@ -24,7 +24,7 @@ function saveRecentSession(duration, name) {
     const sessions = getRecentSessions();
     const newSession = { duration, name, timestamp: Date.now() };
     const updated = [newSession, ...sessions.filter(s => s.duration !== duration || s.name !== name)].slice(0, 5);
-    localStorage.setItem("mindshift_recent_sessions", JSON.stringify(updated));
+    localStorage.setItem("Nudge_recent_sessions", JSON.stringify(updated));
   } catch {}
 }
 
@@ -149,7 +149,7 @@ export default function QuickFocusLauncher() {
 
     // Dispatch focus session start event
     try {
-      const event = new CustomEvent("mindshift:focus:start_template", {
+      const event = new CustomEvent("Nudge:focus:start_template", {
         detail: { duration, template: name }
       });
       window.dispatchEvent(event);
@@ -158,7 +158,7 @@ export default function QuickFocusLauncher() {
     // Also send message to extension if available
     try {
       window.postMessage({
-        type: "mindshift:focus",
+        type: "Nudge:focus",
         action: "startSession",
         payload: { durationMinutes: duration }
       }, "*");

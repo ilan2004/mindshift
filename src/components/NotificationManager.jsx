@@ -8,7 +8,7 @@ import NotificationContext from '@/contexts/NotificationContext';
 // Sound effects for different notification types
 const playNotificationSound = (type) => {
   // Only play sounds if user hasn't disabled them
-  if (typeof window !== 'undefined' && !localStorage.getItem('mindshift_sounds_disabled')) {
+  if (typeof window !== 'undefined' && !localStorage.getItem('Nudge_sounds_disabled')) {
     try {
       const context = new (window.AudioContext || window.webkitAudioContext)();
       let frequency;
@@ -75,9 +75,9 @@ function NotificationContainerWithSound() {
     };
     
     if (typeof window !== 'undefined') {
-      window.addEventListener('mindshift:notification:added', handleNotificationAdded);
+      window.addEventListener('Nudge:notification:added', handleNotificationAdded);
       return () => {
-        window.removeEventListener('mindshift:notification:added', handleNotificationAdded);
+        window.removeEventListener('Nudge:notification:added', handleNotificationAdded);
       };
     }
   }, []);
@@ -102,7 +102,7 @@ function NotificationSoundController() {
   
   React.useEffect(() => {
     // Read sound preference from localStorage
-    const disabled = localStorage.getItem('mindshift_sounds_disabled') === 'true';
+    const disabled = localStorage.getItem('Nudge_sounds_disabled') === 'true';
     setSoundsEnabled(!disabled);
   }, []);
   
@@ -110,11 +110,11 @@ function NotificationSoundController() {
     const newState = !soundsEnabled;
     setSoundsEnabled(newState);
     if (newState) {
-      localStorage.removeItem('mindshift_sounds_disabled');
+      localStorage.removeItem('Nudge_sounds_disabled');
       // Play a test sound
       playNotificationSound('success');
     } else {
-      localStorage.setItem('mindshift_sounds_disabled', 'true');
+      localStorage.setItem('Nudge_sounds_disabled', 'true');
     }
   };
   
@@ -146,7 +146,7 @@ export function useNotificationsWithSound() {
     
     // Dispatch event for sound playing
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('mindshift:notification:added', {
+      window.dispatchEvent(new CustomEvent('Nudge:notification:added', {
         detail: { type: notification.type }
       }));
     }

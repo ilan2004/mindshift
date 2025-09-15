@@ -36,7 +36,7 @@ import mbtiThemes, {
 
 function readMBTI() {
   if (typeof window === 'undefined') return "";
-  try { return (localStorage.getItem("mindshift_personality_type") || "").toUpperCase(); } catch { return ""; }
+  try { return (localStorage.getItem("Nudge_personality_type") || "").toUpperCase(); } catch { return ""; }
 }
 
 function mbtiToCluster(mbti) {
@@ -75,7 +75,7 @@ export default function Home() {
 
   useEffect(() => { 
     const currentMbti = readMBTI();
-    if (currentMbti && !localStorage.getItem("mindshift_profile_seen")) {
+    if (currentMbti && !localStorage.getItem("Nudge_profile_seen")) {
       setShowProfile(true);
     }
     setMbti(currentMbti); 
@@ -87,19 +87,19 @@ export default function Home() {
   }
   function readSessions() {
     if (typeof window === 'undefined') return [];
-    try { const raw = localStorage.getItem("mindshift_focus_sessions"); const arr = raw? JSON.parse(raw) : []; return Array.isArray(arr)? arr : []; } catch { return []; }
+    try { const raw = localStorage.getItem("Nudge_focus_sessions"); const arr = raw? JSON.parse(raw) : []; return Array.isArray(arr)? arr : []; } catch { return []; }
   }
   function writeSessions(list) {
     if (typeof window === 'undefined') return;
-    try { localStorage.setItem("mindshift_focus_sessions", JSON.stringify(list)); } catch {}
+    try { localStorage.setItem("Nudge_focus_sessions", JSON.stringify(list)); } catch {}
   }
   function logRecent(evt) {
     try {
-      const raw = localStorage.getItem("mindshift_recent_events");
+      const raw = localStorage.getItem("Nudge_recent_events");
       const arr = raw ? JSON.parse(raw) : [];
       const entry = { id: `${Date.now()}_${Math.random().toString(36).slice(2)}`, ts: Date.now(), ...evt };
       const next = [entry, ...arr].slice(0, 10);
-      localStorage.setItem("mindshift_recent_events", JSON.stringify(next));
+      localStorage.setItem("Nudge_recent_events", JSON.stringify(next));
     } catch {}
   }
   const computeTodayMinutes = useCallback(() => {
@@ -118,7 +118,7 @@ export default function Home() {
   
   const readStreak = useCallback(() => { 
     if (typeof window === 'undefined') return 0;
-    try { return Number(localStorage.getItem("mindshift_streak"))||0; } catch { return 0; } 
+    try { return Number(localStorage.getItem("Nudge_streak"))||0; } catch { return 0; } 
   }, []);
   
   const getActive = useCallback(() => {
@@ -167,7 +167,7 @@ export default function Home() {
         console.log('🔒 Content-gated session with URL:', sess.attachment_url);
       }
       
-      try { window.dispatchEvent(new Event("mindshift:session:started")); } catch {}
+      try { window.dispatchEvent(new Event("Nudge:session:started")); } catch {}
       refreshToday();
     };
     const onComplete = () => { logRecent({ kind: "session_done", title: "Session completed", meta: dayKey() }); refreshToday(); };
@@ -204,26 +204,26 @@ export default function Home() {
       }
     };
     const onBreakReq = () => setBreakConfirm(true);
-    window.addEventListener("mindshift:focus:start_template", onStart);
-    window.addEventListener("mindshift:session:started", refreshToday);
-    window.addEventListener("mindshift:session:completed", onComplete);
-    window.addEventListener("mindshift:badges:update", onBadge);
-    window.addEventListener("mindshift:blocker:quiz", onQuiz);
-    window.addEventListener("mindshift:focus:break_request", onBreakReq);
+    window.addEventListener("Nudge:focus:start_template", onStart);
+    window.addEventListener("Nudge:session:started", refreshToday);
+    window.addEventListener("Nudge:session:completed", onComplete);
+    window.addEventListener("Nudge:badges:update", onBadge);
+    window.addEventListener("Nudge:blocker:quiz", onQuiz);
+    window.addEventListener("Nudge:focus:break_request", onBreakReq);
     refreshToday();
     return () => {
-      window.removeEventListener("mindshift:focus:start_template", onStart);
-      window.removeEventListener("mindshift:session:started", refreshToday);
-      window.removeEventListener("mindshift:session:completed", onComplete);
-      window.removeEventListener("mindshift:badges:update", onBadge);
-      window.removeEventListener("mindshift:blocker:quiz", onQuiz);
-      window.removeEventListener("mindshift:focus:break_request", onBreakReq);
+      window.removeEventListener("Nudge:focus:start_template", onStart);
+      window.removeEventListener("Nudge:session:started", refreshToday);
+      window.removeEventListener("Nudge:session:completed", onComplete);
+      window.removeEventListener("Nudge:badges:update", onBadge);
+      window.removeEventListener("Nudge:blocker:quiz", onQuiz);
+      window.removeEventListener("Nudge:focus:break_request", onBreakReq);
     };
   }, [refreshToday]);
 
   const handleProfileDone = () => {
     setShowProfile(false);
-    localStorage.setItem("mindshift_profile_seen", "true");
+    localStorage.setItem("Nudge_profile_seen", "true");
   };
 
   const cluster = useMemo(() => mbtiToCluster(mbti), [mbti]);
@@ -243,15 +243,15 @@ export default function Home() {
         duration: template.duration,
         startedAt: Date.now() 
       };
-      localStorage.setItem("mindshift_last_template", JSON.stringify(payload));
-      window.dispatchEvent(new CustomEvent("mindshift:focus:start_template", { detail: payload }));
+      localStorage.setItem("Nudge_last_template", JSON.stringify(payload));
+      window.dispatchEvent(new CustomEvent("Nudge:focus:start_template", { detail: payload }));
     } catch {}
   };
   
   // Test content quiz functionality
   const testContentQuiz = (url) => {
     try {
-      window.dispatchEvent(new CustomEvent("mindshift:blocker:quiz", { detail: { url } }));
+      window.dispatchEvent(new CustomEvent("Nudge:blocker:quiz", { detail: { url } }));
     } catch {}
   };
 
@@ -614,14 +614,14 @@ function TemplatesGrid() {
   const startTemplate = (template, extra = {}) => {
     try {
       const payload = { template, ...extra, startedAt: Date.now() };
-      localStorage.setItem("mindshift_last_template", JSON.stringify(payload));
-      window.dispatchEvent(new CustomEvent("mindshift:focus:start_template", { detail: payload }));
+      localStorage.setItem("Nudge_last_template", JSON.stringify(payload));
+      window.dispatchEvent(new CustomEvent("Nudge:focus:start_template", { detail: payload }));
     } catch {}
   };
   
   const testContentQuiz = (url) => {
     try {
-      window.dispatchEvent(new CustomEvent("mindshift:blocker:quiz", { detail: { url } }));
+      window.dispatchEvent(new CustomEvent("Nudge:blocker:quiz", { detail: { url } }));
     } catch {}
   };
 
@@ -701,17 +701,17 @@ function RecentFeed() {
   const [items, setItems] = useState([]);
   useEffect(() => {
     const read = () => {
-      try { const raw = localStorage.getItem("mindshift_recent_events"); const arr = raw? JSON.parse(raw): []; setItems(Array.isArray(arr)? arr.slice(0,3): []); } catch { setItems([]); }
+      try { const raw = localStorage.getItem("Nudge_recent_events"); const arr = raw? JSON.parse(raw): []; setItems(Array.isArray(arr)? arr.slice(0,3): []); } catch { setItems([]); }
     };
     read();
     const onAny = () => read();
-    window.addEventListener("mindshift:session:started", onAny);
-    window.addEventListener("mindshift:session:completed", onAny);
-    window.addEventListener("mindshift:badges:update", onAny);
+    window.addEventListener("Nudge:session:started", onAny);
+    window.addEventListener("Nudge:session:completed", onAny);
+    window.addEventListener("Nudge:badges:update", onAny);
     return () => {
-      window.removeEventListener("mindshift:session:started", onAny);
-      window.removeEventListener("mindshift:session:completed", onAny);
-      window.removeEventListener("mindshift:badges:update", onAny);
+      window.removeEventListener("Nudge:session:started", onAny);
+      window.removeEventListener("Nudge:session:completed", onAny);
+      window.removeEventListener("Nudge:badges:update", onAny);
     };
   }, []);
   if (items.length === 0) return null;
@@ -794,7 +794,7 @@ function QuizGateModal({ items, url, loading, metadata, error, onClose }) {
       // pass if at least 1 correct
       const passed = (ok? correct + 1 : correct) >= 1;
       if (passed) {
-        try { window.dispatchEvent(new CustomEvent("mindshift:blocker:allow_temp", { detail: { url, minutes: 2 } })); } catch {}
+        try { window.dispatchEvent(new CustomEvent("Nudge:blocker:allow_temp", { detail: { url, minutes: 2 } })); } catch {}
       }
       onClose();
     } else {
@@ -906,9 +906,9 @@ function BreakConfirmModal({ cluster, onClose }) {
         <h3 className="font-tanker text-2xl tracking-widest text-green" style={{ lineHeight: 1 }}>Take a break?</h3>
         <div className="mt-2 text-sm text-neutral-800">{copy}</div>
         <div className="mt-3 flex flex-wrap gap-2">
-          <button className="nav-pill" onClick={()=>{ try { window.dispatchEvent(new CustomEvent("mindshift:focus:microbreak", { detail: { seconds: 90 } })); } catch {}; onClose(); }}>Take 90s micro-break</button>
-          <button className="nav-pill" onClick={()=>{ try { window.dispatchEvent(new CustomEvent("mindshift:blocker:quiz", { detail: {} })); } catch {}; onClose(); }}>Answer 1 question</button>
-          <button className="nav-pill nav-pill--red" onClick={()=>{ try { window.dispatchEvent(new Event("mindshift:focus:break_confirmed")); } catch {}; onClose(); }}>Break anyway</button>
+          <button className="nav-pill" onClick={()=>{ try { window.dispatchEvent(new CustomEvent("Nudge:focus:microbreak", { detail: { seconds: 90 } })); } catch {}; onClose(); }}>Take 90s micro-break</button>
+          <button className="nav-pill" onClick={()=>{ try { window.dispatchEvent(new CustomEvent("Nudge:blocker:quiz", { detail: {} })); } catch {}; onClose(); }}>Answer 1 question</button>
+          <button className="nav-pill nav-pill--red" onClick={()=>{ try { window.dispatchEvent(new Event("Nudge:focus:break_confirmed")); } catch {}; onClose(); }}>Break anyway</button>
         </div>
         <div className="mt-3 flex justify-end">
           <button className="nav-pill" onClick={onClose}>Keep focusing</button>

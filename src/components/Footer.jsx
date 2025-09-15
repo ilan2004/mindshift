@@ -71,7 +71,7 @@ export default function Footer() {
                   className="font-tanker text-3xl md:text-4xl tracking-widest leading-none"
                   style={{ color: 'var(--color-green-900)' }}
                 >
-                  MindShift
+                  Nudge
                 </h2>
                 <p className="text-sm mt-2 opacity-80" style={{ color: 'var(--color-green-900)' }}>
                   {getMotivationalText()}
@@ -166,7 +166,7 @@ export default function Footer() {
               
               {/* Copyright */}
               <div className="text-sm opacity-70" style={{ color: 'var(--color-green-900)' }}>
-                © {currentYear} MindShift. Built for focused minds.
+                © {currentYear} Nudge. Built for focused minds.
               </div>
               
               {/* Social Links / Actions */}

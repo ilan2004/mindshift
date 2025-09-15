@@ -9,7 +9,7 @@ export default function FinalReveal({ onComplete }) {
 
   useEffect(() => {
     try {
-      const v = localStorage.getItem("mindshift_personality_type") || "";
+      const v = localStorage.getItem("Nudge_personality_type") || "";
       setMbti((v || "").toUpperCase());
     } catch {}
   }, []);
