@@ -26,10 +26,11 @@ origins = [o.strip().rstrip('/') for o in _env_origins.split(",") if o.strip()] 
     "http://127.0.0.1:5173",
     "http://localhost",
     "https://localhost",
+    "https://nudge.starshape.in",
 ]
 # Optional regex to allow wildcard domains (e.g., Vercel previews):
 # Example: ^https://.*\.vercel\.app$
-origin_regex = os.getenv("ALLOWED_ORIGIN_REGEX", "").strip() or r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
+origin_regex = os.getenv("ALLOWED_ORIGIN_REGEX", "").strip() or r"^https?://((localhost|127\.0\.0\.1)(:\d+)?|.*\.starshape\.in)$"
 
 app.add_middleware(
     CORSMiddleware,
