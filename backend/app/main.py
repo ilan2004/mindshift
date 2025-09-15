@@ -17,7 +17,16 @@ app = FastAPI(
 # ---------- CORS ----------
 # Read allowed origins from env (comma-separated). Fallback to common localhost origins.
 _env_origins = os.getenv("ALLOWED_ORIGINS", "").strip()
-origins = [o.strip().rstrip('/') for o in _env_origins.split(",") if o.strip()] or [
+# Parse environment origins, handling both comma and space separation
+env_origin_list = []
+if _env_origins:
+    # Try comma separation first, then space separation
+    if ',' in _env_origins:
+        env_origin_list = [o.strip().rstrip('/') for o in _env_origins.split(",") if o.strip()]
+    else:
+        env_origin_list = [o.strip().rstrip('/') for o in _env_origins.split() if o.strip()]
+
+origins = env_origin_list or [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:3001",
@@ -34,8 +43,8 @@ origin_regex = os.getenv("ALLOWED_ORIGIN_REGEX", "").strip() or r"^https?://((lo
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins if not origin_regex else [],
-    allow_origin_regex=origin_regex,
+    allow_origins=origins,
+    allow_origin_regex=origin_regex if origin_regex else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,6 +57,16 @@ def root():
 @app.get("/healthz")
 def healthz():
     return {"status": "ok"}
+
+@app.get("/debug/cors")
+def debug_cors():
+    """Debug endpoint to check CORS configuration"""
+    return {
+        "allowed_origins": origins,
+        "origin_regex": origin_regex,
+        "env_origins": os.getenv("ALLOWED_ORIGINS", "Not set"),
+        "env_regex": os.getenv("ALLOWED_ORIGIN_REGEX", "Not set"),
+    }
 
 # ---------- BLOCKLIST (static MVP) ----------
 @app.get("/blocklist/domains.txt", response_class=PlainTextResponse)
