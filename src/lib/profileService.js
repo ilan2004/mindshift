@@ -85,7 +85,7 @@ export async function syncProfileData() {
     // Sync to localStorage
     if (profile.username) {
       localStorage.setItem('ms_display_name', profile.username);
-      localStorage.setItem('mindshift_profile_name', profile.username);
+      localStorage.setItem('nudge_profile_name', profile.username);
     }
     
     if (profile.gender) {
@@ -93,36 +93,36 @@ export async function syncProfileData() {
     }
     
     if (profile.avatar_url) {
-      localStorage.setItem('mindshift_profile_avatar_url', profile.avatar_url);
+      localStorage.setItem('nudge_profile_avatar_url', profile.avatar_url);
     }
     
     if (profile.bio) {
-      localStorage.setItem('mindshift_profile_bio', profile.bio);
+      localStorage.setItem('nudge_profile_bio', profile.bio);
     }
     
     if (profile.mbti_type) {
-      localStorage.setItem('mindshift_personality_type', profile.mbti_type);
+      localStorage.setItem('nudge_personality_type', profile.mbti_type);
     }
     
     // Sync stats if available and newer than local
     if (typeof profile.points === 'number') {
-      const localPoints = Number(localStorage.getItem('mindshift_points')) || 0;
+      const localPoints = Number(localStorage.getItem('nudge_points')) || 0;
       if (profile.points > localPoints) {
-        localStorage.setItem('mindshift_points', String(profile.points));
+        localStorage.setItem('nudge_points', String(profile.points));
       }
     }
     
     if (typeof profile.streak === 'number') {
-      const localStreak = Number(localStorage.getItem('mindshift_streak')) || 0;
+      const localStreak = Number(localStorage.getItem('nudge_streak')) || 0;
       if (profile.streak > localStreak) {
-        localStorage.setItem('mindshift_streak', String(profile.streak));
+        localStorage.setItem('nudge_streak', String(profile.streak));
       }
     }
     
     if (typeof profile.total_focus_minutes === 'number') {
-      const localTotal = Number(localStorage.getItem('mindshift_total_focus_time')) || 0;
+      const localTotal = Number(localStorage.getItem('nudge_total_focus_time')) || 0;
       if (profile.total_focus_minutes > localTotal) {
-        localStorage.setItem('mindshift_total_focus_time', String(profile.total_focus_minutes));
+        localStorage.setItem('nudge_total_focus_time', String(profile.total_focus_minutes));
       }
     }
     
@@ -137,14 +137,14 @@ export async function syncProfileData() {
 export async function pushLocalDataToCloud() {
   try {
     const localData = {
-      username: localStorage.getItem('ms_display_name') || localStorage.getItem('mindshift_profile_name'),
+      username: localStorage.getItem('ms_display_name') || localStorage.getItem('nudge_profile_name'),
       gender: localStorage.getItem('ms_gender') === 'W' ? 'female' : 'male',
-      avatar_url: localStorage.getItem('mindshift_profile_avatar_url'),
-      bio: localStorage.getItem('mindshift_profile_bio'),
-      mbti_type: localStorage.getItem('mindshift_personality_type'),
-      points: Number(localStorage.getItem('mindshift_points')) || 0,
-      streak: Number(localStorage.getItem('mindshift_streak')) || 0,
-      total_focus_minutes: Number(localStorage.getItem('mindshift_total_focus_time')) || 0,
+      avatar_url: localStorage.getItem('nudge_profile_avatar_url'),
+      bio: localStorage.getItem('nudge_profile_bio'),
+      mbti_type: localStorage.getItem('nudge_personality_type'),
+      points: Number(localStorage.getItem('nudge_points')) || 0,
+      streak: Number(localStorage.getItem('nudge_streak')) || 0,
+      total_focus_minutes: Number(localStorage.getItem('nudge_total_focus_time')) || 0,
       test_completed: localStorage.getItem('ms_intro_complete') === '1'
     };
     
@@ -172,14 +172,14 @@ export async function getProfileData() {
   // Fallback to localStorage
   try {
     return {
-      username: localStorage.getItem('ms_display_name') || localStorage.getItem('mindshift_profile_name') || '',
+      username: localStorage.getItem('ms_display_name') || localStorage.getItem('nudge_profile_name') || '',
       gender: localStorage.getItem('ms_gender') === 'W' ? 'female' : 'male',
-      avatar_url: localStorage.getItem('mindshift_profile_avatar_url') || '',
-      bio: localStorage.getItem('mindshift_profile_bio') || '',
-      mbti_type: localStorage.getItem('mindshift_personality_type') || '',
-      points: Number(localStorage.getItem('mindshift_points')) || 0,
-      streak: Number(localStorage.getItem('mindshift_streak')) || 0,
-      total_focus_minutes: Number(localStorage.getItem('mindshift_total_focus_time')) || 0,
+      avatar_url: localStorage.getItem('nudge_profile_avatar_url') || '',
+      bio: localStorage.getItem('nudge_profile_bio') || '',
+      mbti_type: localStorage.getItem('nudge_personality_type') || '',
+      points: Number(localStorage.getItem('nudge_points')) || 0,
+      streak: Number(localStorage.getItem('nudge_streak')) || 0,
+      total_focus_minutes: Number(localStorage.getItem('nudge_total_focus_time')) || 0,
       test_completed: localStorage.getItem('ms_intro_complete') === '1'
     };
   } catch (error) {
@@ -193,14 +193,14 @@ export async function saveProfileField(field, value) {
   try {
     // Save to localStorage immediately (instant feedback)
     const localStorageKeys = {
-      username: ['ms_display_name', 'mindshift_profile_name'],
+      username: ['ms_display_name', 'nudge_profile_name'],
       gender: ['ms_gender'],
-      avatar_url: ['mindshift_profile_avatar_url'],
-      bio: ['mindshift_profile_bio'],
-      mbti_type: ['mindshift_personality_type'],
-      points: ['mindshift_points'],
-      streak: ['mindshift_streak'],
-      total_focus_minutes: ['mindshift_total_focus_time']
+      avatar_url: ['nudge_profile_avatar_url'],
+      bio: ['nudge_profile_bio'],
+      mbti_type: ['nudge_personality_type'],
+      points: ['nudge_points'],
+      streak: ['nudge_streak'],
+      total_focus_minutes: ['nudge_total_focus_time']
     };
     
     const keys = localStorageKeys[field] || [];

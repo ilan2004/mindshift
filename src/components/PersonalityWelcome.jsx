@@ -12,7 +12,7 @@ function getTimeOfDay() {
 
 function getPersonalityType() {
   try {
-    return localStorage.getItem("mindshift_personality_type") || "";
+    return localStorage.getItem("Nudge_personality_type") || "";
   } catch {
     return "";
   }
@@ -20,7 +20,7 @@ function getPersonalityType() {
 
 function getCurrentStreak() {
   try {
-    return Number(localStorage.getItem("mindshift_streak")) || 0;
+    return Number(localStorage.getItem("Nudge_streak")) || 0;
   } catch {
     return 0;
   }
@@ -28,7 +28,7 @@ function getCurrentStreak() {
 
 function getTodayFocusMinutes() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_focus_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_focus_sessions") || "[]");
     const today = new Date().toLocaleDateString("en-CA");
     const todaySession = sessions.find(s => s.date === today);
     return todaySession?.minutes || 0;

@@ -15,7 +15,7 @@ export default function PersonalityTypePage() {
   const readStoredType = () => {
     if (typeof window === 'undefined') return '';
     try {
-      return (localStorage.getItem('mindshift_personality_type') || '').toUpperCase();
+      return (localStorage.getItem('nudge_personality_type') || '').toUpperCase();
     } catch {
       return '';
     }

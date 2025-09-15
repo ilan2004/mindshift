@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 function getTodayFocusMinutes() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_focus_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_focus_sessions") || "[]");
     const today = new Date().toLocaleDateString("en-CA");
     const todaySession = sessions.find(s => s.date === today);
     return todaySession?.minutes || 0;
@@ -15,7 +15,7 @@ function getTodayFocusMinutes() {
 
 function getWeeklyFocusMinutes() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_focus_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_focus_sessions") || "[]");
     const today = new Date();
     const weekStart = new Date(today);
     weekStart.setDate(today.getDate() - today.getDay()); // Start of week
@@ -33,7 +33,7 @@ function getWeeklyFocusMinutes() {
 
 function getCurrentStreak() {
   try {
-    return Number(localStorage.getItem("mindshift_streak")) || 0;
+    return Number(localStorage.getItem("Nudge_streak")) || 0;
   } catch {
     return 0;
   }
@@ -41,7 +41,7 @@ function getCurrentStreak() {
 
 function getBlockedToday() {
   try {
-    return Number(localStorage.getItem("mindshift_blocked_today")) || 0;
+    return Number(localStorage.getItem("Nudge_blocked_today")) || 0;
   } catch {
     return 0;
   }
@@ -100,13 +100,13 @@ export default function FocusMetricCard({ metric }) {
     // Listen for updates
     const handleUpdate = () => updateValues();
     window.addEventListener("storage", handleUpdate);
-    window.addEventListener("mindshift:counters:update", handleUpdate);
-    window.addEventListener("mindshift:session:completed", handleUpdate);
+    window.addEventListener("Nudge:counters:update", handleUpdate);
+    window.addEventListener("Nudge:session:completed", handleUpdate);
 
     return () => {
       window.removeEventListener("storage", handleUpdate);
-      window.removeEventListener("mindshift:counters:update", handleUpdate);
-      window.removeEventListener("mindshift:session:completed", handleUpdate);
+      window.removeEventListener("Nudge:counters:update", handleUpdate);
+      window.removeEventListener("Nudge:session:completed", handleUpdate);
     };
   }, [metric]);
 

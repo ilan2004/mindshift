@@ -66,10 +66,10 @@ export function syncTotalFocusMinutes(totalMinutes) {
 // Sync all stats at once (useful for periodic full sync)
 export async function syncAllStats() {
   try {
-    const points = Number(localStorage.getItem('mindshift_points')) || 0;
-    const streak = Number(localStorage.getItem('mindshift_streak')) || 0;
-    const totalMinutes = Number(localStorage.getItem('mindshift_total_focus_time')) || 0;
-    const mbtiType = localStorage.getItem('mindshift_personality_type') || '';
+    const points = Number(localStorage.getItem('Nudge_points')) || 0;
+    const streak = Number(localStorage.getItem('Nudge_streak')) || 0;
+    const totalMinutes = Number(localStorage.getItem('Nudge_total_focus_time')) || 0;
+    const mbtiType = localStorage.getItem('Nudge_personality_type') || '';
 
     // Sync all simultaneously
     const promises = [];
@@ -90,38 +90,38 @@ export function setupAutoSync() {
 
   // Listen for custom events that indicate stats changes
   const handleStatsUpdate = (event) => {
-    if (event.type === 'mindshift:points:update') {
-      const points = Number(localStorage.getItem('mindshift_points')) || 0;
+    if (event.type === 'Nudge:points:update') {
+      const points = Number(localStorage.getItem('Nudge_points')) || 0;
       syncPoints(points);
-    } else if (event.type === 'mindshift:streak:update') {
-      const streak = Number(localStorage.getItem('mindshift_streak')) || 0;
+    } else if (event.type === 'Nudge:streak:update') {
+      const streak = Number(localStorage.getItem('Nudge_streak')) || 0;
       syncStreak(streak);
-    } else if (event.type === 'mindshift:focus:session:complete') {
-      const totalMinutes = Number(localStorage.getItem('mindshift_total_focus_time')) || 0;
+    } else if (event.type === 'Nudge:focus:session:complete') {
+      const totalMinutes = Number(localStorage.getItem('Nudge_total_focus_time')) || 0;
       syncTotalFocusMinutes(totalMinutes);
-    } else if (event.type === 'mindshift:mbti:update') {
-      const mbtiType = localStorage.getItem('mindshift_personality_type') || '';
+    } else if (event.type === 'Nudge:mbti:update') {
+      const mbtiType = localStorage.getItem('Nudge_personality_type') || '';
       if (mbtiType) syncMbtiType(mbtiType);
     }
   };
 
   // Listen for various update events
-  window.addEventListener('mindshift:points:update', handleStatsUpdate);
-  window.addEventListener('mindshift:streak:update', handleStatsUpdate);
-  window.addEventListener('mindshift:focus:session:complete', handleStatsUpdate);
-  window.addEventListener('mindshift:mbti:update', handleStatsUpdate);
-  window.addEventListener('mindshift:counters:update', handleStatsUpdate);
+  window.addEventListener('Nudge:points:update', handleStatsUpdate);
+  window.addEventListener('Nudge:streak:update', handleStatsUpdate);
+  window.addEventListener('Nudge:focus:session:complete', handleStatsUpdate);
+  window.addEventListener('Nudge:mbti:update', handleStatsUpdate);
+  window.addEventListener('Nudge:counters:update', handleStatsUpdate);
 
   // Periodic full sync every 5 minutes
   const fullSyncInterval = setInterval(syncAllStats, 300000);
 
   // Return cleanup function
   return () => {
-    window.removeEventListener('mindshift:points:update', handleStatsUpdate);
-    window.removeEventListener('mindshift:streak:update', handleStatsUpdate);
-    window.removeEventListener('mindshift:focus:session:complete', handleStatsUpdate);
-    window.removeEventListener('mindshift:mbti:update', handleStatsUpdate);
-    window.removeEventListener('mindshift:counters:update', handleStatsUpdate);
+    window.removeEventListener('Nudge:points:update', handleStatsUpdate);
+    window.removeEventListener('Nudge:streak:update', handleStatsUpdate);
+    window.removeEventListener('Nudge:focus:session:complete', handleStatsUpdate);
+    window.removeEventListener('Nudge:mbti:update', handleStatsUpdate);
+    window.removeEventListener('Nudge:counters:update', handleStatsUpdate);
     clearInterval(fullSyncInterval);
   };
 }

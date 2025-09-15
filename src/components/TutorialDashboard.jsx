@@ -45,7 +45,7 @@ export default function TutorialDashboard({ className = "" }) {
               Tutorial Center
             </h2>
             <p className="text-mbti-secondary text-sm">
-              Learn MindShift's personality-aware productivity system
+              Learn Nudge's personality-aware productivity system
             </p>
           </div>
           

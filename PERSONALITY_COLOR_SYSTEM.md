@@ -1,8 +1,8 @@
-# 🎨 MindShift Personality Color System
+# 🎨 Nudge Personality Color System
 
 ## Overview
 
-The MindShift Personality Color System is an advanced color management solution that dynamically adapts the user interface based on MBTI personality types and gender preferences. This creates a more personalized, psychologically comfortable experience for each user.
+The Nudge Personality Color System is an advanced color management solution that dynamically adapts the user interface based on MBTI personality types and gender preferences. This creates a more personalized, psychologically comfortable experience for each user.
 
 ## Core Concept
 
@@ -10,7 +10,7 @@ Instead of one-size-fits-all colors, the system provides:
 - **Personality-specific palettes** tailored to MBTI psychological clusters
 - **Gender-aware variations** with softer feminine and stronger masculine options  
 - **Eye-friendly combinations** that maintain excellent contrast and readability
-- **Seamless UI integration** with your existing MindShift design language
+- **Seamless UI integration** with your existing Nudge design language
 
 ## 🧠 Color Psychology
 
@@ -320,4 +320,4 @@ import PersonalityColorDemo from '@/components/PersonalityColorDemo';
 - **Maintain design system consistency** while adding personality
 - **Document color usage** for team members
 
-This system transforms MindShift from a generic productivity app into a deeply personalized experience that resonates with each user's psychological preferences! 🎨✨
+This system transforms Nudge from a generic productivity app into a deeply personalized experience that resonates with each user's psychological preferences! 🎨✨

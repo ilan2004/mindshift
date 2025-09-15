@@ -257,7 +257,7 @@ export function TutorialProvider({ children }) {
   // Load saved state from localStorage
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('mindshift_tutorial_state');
+      const saved = localStorage.getItem('Nudge_tutorial_state');
       if (saved) {
         const state = JSON.parse(saved);
         setCompletedTutorials(new Set(state.completed || []));
@@ -277,7 +277,7 @@ export function TutorialProvider({ children }) {
         skipped: Array.from(skippedTutorials),
         preferences: userPreferences
       };
-      localStorage.setItem('mindshift_tutorial_state', JSON.stringify(state));
+      localStorage.setItem('Nudge_tutorial_state', JSON.stringify(state));
     } catch (error) {
       console.warn('Failed to save tutorial state:', error);
     }
@@ -291,7 +291,7 @@ export function TutorialProvider({ children }) {
   useEffect(() => {
     // Only check for profile dismissal if it hasn't been set yet
     if (!profileDismissed) {
-      const profileSeen = localStorage.getItem('mindshift_profile_seen');
+      const profileSeen = localStorage.getItem('Nudge_profile_seen');
       if (profileSeen === 'true') {
         setProfileDismissed(true);
       }

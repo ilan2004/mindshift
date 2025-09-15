@@ -2,7 +2,7 @@
  * TUTORIAL INTEGRATION EXAMPLES
  * 
  * This file demonstrates how to integrate the tutorial system
- * with your existing MindShift components by adding data-tutorial
+ * with your existing Nudge components by adding data-tutorial
  * attributes and tutorial trigger buttons.
  */
 

@@ -9,7 +9,7 @@ import requests
 
 # ---------- FASTAPI APP ----------
 app = FastAPI(
-    title="MindShift API with Groq",
+    title="Nudge API with Groq",
     version="0.3.0",
     description="AI-powered productivity assistant with personality profiling 🚀"
 )
@@ -42,7 +42,7 @@ app.add_middleware(
 
 @app.get("/")
 def root():
-    return {"message": "MindShift API with Groq is running 🚀"}
+    return {"message": "Nudge API with Groq is running 🚀"}
 
 @app.get("/healthz")
 def healthz():
@@ -184,7 +184,7 @@ def blocklist_token_adblock(token: str):
     lines = [f"||{d}^" for d in combined]
     # Add a header comment
     header = [
-        "! MindShift Blocklist (Adblock format)",
+        "! Nudge Blocklist (Adblock format)",
         "! Syntax: ||domain^",
         "",
     ]

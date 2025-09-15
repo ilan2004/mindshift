@@ -1,13 +1,13 @@
-# 🔔 MindShift Notification System
+# 🔔 Nudge Notification System
 
 ## Overview
 
-The MindShift notification system provides real-time peer nudges, activity updates, and system alerts with a sleek box-shadow UI that matches the app's design language.
+The Nudge notification system provides real-time peer nudges, activity updates, and system alerts with a sleek box-shadow UI that matches the app's design language.
 
 ## Features
 
 ### ✨ Core Functionality
-- **Snackbar notifications** with MindShift's signature box-shadow styling
+- **Snackbar notifications** with Nudge's signature box-shadow styling
 - **Auto-dismiss with progress bar** (configurable duration)
 - **Actionable notifications** with callback functions
 - **Sound effects** (toggleable by user)
@@ -21,7 +21,7 @@ The MindShift notification system provides real-time peer nudges, activity updat
 - **Simulated peer responses** - Mock responses to create engaging social interaction
 
 ### 🎨 UI Design
-- **Box-shadow styling** matching MindShift design system
+- **Box-shadow styling** matching Nudge design system
 - **Personality-based color coding** for different notification types  
 - **Avatar support** for peer notifications
 - **Progress bar** for auto-dismiss timing
@@ -169,7 +169,7 @@ Use the **NotificationDemo component** (temporarily in "More For You" section) t
 
 ✅ **Completed**
 - Notification context and provider
-- Snackbar component with MindShift styling
+- Snackbar component with Nudge styling
 - Peer nudge functionality 
 - Sound effects system
 - PeerStatusPanel integration

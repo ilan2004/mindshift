@@ -53,13 +53,13 @@ export default function ClientLayout({ children }) {
       setStage("introForm");
     };
     try {
-      window.addEventListener('mindshift:auth:signed_in', onSignedIn);
-      window.addEventListener('mindshift:auth:signed_out', onSignedOut);
+      window.addEventListener('Nudge:auth:signed_in', onSignedIn);
+      window.addEventListener('Nudge:auth:signed_out', onSignedOut);
     } catch {}
     return () => {
       try {
-        window.removeEventListener('mindshift:auth:signed_in', onSignedIn);
-        window.removeEventListener('mindshift:auth:signed_out', onSignedOut);
+        window.removeEventListener('Nudge:auth:signed_in', onSignedIn);
+        window.removeEventListener('Nudge:auth:signed_out', onSignedOut);
       } catch {}
     };
   }, []);

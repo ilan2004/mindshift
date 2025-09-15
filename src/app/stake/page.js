@@ -85,15 +85,15 @@ export default function StakePage() {
       setAllStakes(items);
       // Seed demo stakes on first visit if empty
       try {
-        const seeded = localStorage.getItem("mindshift_seeded_stakes");
+        const seeded = localStorage.getItem("Nudge_seeded_stakes");
         if ((!items || items.length === 0) && !seeded) {
-          localStorage.setItem("mindshift_seeded_stakes", "true");
+          localStorage.setItem("Nudge_seeded_stakes", "true");
           await Promise.all([
             createStake({ type: "money", amount: 250, goal: "2 × 25m deep work today", note: "Demo money stake", status: "active", pinned: true, startAt: Date.now(), dueAt: Date.now() + 24*60*60*1000 }),
             createStake({ type: "message", phone: "+91 9876543210", channel: "sms", template: "I missed my goal today—hold me to it.", goal: "Ship feature PR today", note: "Demo auto message", status: "active", startAt: Date.now(), dueAt: Date.now() + 36*60*60*1000 }),
             createStake({ type: "streak", minPerDay: 45, days: 7, goal: "45m/day for 7d", note: "Demo streak", status: "active", startAt: Date.now(), dueAt: Date.now() + 7*24*60*60*1000 })
           ]);
-          window.dispatchEvent(new Event("mindshift:stakes:update"));
+          window.dispatchEvent(new Event("Nudge:stakes:update"));
         }
       } catch {}
       // If a selection exists, refresh it
@@ -107,13 +107,13 @@ export default function StakePage() {
   useEffect(() => {
     loadStakes();
     const onUpd = () => loadStakes();
-    window.addEventListener("mindshift:stakes:update", onUpd);
+    window.addEventListener("Nudge:stakes:update", onUpd);
     // First-visit intro modal
     try {
-      const seen = localStorage.getItem("mindshift_stake_intro_seen");
+      const seen = localStorage.getItem("Nudge_stake_intro_seen");
       if (!seen) setShowIntro(true);
     } catch {}
-    return () => window.removeEventListener("mindshift:stakes:update", onUpd);
+    return () => window.removeEventListener("Nudge:stakes:update", onUpd);
   }, [loadStakes]);
 
   useEffect(() => {
@@ -136,7 +136,7 @@ export default function StakePage() {
         dueAt: dueAt ? new Date(dueAt).getTime() : undefined,
       };
       await createStake(payloadWithDates);
-      window.dispatchEvent(new Event("mindshift:stakes:update"));
+      window.dispatchEvent(new Event("Nudge:stakes:update"));
     } finally {
       setBusy(false);
     }
@@ -220,7 +220,7 @@ export default function StakePage() {
       if (!val) sp.delete("status"); else sp.set("status", val);
       const nextUrl = `${window.location.pathname}?${sp.toString()}`;
       window.history.pushState(null, "", nextUrl);
-      window.dispatchEvent(new CustomEvent("mindshift:filters:set", { detail: { status: val } }));
+      window.dispatchEvent(new CustomEvent("Nudge:filters:set", { detail: { status: val } }));
       setSidebarStatus(val || "");
     } catch {}
   };
@@ -243,7 +243,7 @@ export default function StakePage() {
                 <button
                   className="nav-pill"
                   style={{ background: "var(--color-yellow-200)", color: "var(--color-green-900)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}
-                  onClick={()=>{ try { localStorage.setItem("mindshift_stake_intro_seen", "true"); } catch {}; setShowIntro(false); }}
+                  onClick={()=>{ try { localStorage.setItem("Nudge_stake_intro_seen", "true"); } catch {}; setShowIntro(false); }}
                 >
                   OK
                 </button>

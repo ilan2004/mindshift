@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 function getLastUsedDuration() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_recent_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_recent_sessions") || "[]");
     return sessions[0]?.duration || 25;
   } catch {
     return 25;
@@ -29,7 +29,7 @@ export default function QuickActions() {
     
     // Dispatch focus session start
     try {
-      const event = new CustomEvent("mindshift:focus:start_template", {
+      const event = new CustomEvent("Nudge:focus:start_template", {
         detail: { duration, template: "Quick Focus" }
       });
       window.dispatchEvent(event);
@@ -38,7 +38,7 @@ export default function QuickActions() {
     // Send message to extension
     try {
       window.postMessage({
-        type: "mindshift:focus",
+        type: "Nudge:focus",
         action: "startSession", 
         payload: { durationMinutes: duration }
       }, "*");
@@ -53,14 +53,14 @@ export default function QuickActions() {
 
     // Add to blocked domains
     try {
-      const blocked = JSON.parse(localStorage.getItem("mindshift_blocked_domains") || "[]");
+      const blocked = JSON.parse(localStorage.getItem("Nudge_blocked_domains") || "[]");
       if (!blocked.includes(domain)) {
         blocked.push(domain);
-        localStorage.setItem("mindshift_blocked_domains", JSON.stringify(blocked));
+        localStorage.setItem("Nudge_blocked_domains", JSON.stringify(blocked));
         
         // Send to extension
         window.postMessage({
-          type: "mindshift:focus",
+          type: "Nudge:focus",
           action: "updateBlocklist",
           payload: { domains: blocked }
         }, "*");
@@ -74,7 +74,7 @@ export default function QuickActions() {
     // Start 5-minute break
     try {
       window.postMessage({
-        type: "mindshift:focus",
+        type: "Nudge:focus",
         action: "startBreak",
         payload: { durationMinutes: 5 }
       }, "*");
@@ -86,7 +86,7 @@ export default function QuickActions() {
   const sendBuddyNudge = () => {
     // Mock buddy nudge - in real app this would send to a peer
     try {
-      const event = new CustomEvent("mindshift:achievement:unlocked", {
+      const event = new CustomEvent("Nudge:achievement:unlocked", {
         detail: { achievement: "Supportive Buddy" }
       });
       window.dispatchEvent(event);
@@ -94,7 +94,7 @@ export default function QuickActions() {
     
     // Add activity
     try {
-      const activities = JSON.parse(localStorage.getItem("mindshift_activity_feed") || "[]");
+      const activities = JSON.parse(localStorage.getItem("Nudge_activity_feed") || "[]");
       const newActivity = {
         id: `buddy-${Date.now()}`,
         type: "social",
@@ -104,7 +104,7 @@ export default function QuickActions() {
         icon: "🤗"
       };
       activities.unshift(newActivity);
-      localStorage.setItem("mindshift_activity_feed", JSON.stringify(activities.slice(0, 50)));
+      localStorage.setItem("Nudge_activity_feed", JSON.stringify(activities.slice(0, 50)));
     } catch {}
 
     setIsOpen(false);

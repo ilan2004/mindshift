@@ -1,15 +1,15 @@
-// MindShift Focus – Background Service Worker (MV3)
+// Nudge Focus – Background Service Worker (MV3)
 // Owns: session timer (chrome.alarms), block rules (DNR), storage, messaging
 
 const STORAGE_KEYS = {
-  SESSION: "mindshift_session",
-  BLOCKLIST: "mindshift_blocklist",
-  TEMP_ALLOW: "mindshift_tempAllowUntil", // { [domain]: epochMs }
-  PROFILE: "mindshift_profile", // { mbti, gender, name }
+  SESSION: "nudge_session",
+  BLOCKLIST: "nudge_blocklist",
+  TEMP_ALLOW: "nudge_tempAllowUntil", // { [domain]: epochMs }
+  PROFILE: "nudge_profile", // { mbti, gender, name }
 };
 
 const RULE_ID_BASE = 1000; // dynamic rule ids base
-const ALARM_NAME = "mindshift_session_end";
+const ALARM_NAME = "nudge_session_end";
 
 // In-memory map of last blocked URL per tab
 const lastBlockedByTab = new Map();
@@ -231,7 +231,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 // Message bridge from content script / popup
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
-    if (!msg || msg.type !== "mindshift:focus") return;
+    if (!msg || msg.type !== "nudge:focus") return;
     const { action, payload } = msg;
     let out = null;
     if (action === "startSession") out = await startSession(payload?.durationMinutes || 25, payload?.domains);
@@ -246,12 +246,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       const gender = (payload?.gender || "").toUpperCase();
       const name = payload?.name || "";
       await setStorage({ [STORAGE_KEYS.PROFILE]: { mbti, gender, name } });
-      sendResponse({ ok: true, type: "mindshift:focus:profile", payload: { saved: true } });
+      sendResponse({ ok: true, type: "nudge:focus:profile", payload: { saved: true } });
       return;
     } else if (action === "getProfile") {
       const res = await getStorage([STORAGE_KEYS.PROFILE]);
       const profile = res[STORAGE_KEYS.PROFILE] || null;
-      sendResponse({ ok: true, type: "mindshift:focus:profile", payload: { profile } });
+      sendResponse({ ok: true, type: "nudge:focus:profile", payload: { profile } });
       return;
     } else if (action === "getStatus") {
       const { session, blocklist } = await getState();
@@ -259,22 +259,22 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     } else if (action === "getLastBlocked") {
       const tabId = payload?.tabId;
       const url = typeof tabId === "number" ? lastBlockedByTab.get(tabId) : undefined;
-      sendResponse({ ok: true, type: "mindshift:focus:last", payload: { url: url || null } });
+      sendResponse({ ok: true, type: "nudge:focus:last", payload: { url: url || null } });
       return; // early return because we already responded
     } else if (action === "goBack") {
       try {
         const tabId = payload?.tabId;
         if (typeof tabId === "number") await chrome.tabs.goBack(tabId);
-        sendResponse({ ok: true, type: "mindshift:focus:nav", payload: { done: true } });
+        sendResponse({ ok: true, type: "nudge:focus:nav", payload: { done: true } });
       } catch (e) {
-        sendResponse({ ok: false, type: "mindshift:focus:nav", error: String(e) });
+        sendResponse({ ok: false, type: "nudge:focus:nav", error: String(e) });
       }
       return;
     }
 
     if (out) {
       const { session, blocklist } = out;
-      sendResponse({ ok: true, type: "mindshift:focus:status", payload: statusPayload(session, blocklist || []) });
+      sendResponse({ ok: true, type: "nudge:focus:status", payload: statusPayload(session, blocklist || []) });
     }
   })();
   return true; // async

@@ -1,6 +1,6 @@
-# MindShift Tutorial System Setup Guide
+# Nudge Tutorial System Setup Guide
 
-This guide will help you integrate the new tutorial system into your MindShift application.
+This guide will help you integrate the new tutorial system into your Nudge application.
 
 ## 📁 Files Created
 
@@ -132,7 +132,7 @@ The system includes these pre-configured tutorials:
 
 ## 🎨 Styling Integration
 
-The tutorial components use your existing MindShift styles:
+The tutorial components use your existing Nudge styles:
 
 - **retro-console**: Main container styling
 - **nav-pill**: Button styling with variants (--primary, --cyan, --outline, etc.)
@@ -225,7 +225,7 @@ The tutorials automatically adapt to your MBTI personality themes. No additional
 
 ### Styling Issues
 1. Make sure your global CSS includes the MBTI theme variables
-2. Check that components use existing MindShift style classes
+2. Check that components use existing Nudge style classes
 3. Verify GSAP animations are working (required dependency)
 
 ### Performance
@@ -251,4 +251,4 @@ Once you've completed the setup:
 3. Users can manage tutorials via the dashboard
 4. The system respects user preferences and completion state
 
-The tutorial system is fully integrated with your existing MindShift styling and personality-aware theming system!
+The tutorial system is fully integrated with your existing Nudge styling and personality-aware theming system!

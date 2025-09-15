@@ -4,7 +4,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Project Overview
 
-**MindShift** is a personality-aware productivity platform that combats digital distraction through AI-driven personality profiling, commitment mechanisms, and personalized nudges. Unlike generic blockers, MindShift analyzes user chat patterns to generate personalized assessments and adapts interventions to individual psychology.
+**Nudge** is a personality-aware productivity platform that combats digital distraction through AI-driven personality profiling, commitment mechanisms, and personalized nudges. Unlike generic blockers, Nudge analyzes user chat patterns to generate personalized assessments and adapts interventions to individual psychology.
 
 ### Core Architecture
 

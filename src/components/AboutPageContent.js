@@ -46,7 +46,7 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
     // Load gender preference from localStorage
     if (typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem('mindshift_personality_gender_pref');
+        const stored = localStorage.getItem('Nudge_personality_gender_pref');
         if (stored === 'female') {
           setGenderPreference('female');
         }
@@ -88,7 +88,7 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
     // Save preference
     if (typeof window !== 'undefined') {
       try {
-        localStorage.setItem('mindshift_personality_gender_pref', newGender);
+        localStorage.setItem('Nudge_personality_gender_pref', newGender);
       } catch {}
     }
   };
@@ -101,8 +101,8 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
         duration: duration,
         startedAt: Date.now() 
       };
-      localStorage.setItem("mindshift_last_template", JSON.stringify(payload));
-      window.dispatchEvent(new CustomEvent("mindshift:focus:start_template", { detail: payload }));
+      localStorage.setItem("Nudge_last_template", JSON.stringify(payload));
+      window.dispatchEvent(new CustomEvent("Nudge:focus:start_template", { detail: payload }));
       router.push('/');
     } catch {}
   };

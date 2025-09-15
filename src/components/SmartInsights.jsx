@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 
 function getPersonalityType() {
   try {
-    return localStorage.getItem("mindshift_personality_type") || "";
+    return localStorage.getItem("Nudge_personality_type") || "";
   } catch {
     return "";
   }
@@ -12,7 +12,7 @@ function getPersonalityType() {
 
 function getFocusSessions() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_focus_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_focus_sessions") || "[]");
     return Array.isArray(sessions) ? sessions : [];
   } catch {
     return [];
@@ -21,7 +21,7 @@ function getFocusSessions() {
 
 function getBlockedAttempts() {
   try {
-    return Number(localStorage.getItem("mindshift_blocked_today")) || 0;
+    return Number(localStorage.getItem("Nudge_blocked_today")) || 0;
   } catch {
     return 0;
   }
@@ -29,7 +29,7 @@ function getBlockedAttempts() {
 
 function getCurrentStreak() {
   try {
-    return Number(localStorage.getItem("mindshift_streak")) || 0;
+    return Number(localStorage.getItem("Nudge_streak")) || 0;
   } catch {
     return 0;
   }
@@ -189,13 +189,13 @@ export default function SmartInsights() {
     };
 
     window.addEventListener("storage", handleUpdate);
-    window.addEventListener("mindshift:session:completed", handleUpdate);
-    window.addEventListener("mindshift:counters:update", handleUpdate);
+    window.addEventListener("Nudge:session:completed", handleUpdate);
+    window.addEventListener("Nudge:counters:update", handleUpdate);
 
     return () => {
       window.removeEventListener("storage", handleUpdate);
-      window.removeEventListener("mindshift:session:completed", handleUpdate);
-      window.removeEventListener("mindshift:counters:update", handleUpdate);
+      window.removeEventListener("Nudge:session:completed", handleUpdate);
+      window.removeEventListener("Nudge:counters:update", handleUpdate);
     };
   }, []);
 

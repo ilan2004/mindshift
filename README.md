@@ -1,4 +1,4 @@
-# 🚀 MindShift: Personality-Aware Productivity
+# 🚀 Nudge: Personality-Aware Productivity
 
 > A hackathon project built at Recurzive v2 (24h Hackathon, Dayananda Sagar College, Bengaluru)
 
@@ -10,7 +10,7 @@ Social media & online distractions are optimized for attention, not productivity
 ---
 
 ## 💡 Our Solution
-**MindShift** uses AI + personality profiling to create a personalized productivity system that:
+**Nudge** uses AI + personality profiling to create a personalized productivity system that:
 1. Analyzes your **ChatGPT history** to generate **personalized personality questions** (instead of generic MBTI-style forms).  
 2. Builds a **profile type** (Achiever, Explorer, Diplomat, Analyst, etc.) tailored to your actual behavior.  
 3. Applies **profile-driven nudges** when you try to access distraction sites.  
@@ -56,7 +56,7 @@ Social media & online distractions are optimized for attention, not productivity
 ---
 
 ## 📂 Project Structure
-mindshift/
+nudge/
 ├── frontend/ # Next.js app (Ilan + Rohan)
 │ ├── app/ # Pages (dashboard, leaderboard, contracts, questions)
 │ ├── components/ # Navbar, Card, Form, TimerUI

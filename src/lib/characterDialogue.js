@@ -10,7 +10,7 @@ function getTimeOfDay() {
 
 function getCurrentStreak() {
   try {
-    return Number(localStorage.getItem("mindshift_streak")) || 0;
+    return Number(localStorage.getItem("Nudge_streak")) || 0;
   } catch {
     return 0;
   }
@@ -18,7 +18,7 @@ function getCurrentStreak() {
 
 function getTodayFocusMinutes() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_focus_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_focus_sessions") || "[]");
     const today = new Date().toLocaleDateString("en-CA");
     const todaySession = sessions.find(s => s.date === today);
     return todaySession?.minutes || 0;
@@ -29,7 +29,7 @@ function getTodayFocusMinutes() {
 
 function getRecentAchievements() {
   try {
-    const achievements = JSON.parse(localStorage.getItem("mindshift_recent_achievements") || "[]");
+    const achievements = JSON.parse(localStorage.getItem("Nudge_recent_achievements") || "[]");
     return achievements.slice(0, 3); // Most recent 3
   } catch {
     return [];

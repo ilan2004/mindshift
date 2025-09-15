@@ -1,6 +1,6 @@
 # ✅ Tutorial System Integration Complete!
 
-Your MindShift home page now has full tutorial integration! Here's what was added:
+Your Nudge home page now has full tutorial integration! Here's what was added:
 
 ## 🔄 Changes Made
 
@@ -69,7 +69,7 @@ Your components now have these tutorial targets:
 
 #### New User Experience:
 ```
-1. Page loads → Auto-start "Welcome to MindShift" tutorial (modal)
+1. Page loads → Auto-start "Welcome to Nudge" tutorial (modal)
 2. Highlights personality card → "Learn About Profiles" button appears
 3. Clicks focus bar → Interactive overlay shows how it works
 4. Templates section → "Learn how templates work" link available
@@ -84,7 +84,7 @@ Your components now have these tutorial targets:
 
 ## 🎨 Design Integration
 
-The tutorial system **perfectly matches** your MindShift aesthetic:
+The tutorial system **perfectly matches** your Nudge aesthetic:
 
 - **Colors**: Uses your personality-aware MBTI theme variables
 - **Fonts**: Integrates your `font-tanker` custom typography
@@ -97,7 +97,7 @@ The tutorial system **perfectly matches** your MindShift aesthetic:
 1. **Clear Tutorial State** (to simulate new user):
 ```javascript
 // In browser console:
-localStorage.removeItem('mindshift_tutorial_state');
+localStorage.removeItem('Nudge_tutorial_state');
 location.reload();
 ```
 
@@ -156,7 +156,7 @@ The system automatically tracks:
 - Skip vs complete behavior
 
 Data stored in `localStorage` as:
-- `mindshift_tutorial_state` - Completion status and preferences
+- `Nudge_tutorial_state` - Completion status and preferences
 
 ## 🎉 Ready to Launch!
 
@@ -164,8 +164,8 @@ Your tutorial system is now fully integrated and ready for users! The system wil
 
 ✅ **Guide new users** through personality-aware productivity features
 ✅ **Respect user preferences** and completion status  
-✅ **Match your design perfectly** with existing MindShift styles
+✅ **Match your design perfectly** with existing Nudge styles
 ✅ **Scale automatically** with your personality theming system
 ✅ **Work responsively** across desktop and mobile devices
 
-The integration is complete and your users will now have a smooth, guided introduction to MindShift's powerful features!
+The integration is complete and your users will now have a smooth, guided introduction to Nudge's powerful features!

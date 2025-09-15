@@ -174,7 +174,7 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
   const [storedType, setStoredType] = useState(null);
   useEffect(() => {
     try {
-      const v = localStorage.getItem("mindshift_personality_type");
+      const v = localStorage.getItem("Nudge_personality_type");
       if (v) setStoredType(v);
       // Do NOT auto-open any internal test modal; intro flow handles this now
     } catch {}
@@ -195,9 +195,9 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
   useEffect(() => {
     if (!type) return;
     try {
-      const streak = Number(localStorage.getItem("mindshift_streak")) || 0;
-      const totalMinutes = Number(localStorage.getItem("mindshift_total_focus_time")) || 0;
-      const achievements = JSON.parse(localStorage.getItem("mindshift_achievements") || "[]");
+      const streak = Number(localStorage.getItem("Nudge_streak")) || 0;
+      const totalMinutes = Number(localStorage.getItem("Nudge_total_focus_time")) || 0;
+      const achievements = JSON.parse(localStorage.getItem("Nudge_achievements") || "[]");
       
       const dialogue = getCharacterDialogue(type, {
         streak,
@@ -223,7 +223,7 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
       setStatus({ active: !!active, mode: mode || (active ? "focus" : "idle"), remainingMs: remainingMs || 0 });
       // Keep total from localStorage if present; fall back to max observed remainingMs
       try {
-        const stored = Number(localStorage.getItem("mindshift_session_total_ms")) || 0;
+        const stored = Number(localStorage.getItem("Nudge_session_total_ms")) || 0;
         if (stored > 0) {
           totalMsRef.current = stored;
         } else if (remainingMs) {
@@ -329,21 +329,21 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
   useEffect(() => {
     const read = () => {
       try {
-        setPoints(Number(localStorage.getItem("mindshift_points")) || 0);
-        setStreak(Number(localStorage.getItem("mindshift_streak")) || 0);
+        setPoints(Number(localStorage.getItem("Nudge_points")) || 0);
+        setStreak(Number(localStorage.getItem("Nudge_streak")) || 0);
       } catch {}
     };
     read();
     const onStorage = (e) => {
       if (!e || !e.key) return;
-      if (e.key === "mindshift_points" || e.key === "mindshift_streak") read();
+      if (e.key === "Nudge_points" || e.key === "Nudge_streak") read();
     };
     const onCustom = () => read();
     window.addEventListener("storage", onStorage);
-    window.addEventListener("mindshift:counters:update", onCustom);
+    window.addEventListener("Nudge:counters:update", onCustom);
     return () => {
       window.removeEventListener("storage", onStorage);
-      window.removeEventListener("mindshift:counters:update", onCustom);
+      window.removeEventListener("Nudge:counters:update", onCustom);
     };
   }, []);
 
@@ -491,10 +491,10 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
   function resetProfile() {
     // Clear MBTI and progress; keep name/gender
     try {
-      localStorage.removeItem("mindshift_personality_type");
-      localStorage.removeItem("mindshift_points");
-      localStorage.removeItem("mindshift_streak");
-      localStorage.removeItem("mindshift_session_total_ms");
+      localStorage.removeItem("Nudge_personality_type");
+      localStorage.removeItem("Nudge_points");
+      localStorage.removeItem("Nudge_streak");
+      localStorage.removeItem("Nudge_session_total_ms");
     } catch {}
     setStoredType(null);
     setPoints(0);
@@ -535,7 +535,7 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
       const res = await postAnswers({ user_id: userId, answers: payload });
       const mbti = (res?.profile || "").toUpperCase();
       try {
-        localStorage.setItem("mindshift_personality_type", mbti);
+        localStorage.setItem("Nudge_personality_type", mbti);
         setStoredType(mbti);
       } catch {}
       setShowTest(false);

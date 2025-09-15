@@ -32,7 +32,7 @@ function dayLabel(d) {
 
 function getFocusSessions() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_focus_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_focus_sessions") || "[]");
     return Array.isArray(sessions) ? sessions : [];
   } catch {
     return [];

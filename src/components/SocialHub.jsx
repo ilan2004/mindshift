@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 
 function getPersonalityType() {
   try {
-    return localStorage.getItem("mindshift_personality_type") || "";
+    return localStorage.getItem("Nudge_personality_type") || "";
   } catch {
     return "";
   }
@@ -12,7 +12,7 @@ function getPersonalityType() {
 
 function getCurrentStreak() {
   try {
-    return Number(localStorage.getItem("mindshift_streak")) || 0;
+    return Number(localStorage.getItem("Nudge_streak")) || 0;
   } catch {
     return 0;
   }
@@ -20,7 +20,7 @@ function getCurrentStreak() {
 
 function getFocusHours() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_focus_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_focus_sessions") || "[]");
     const totalMinutes = sessions.reduce((sum, s) => sum + (s.minutes || 0), 0);
     return Math.round(totalMinutes / 60 * 10) / 10;
   } catch {
@@ -169,7 +169,7 @@ export default function SocialHub() {
   const sendNudge = (userId) => {
     // Mock sending a nudge
     try {
-      const activities = JSON.parse(localStorage.getItem("mindshift_activity_feed") || "[]");
+      const activities = JSON.parse(localStorage.getItem("Nudge_activity_feed") || "[]");
       const user = MOCK_USERS.find(u => u.id === userId);
       const newActivity = {
         id: `nudge-${Date.now()}`,
@@ -180,14 +180,14 @@ export default function SocialHub() {
         icon: "🤗"
       };
       activities.unshift(newActivity);
-      localStorage.setItem("mindshift_activity_feed", JSON.stringify(activities.slice(0, 50)));
+      localStorage.setItem("Nudge_activity_feed", JSON.stringify(activities.slice(0, 50)));
       
       // Update nudge count
-      const nudgeCount = Number(localStorage.getItem("mindshift_nudges_sent")) || 0;
-      localStorage.setItem("mindshift_nudges_sent", String(nudgeCount + 1));
+      const nudgeCount = Number(localStorage.getItem("Nudge_nudges_sent")) || 0;
+      localStorage.setItem("Nudge_nudges_sent", String(nudgeCount + 1));
       
       // Dispatch event
-      window.dispatchEvent(new CustomEvent("mindshift:counters:update"));
+      window.dispatchEvent(new CustomEvent("Nudge:counters:update"));
     } catch {}
   };
 

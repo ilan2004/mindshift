@@ -146,7 +146,7 @@ export default function TutorialModal() {
         ref={contentRef}
         className="relative w-full max-w-2xl mx-auto"
       >
-        {/* Main Modal Card using MindShift styles */}
+        {/* Main Modal Card using Nudge styles */}
         <div className="retro-console rounded-3xl p-4 md:p-8 max-h-[90vh] overflow-y-auto relative">
           {/* Close Button - Absolute positioned to top-right */}
           <button

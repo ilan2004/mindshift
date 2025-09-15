@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 
 function getCurrentStreak() {
   try {
-    return Number(localStorage.getItem("mindshift_streak")) || 0;
+    return Number(localStorage.getItem("Nudge_streak")) || 0;
   } catch {
     return 0;
   }
@@ -12,7 +12,7 @@ function getCurrentStreak() {
 
 function getTotalFocusHours() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_focus_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_focus_sessions") || "[]");
     const totalMinutes = sessions.reduce((sum, s) => sum + (s.minutes || 0), 0);
     return Math.round(totalMinutes / 60 * 10) / 10;
   } catch {
@@ -22,7 +22,7 @@ function getTotalFocusHours() {
 
 function getTotalSessions() {
   try {
-    const sessions = JSON.parse(localStorage.getItem("mindshift_focus_sessions") || "[]");
+    const sessions = JSON.parse(localStorage.getItem("Nudge_focus_sessions") || "[]");
     return sessions.length;
   } catch {
     return 0;
@@ -31,7 +31,7 @@ function getTotalSessions() {
 
 function getBlockedAttempts() {
   try {
-    return Number(localStorage.getItem("mindshift_blocked_total")) || 0;
+    return Number(localStorage.getItem("Nudge_blocked_total")) || 0;
   } catch {
     return 0;
   }
@@ -225,15 +225,15 @@ export default function AchievementShowcase() {
     // Listen for updates
     const handleUpdate = () => updateStats();
     window.addEventListener("storage", handleUpdate);
-    window.addEventListener("mindshift:session:completed", handleUpdate);
-    window.addEventListener("mindshift:achievement:unlocked", handleUpdate);
-    window.addEventListener("mindshift:counters:update", handleUpdate);
+    window.addEventListener("Nudge:session:completed", handleUpdate);
+    window.addEventListener("Nudge:achievement:unlocked", handleUpdate);
+    window.addEventListener("Nudge:counters:update", handleUpdate);
 
     return () => {
       window.removeEventListener("storage", handleUpdate);
-      window.removeEventListener("mindshift:session:completed", handleUpdate);
-      window.removeEventListener("mindshift:achievement:unlocked", handleUpdate);
-      window.removeEventListener("mindshift:counters:update", handleUpdate);
+      window.removeEventListener("Nudge:session:completed", handleUpdate);
+      window.removeEventListener("Nudge:achievement:unlocked", handleUpdate);
+      window.removeEventListener("Nudge:counters:update", handleUpdate);
     };
   }, []);
 
@@ -244,9 +244,9 @@ export default function AchievementShowcase() {
         totalSessions: getTotalSessions(),
         totalHours: getTotalFocusHours(),
         blockedAttempts: getBlockedAttempts(),
-        nudgesSent: Number(localStorage.getItem("mindshift_nudges_sent")) || 0,
-        hasEarlySession: Boolean(localStorage.getItem("mindshift_early_bird")),
-        hasLateSession: Boolean(localStorage.getItem("mindshift_night_owl"))
+        nudgesSent: Number(localStorage.getItem("Nudge_nudges_sent")) || 0,
+        hasEarlySession: Boolean(localStorage.getItem("Nudge_early_bird")),
+        hasLateSession: Boolean(localStorage.getItem("Nudge_night_owl"))
       };
       setStats(newStats);
     } catch {}

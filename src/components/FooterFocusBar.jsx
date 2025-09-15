@@ -42,13 +42,13 @@ function todayKey() {
 }
 function readSessions() {
   try {
-    const raw = localStorage.getItem("mindshift_focus_sessions");
+    const raw = localStorage.getItem("Nudge_focus_sessions");
     const arr = raw ? JSON.parse(raw) : [];
     return Array.isArray(arr) ? arr : [];
   } catch { return []; }
 }
 function writeSessions(list) {
-  try { localStorage.setItem("mindshift_focus_sessions", JSON.stringify(list)); } catch {}
+  try { localStorage.setItem("Nudge_focus_sessions", JSON.stringify(list)); } catch {}
 }
 function dispatchFocusUpdate() {
   try { window.dispatchEvent(new Event("nudge:counters:update")); } catch {}
@@ -244,9 +244,9 @@ export default function FooterFocusBar() {
     send("startSession", { durationMinutes: m, domains });
     // Persist total duration locally so UI can restore ring progress on refresh
     try {
-      localStorage.setItem("mindshift_session_total_ms", String(m * 60 * 1000));
-      localStorage.setItem("mindshift_session_mode", "focus");
-      localStorage.removeItem("mindshift_session_stopped");
+      localStorage.setItem("Nudge_session_total_ms", String(m * 60 * 1000));
+      localStorage.setItem("Nudge_session_mode", "focus");
+      localStorage.removeItem("Nudge_session_stopped");
     } catch {}
   };
 
@@ -254,19 +254,19 @@ export default function FooterFocusBar() {
   const onResume = () => send("resumeSession");
   const onStop = () => {
     // Mark as manually stopped to avoid logging as completed
-    try { localStorage.setItem("mindshift_session_stopped", "1"); } catch {}
+    try { localStorage.setItem("Nudge_session_stopped", "1"); } catch {}
     send("stopSession");
     try {
-      localStorage.removeItem("mindshift_session_total_ms");
-      localStorage.removeItem("mindshift_session_mode");
+      localStorage.removeItem("Nudge_session_total_ms");
+      localStorage.removeItem("Nudge_session_mode");
     } catch {}
   };
   const onStartBreak = (m = 5) => {
     send("startBreak", { durationMinutes: m });
     try {
-      localStorage.setItem("mindshift_session_total_ms", String(m * 60 * 1000));
-      localStorage.setItem("mindshift_session_mode", "break");
-      localStorage.removeItem("mindshift_session_stopped");
+      localStorage.setItem("Nudge_session_total_ms", String(m * 60 * 1000));
+      localStorage.setItem("Nudge_session_mode", "break");
+      localStorage.removeItem("Nudge_session_stopped");
     } catch {}
   };
 
@@ -274,7 +274,7 @@ export default function FooterFocusBar() {
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
   const filterListUrl = useMemo(() => (API_BASE && blToken ? `${API_BASE}/blocklist/${blToken}.filter` : ""), [API_BASE, blToken]);
   const abpSubscribeHref = useMemo(() => (filterListUrl ? `abp:subscribe?location=${encodeURIComponent(filterListUrl)}&title=${encodeURIComponent("Nudge Blocklist")}` : ""), [filterListUrl]);
-  const adguardSubscribeHref = useMemo(() => (filterListUrl ? `adguard:add_subscription?location=${encodeURIComponent(filterListUrl)}&title=${encodeURIComponent("Mindshift Blocklist")}` : ""), [filterListUrl]);
+  const adguardSubscribeHref = useMemo(() => (filterListUrl ? `adguard:add_subscription?location=${encodeURIComponent(filterListUrl)}&title=${encodeURIComponent("Nudge Blocklist")}` : ""), [filterListUrl]);
   const extensionInstallHref = ""; // TODO: set to your Chrome/Edge/Firefox store listing when available
 
   // Since the extension is not on the store yet, show an instructions modal on desktop
@@ -337,9 +337,9 @@ export default function FooterFocusBar() {
       let totalMs = 0;
       let manuallyStopped = false;
       try {
-        mode = localStorage.getItem("mindshift_session_mode") || "";
-        totalMs = Number(localStorage.getItem("mindshift_session_total_ms")) || 0;
-        manuallyStopped = !!localStorage.getItem("mindshift_session_stopped");
+        mode = localStorage.getItem("Nudge_session_mode") || "";
+        totalMs = Number(localStorage.getItem("Nudge_session_total_ms")) || 0;
+        manuallyStopped = !!localStorage.getItem("Nudge_session_stopped");
       } catch {}
       if (!manuallyStopped && mode === "focus" && totalMs > 0) {
         const minutes = Math.max(1, Math.round(totalMs / 60000));
@@ -354,9 +354,9 @@ export default function FooterFocusBar() {
       }
       // Clear session markers after handling
       try {
-        localStorage.removeItem("mindshift_session_total_ms");
-        localStorage.removeItem("mindshift_session_mode");
-        localStorage.removeItem("mindshift_session_stopped");
+        localStorage.removeItem("Nudge_session_total_ms");
+        localStorage.removeItem("Nudge_session_mode");
+        localStorage.removeItem("Nudge_session_stopped");
       } catch {}
     }
     prevStatusRef.current = curr;
@@ -546,7 +546,7 @@ export default function FooterFocusBar() {
           
           {/* Modal Content */}
           <div className="relative w-full max-w-2xl mx-auto">
-            {/* Main Modal Card using MindShift retro-console style */}
+            {/* Main Modal Card using Nudge retro-console style */}
             <div 
               className="retro-console rounded-3xl p-6 md:p-8 max-h-[90vh] overflow-y-auto relative"
               style={{

@@ -10,23 +10,23 @@ function getNumber(key, def = 0) {
 }
 function readSessions() {
   try {
-    const raw = localStorage.getItem("mindshift_focus_sessions");
+    const raw = localStorage.getItem("Nudge_focus_sessions");
     const arr = raw ? JSON.parse(raw) : [];
     return Array.isArray(arr) ? arr : [];
   } catch { return []; }
 }
 function readBadges() {
   try {
-    const raw = localStorage.getItem("mindshift_badges");
+    const raw = localStorage.getItem("Nudge_badges");
     const arr = raw ? JSON.parse(raw) : [];
     return Array.isArray(arr) ? arr : [];
   } catch { return []; }
 }
 function writeBadges(list) {
-  try { localStorage.setItem("mindshift_badges", JSON.stringify(list)); } catch {}
+  try { localStorage.setItem("Nudge_badges", JSON.stringify(list)); } catch {}
 }
 function dispatchBadgesUpdate() {
-  try { window.dispatchEvent(new Event("mindshift:badges:update")); } catch {}
+  try { window.dispatchEvent(new Event("Nudge:badges:update")); } catch {}
 }
 
 // Badge schema
@@ -90,7 +90,7 @@ function todayKey() {
 }
 function hasAnyCustomQuestForToday() {
   try {
-    const key = `mindshift_custom_quests_${todayKey()}`;
+    const key = `Nudge_custom_quests_${todayKey()}`;
     const raw = localStorage.getItem(key);
     const list = raw ? JSON.parse(raw) : [];
     return Array.isArray(list) && list.length > 0;
@@ -108,8 +108,8 @@ export default function Badges() {
 
   // Evaluate and award any new badges
   const evaluate = () => {
-    const points = getNumber("mindshift_points", 0);
-    const streak = getNumber("mindshift_streak", 0);
+    const points = getNumber("Nudge_points", 0);
+    const streak = getNumber("Nudge_streak", 0);
     const sessions = readSessions();
     const totalSessions = sessions.length;
     
@@ -168,13 +168,13 @@ export default function Badges() {
     const onCounters = () => evaluate();
     const onSession = () => evaluate();
     const onManualCheck = () => evaluate();
-    window.addEventListener("mindshift:counters:update", onCounters);
-    window.addEventListener("mindshift:session:completed", onSession);
-    window.addEventListener("mindshift:badges:check", onManualCheck);
+    window.addEventListener("Nudge:counters:update", onCounters);
+    window.addEventListener("Nudge:session:completed", onSession);
+    window.addEventListener("Nudge:badges:check", onManualCheck);
     return () => {
-      window.removeEventListener("mindshift:counters:update", onCounters);
-      window.removeEventListener("mindshift:session:completed", onSession);
-      window.removeEventListener("mindshift:badges:check", onManualCheck);
+      window.removeEventListener("Nudge:counters:update", onCounters);
+      window.removeEventListener("Nudge:session:completed", onSession);
+      window.removeEventListener("Nudge:badges:check", onManualCheck);
     };
   }, []);
 

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "MindShift Focus",
+  "name": "Nudge Focus",
   "version": "0.2.0",
   "description": "Block distraction sites during focus sessions with a timer.",
   "permissions": [
@@ -13,11 +13,11 @@
   ],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "background.js" },
-  "action": { "default_popup": "popup.html", "default_title": "MindShift" },
+  "action": { "default_popup": "popup.html", "default_title": "Nudge" },
   "content_scripts": [
     {
       "matches": [
-        "https://mindshifts.vercel.app/*",
+        "https://nudges.vercel.app/*",
         "http://localhost:3000/*"
       ],
       "js": ["content.js"],

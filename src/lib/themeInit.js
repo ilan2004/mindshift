@@ -8,7 +8,7 @@
   // Get personality type from localStorage
   function getPersonalityType() {
     try {
-      return localStorage.getItem('mindshift_personality_type') || 'INFP';
+      return localStorage.getItem('Nudge_personality_type') || 'INFP';
     } catch {
       return 'INFP';
     }
@@ -27,7 +27,7 @@
   // Get theme preference
   function getThemePreference() {
     try {
-      return localStorage.getItem('mindshift_theme_mode') || 'personality';
+      return localStorage.getItem('Nudge_theme_mode') || 'personality';
     } catch {
       return 'personality';
     }

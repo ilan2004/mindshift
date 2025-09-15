@@ -101,7 +101,7 @@ export async function getUsersByIds(userIds = []) {
 // -----------------------------
 // Stakes (Contracts) API
 // -----------------------------
-const STAKES_KEY = "mindshift_stakes";
+const STAKES_KEY = "Nudge_stakes";
 
 function lsGet(key, fallback) {
   try {

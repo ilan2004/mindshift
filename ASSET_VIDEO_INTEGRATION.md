@@ -1,7 +1,7 @@
 # 🎨 Asset & Video Integration Update
 
 ## Overview
-Successfully updated the Mindshift application to properly use all new images and videos from `public/images` and `public/videos` directories across character cards and about pages.
+Successfully updated the Nudge application to properly use all new images and videos from `public/images` and `public/videos` directories across character cards and about pages.
 
 ## ✅ Updates Made
 

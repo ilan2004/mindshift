@@ -30,7 +30,7 @@ function lsSetJSON(key, obj) {
 
 // Focus metrics (private/local)
 function readFocusSessions() {
-  const arr = lsGetJSON("mindshift_focus_sessions", []);
+  const arr = lsGetJSON("Nudge_focus_sessions", []);
   return Array.isArray(arr) ? arr : [];
 }
 function computeTotalFocusMinutes() {
@@ -49,16 +49,16 @@ function computeTotalFocusMinutes() {
   return total;
 }
 function readStreak() {
-  try { return Number(localStorage.getItem("mindshift_streak")) || 0; } catch { return 0; }
+  try { return Number(localStorage.getItem("Nudge_streak")) || 0; } catch { return 0; }
 }
 
 // Profile storage keys (private)
-const KEY_PROFILE_NAME = "mindshift_profile_name";
-const KEY_PROFILE_AVATAR = "mindshift_profile_avatar_url";
-const KEY_PROFILE_BIO = "mindshift_profile_bio";
-const KEY_NOTIF_SESSION = "mindshift_notif_session_reminders";
-const KEY_NOTIF_WEEKLY = "mindshift_notif_weekly_summary";
-const KEY_FRIENDS = "mindshift_friends"; // [{id,name}]
+const KEY_PROFILE_NAME = "Nudge_profile_name";
+const KEY_PROFILE_AVATAR = "Nudge_profile_avatar_url";
+const KEY_PROFILE_BIO = "Nudge_profile_bio";
+const KEY_NOTIF_SESSION = "Nudge_notif_session_reminders";
+const KEY_NOTIF_WEEKLY = "Nudge_notif_weekly_summary";
+const KEY_FRIENDS = "Nudge_friends"; // [{id,name}]
 
 // Simple ID generator
 function genId() {
@@ -123,8 +123,8 @@ export default function ProfilePage() {
         setName(lsGet(KEY_PROFILE_NAME, lsGet("ms_display_name", "Your Name")));
         setAvatarUrl(lsGet(KEY_PROFILE_AVATAR, ""));
         setBio(lsGet(KEY_PROFILE_BIO, ""));
-        try { setPoints(Number(localStorage.getItem("mindshift_points")) || 0); } catch {}
-        try { setMbti((localStorage.getItem("mindshift_personality_type") || "").toUpperCase()); } catch {}
+        try { setPoints(Number(localStorage.getItem("Nudge_points")) || 0); } catch {}
+        try { setMbti((localStorage.getItem("Nudge_personality_type") || "").toUpperCase()); } catch {}
         setTotalMinutes(computeTotalFocusMinutes());
         setStreak(readStreak());
       }
@@ -163,12 +163,12 @@ export default function ProfilePage() {
     // Subscribe to storage and custom updates for live refresh
     const onStorage = (e) => {
       if (!e || !e.key) return;
-      if (e.key === "mindshift_points") {
-        try { setPoints(Number(localStorage.getItem("mindshift_points")) || 0); } catch {}
-      } else if (e.key === "mindshift_streak") {
+      if (e.key === "Nudge_points") {
+        try { setPoints(Number(localStorage.getItem("Nudge_points")) || 0); } catch {}
+      } else if (e.key === "Nudge_streak") {
         setStreak(readStreak());
-      } else if (e.key === "mindshift_personality_type") {
-        try { setMbti((localStorage.getItem("mindshift_personality_type") || "").toUpperCase()); } catch {}
+      } else if (e.key === "Nudge_personality_type") {
+        try { setMbti((localStorage.getItem("Nudge_personality_type") || "").toUpperCase()); } catch {}
       } else if (e.key === KEY_PROFILE_NAME || e.key === "ms_display_name") {
         setName(lsGet(KEY_PROFILE_NAME, lsGet("ms_display_name", "Your Name")));
       } else if (e.key === KEY_PROFILE_AVATAR) {
@@ -178,18 +178,18 @@ export default function ProfilePage() {
       } else if (e.key === KEY_FRIENDS) {
         const f = lsGetJSON(KEY_FRIENDS, []);
         setFriends(Array.isArray(f) ? f : []);
-      } else if (e.key === "mindshift_focus_sessions") {
+      } else if (e.key === "Nudge_focus_sessions") {
         setTotalMinutes(computeTotalFocusMinutes());
       }
     };
     const refreshCounters = () => {
-      try { setPoints(Number(localStorage.getItem("mindshift_points")) || 0); } catch {}
+      try { setPoints(Number(localStorage.getItem("Nudge_points")) || 0); } catch {}
       setStreak(readStreak());
       setTotalMinutes(computeTotalFocusMinutes());
     };
     window.addEventListener("storage", onStorage);
-    window.addEventListener("mindshift:counters:update", refreshCounters);
-    window.addEventListener("mindshift:focus:sessions:update", refreshCounters);
+    window.addEventListener("Nudge:counters:update", refreshCounters);
+    window.addEventListener("Nudge:focus:sessions:update", refreshCounters);
 
     // Gentle polling fallback in case events are missed
     const poll = setInterval(refreshCounters, 15000);
@@ -211,8 +211,8 @@ export default function ProfilePage() {
       observersRef.current.forEach(({ observer, el }) => observer.unobserve(el));
       observersRef.current = [];
       window.removeEventListener("storage", onStorage);
-      window.removeEventListener("mindshift:counters:update", refreshCounters);
-      window.removeEventListener("mindshift:focus:sessions:update", refreshCounters);
+      window.removeEventListener("Nudge:counters:update", refreshCounters);
+      window.removeEventListener("Nudge:focus:sessions:update", refreshCounters);
       clearInterval(poll);
       clearInterval(syncInterval);
       if (cleanupAutoSync) cleanupAutoSync();
@@ -297,7 +297,7 @@ export default function ProfilePage() {
       }
       
       // Dispatch event to update global auth state
-      try { window.dispatchEvent(new Event('mindshift:auth:signed_out')); } catch {}
+      try { window.dispatchEvent(new Event('Nudge:auth:signed_out')); } catch {}
       
       // Reset loading state after successful logout
       setLoggingOut(false);
@@ -587,17 +587,17 @@ function BadgeCountDisplay() {
   useEffect(() => {
     const read = () => {
       try {
-        const raw = localStorage.getItem("mindshift_badges");
+        const raw = localStorage.getItem("Nudge_badges");
         const arr = raw ? JSON.parse(raw) : [];
         setCount(Array.isArray(arr) ? arr.length : 0);
       } catch { setCount(0); }
     };
     read();
     const onUpdate = () => read();
-    window.addEventListener("mindshift:badges:update", onUpdate);
+    window.addEventListener("Nudge:badges:update", onUpdate);
     window.addEventListener("focus", onUpdate);
     return () => {
-      window.removeEventListener("mindshift:badges:update", onUpdate);
+      window.removeEventListener("Nudge:badges:update", onUpdate);
       window.removeEventListener("focus", onUpdate);
     };
   }, []);
