@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Maggie Theme – Fonts, Colors, Utilities */
 :root {
   /* Theme fallback variables to prevent FOUC */
   --mbti-primary: var(--color-mint-500);

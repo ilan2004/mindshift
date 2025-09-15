@@ -12,7 +12,7 @@ import "./globals.css";
 import "../styles/personality-colors.css";
 
 export const metadata = {
-  title: "Nudge – Gentle Guidance. Better Habits.",
+  title: "Nudge",
   description: "Nudge - Your personality-driven focus toolkit. Gentle nudges toward better productivity habits with AI-driven insights and smart blocking tools.",
 };
 
@@ -144,7 +144,7 @@ export default function RootLayout({ children }) {
         {/* Apple PWA support */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <link rel="apple-touch-icon" href="/next.svg" />
+        <link rel="apple-touch-icon" href="/nudge2.png" />
         {/* Google Fonts now loaded globally via pages/_document.js */}
       </head>
       <body className={`antialiased ${tanker.variable}`} style={{ transition: 'all 0.2s ease-in-out' }}>

@@ -47,9 +47,6 @@ export default function Navbar() {
               <div className="font-tanker font-semibold text-3xl sm:text-4xl md:text-5xl leading-none tracking-widest">
                 Nudge
               </div>
-              <div className="text-xs sm:text-sm text-neutral-500 mt-1 tracking-wide font-normal">
-                Gentle Guidance. Better Habits.
-              </div>
             </Link>
           </div>
 
