@@ -67,11 +67,6 @@ export default function GreetingReveal({ onComplete }) {
             Nudge
           </span>
         </div>
-        <div className="overflow-hidden mt-2">
-          <span className="ms-greet-3 block text-lg md:text-xl tracking-wide text-neutral-500">
-            Gentle Guidance. Better Habits.
-          </span>
-        </div>
       </div>
     </div>
   );

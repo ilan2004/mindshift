@@ -249,7 +249,6 @@ export default function AuthOverlay({
         <div className="w-full max-w-xl">
           <div className="text-center mb-8" style={{ fontFamily: "Tanker, sans-serif" }}>
             <h1 className="text-4xl md:text-5xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Nudge</h1>
-            <p className="text-sm text-neutral-400 mt-1">Gentle Guidance. Better Habits.</p>
             <p className="mt-3 text-neutral-500">Let's personalize your experience</p>
           </div>
 
