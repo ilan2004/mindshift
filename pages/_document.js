@@ -4,9 +4,6 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        {/* Favicon */}
-        <link rel="icon" type="image/png" href="/nudge2.png" />
-        <link rel="shortcut icon" href="/nudge2.png" />
         {/* Global fonts - loaded once for entire application */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
