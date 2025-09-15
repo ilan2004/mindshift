@@ -14,6 +14,11 @@ import "../styles/personality-colors.css";
 export const metadata = {
   title: "Nudge",
   description: "Nudge - Your personality-driven focus toolkit. Gentle nudges toward better productivity habits with AI-driven insights and smart blocking tools.",
+  icons: {
+    icon: '/nudge2.png',
+    shortcut: '/nudge2.png',
+    apple: '/nudge2.png',
+  },
 };
 
 // Load Tanker font and expose as CSS variable --font-tanker
@@ -35,6 +40,9 @@ export default function RootLayout({ children }) {
       <head>
         {/* Viewport for mobile responsiveness */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        {/* Favicon */}
+        <link rel="icon" href="/nudge2.png" type="image/png" />
+        <link rel="shortcut icon" href="/nudge2.png" type="image/png" />
         {/* PWA: manifest and theme color */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#10b981" />
