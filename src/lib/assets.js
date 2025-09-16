@@ -69,9 +69,19 @@ export const ASSET_MAP = {
   ISTPW: "/images/ISTPW.png",
 };
 
+function normalizeGenderCode(gender) {
+  if (!gender) return null;
+  const s = String(gender).trim().toUpperCase();
+  if (s === 'M' || s === 'MALE' || s === 'MAN' || s === 'MEN') return 'M';
+  if (s === 'W' || s === 'F' || s === 'FEMALE' || s === 'WOMAN' || s === 'WOMEN' || s === 'FEM') return 'W';
+  return null;
+}
+
 export function getAssetPath(mbti, gender) {
-  if (!mbti || !gender) return null;
-  const key = `${mbti}${gender}`;
+  const upperMbti = (mbti || '').toUpperCase();
+  const code = normalizeGenderCode(gender);
+  if (!upperMbti || !code) return null;
+  const key = `${upperMbti}${code}`;
   
   // Primary lookup in asset map
   if (ASSET_MAP[key]) {
@@ -100,6 +110,7 @@ export const VIDEO_MAP = {
   ENFJW: "/videos/ENFJW.439Z.mp4",
   
   // ENFP - The Campaigner
+  ENFPM: "/videos/ENFPM.357Z.mp4",
   ENFPW: "/videos/ENFPW.964Z.mp4",
   ENFPW2: "/videos/ENFPW.mp4", // Alternative ENFP Female video
   
@@ -112,6 +123,7 @@ export const VIDEO_MAP = {
   
   // ESFJ - The Consul
   ESFJM: "/videos/ESFJM.978Z.mp4",
+  ESFJW: "/videos/ESFJW.059Z.mp4",
   
   // ESFP - The Entertainer
   ESFPM: "/videos/ESFPM.mp4",
@@ -127,6 +139,7 @@ export const VIDEO_MAP = {
   
   // INFJ - The Advocate
   INFJM: "/videos/INFJM.984Z.mp4",
+  INFJW: "/videos/INFJW.285Z.mp4",
   
   // INFP - The Mediator
   INFPM: "/videos/INFPM.mp4",
@@ -134,6 +147,7 @@ export const VIDEO_MAP = {
   
   // INTJ - The Architect
   INTJM: "/videos/INTJM.mp4",
+  INTJW: "/videos/INTJW.mp4",
   
   // INTP - The Thinker (NEW: Added INTPW)
   INTPM: "/videos/INTPM.896Z.mp4",
@@ -141,6 +155,7 @@ export const VIDEO_MAP = {
   
   // ISFJ - The Protector (NEW: Added ISFJM)
   ISFJM: "/videos/ISFJM.077Z.mp4",
+  ISFJW: "/videos/ISFJW.211Z.mp4",
   
   // ISFP - The Adventurer
   ISFPM: "/videos/ISFPM.696Z.mp4",
@@ -162,37 +177,23 @@ export function getVideoPath(mbti, gender) {
   if (!mbti || !gender) return null;
   
   // Ensure uppercase for consistency
-  const upperMbti = mbti.toUpperCase();
-  const upperGender = gender.toUpperCase();
-  const key = `${upperMbti}${upperGender}`;
+  const upperMbti = String(mbti).toUpperCase();
+  const code = normalizeGenderCode(gender);
+  if (!code) return null;
+  const key = `${upperMbti}${code}`;
   
   // Primary lookup in video map
   if (VIDEO_MAP[key]) {
     return VIDEO_MAP[key];
   }
   
-  // Check for alternative versions (e.g., ENFPW2)
-  const alt2Key = `${upperMbti}${upperGender}2`;
+  // Check for alternative versions with same gender (e.g., ENFPW2)
+  const alt2Key = `${upperMbti}${code}2`;
   if (VIDEO_MAP[alt2Key]) {
     return VIDEO_MAP[alt2Key];
   }
   
-  // Fallback: try alternative gender if available (only if current gender not found)
-  const altGender = upperGender === 'M' ? 'W' : 'M';
-  const altKey = `${upperMbti}${altGender}`;
-  if (VIDEO_MAP[altKey]) {
-    console.info(`Using ${altGender} video for ${upperMbti} (${upperGender} not available)`);
-    return VIDEO_MAP[altKey];
-  }
-  
-  // Check alternative version of opposite gender
-  const altAlt2Key = `${upperMbti}${altGender}2`;
-  if (VIDEO_MAP[altAlt2Key]) {
-    console.info(`Using ${altGender} alternative video for ${upperMbti} (${upperGender} not available)`);
-    return VIDEO_MAP[altAlt2Key];
-  }
-  
-  // No video available
+  // Do NOT fallback to opposite gender to avoid mismatched visuals
   return null;
 }
 
