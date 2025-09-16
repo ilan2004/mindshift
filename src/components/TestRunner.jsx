@@ -664,11 +664,15 @@ export default function TestRunner({ mode = "general", onComplete }) {
                         key={v}
                         type="button"
                         onClick={() => onPick(q.id, v)}
-                        className={`px-4 py-2 md:px-5 md:py-2.5 rounded-[999px] ${answers[q.id] === v ? "nav-pill nav-pill--cyan" : "nav-pill"}`}
+                        className={`px-3 py-2 md:px-5 md:py-2.5 rounded-[999px] text-xs md:text-sm ${answers[q.id] === v ? "nav-pill nav-pill--cyan" : "nav-pill"}`}
                         aria-pressed={answers[q.id] === v}
                       >
-                        <span className="font-mono mr-1">{v}</span>
-                        <span className="hidden md:inline text-xs opacity-80">{SCALE_LABEL[v]}</span>
+                        {/* Mobile: Show full text, Desktop: Show number + text */}
+                        <span className="md:hidden">{SCALE_LABEL[v]}</span>
+                        <span className="hidden md:inline">
+                          <span className="font-mono mr-1">{v}</span>
+                          <span className="text-xs opacity-80">{SCALE_LABEL[v]}</span>
+                        </span>
                       </button>
                     ))}
                   </div>
