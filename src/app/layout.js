@@ -6,7 +6,6 @@ import Navbar from "../components/Navbar";
 import ClientLayout from "../components/ClientLayout";
 import NotificationManager from "../components/NotificationManager";
 import { ThemeProvider } from "../contexts/ThemeContext";
-import ThemeKeyWrapper from "../components/ThemeKeyWrapper";
 import { TutorialProvider } from "../contexts/TutorialContext";
 import TutorialManager from "../components/TutorialManager";
 import "./globals.css";
@@ -63,7 +62,7 @@ export default function RootLayout({ children }) {
               (function() {
                 'use strict';
                 function getPersonalityType() {
-                  try { return localStorage.getItem('nudge_personality_type') || 'INFP'; } catch { return 'INFP'; }
+                  try { return localStorage.getItem('Nudge_personality_type') || 'INFP'; } catch { return 'INFP'; }
                 }
                 function getGender() {
                   try {
@@ -72,7 +71,7 @@ export default function RootLayout({ children }) {
                   } catch { return null; }
                 }
                 function getThemePreference() {
-                  try { return localStorage.getItem('nudge_theme_mode') || 'personality'; } catch { return 'personality'; }
+                  try { return localStorage.getItem('Nudge_theme_mode') || 'personality'; } catch { return 'personality'; }
                 }
                 const MBTI_COLORS = {
                   'INTJ': { primary: 'var(--color-purple-400)', text: 'var(--color-green-900)' },
@@ -170,21 +169,19 @@ export default function RootLayout({ children }) {
           <TutorialProvider>
             <NotificationManager>
               <ClientLayout>
-                <ThemeKeyWrapper>
-                  <Navbar />
-                  {/* Global SVG symbols (placed once) */}
-                  <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
-                    <defs>
-                      <symbol id="chev-down" viewBox="0 0 24 24">
-                        <polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </symbol>
-                    </defs>
-                  </svg>
-                  <LayoutContent>{children}</LayoutContent>
-                  <Footer />
-                  <FooterFocusBar />
-                  <TutorialManager />
-                </ThemeKeyWrapper>
+                <Navbar />
+                {/* Global SVG symbols (placed once) */}
+                <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
+                  <defs>
+                    <symbol id="chev-down" viewBox="0 0 24 24">
+                      <polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </symbol>
+                  </defs>
+                </svg>
+                <LayoutContent>{children}</LayoutContent>
+                <Footer />
+                <FooterFocusBar />
+                <TutorialManager />
               </ClientLayout>
             </NotificationManager>
           </TutorialProvider>

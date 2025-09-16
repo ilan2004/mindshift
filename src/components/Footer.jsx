@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Footer() {
   const [email, setEmail] = useState("");
-  const { getCSSVariables, themeMode, personalityType } = useTheme();
-  const cssVars = getCSSVariables();
+  const { themeMode, personalityType } = useTheme();
+
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -45,7 +45,6 @@ export default function Footer() {
     <footer
       className="w-full mt-12 mb-8 md:mb-12"
       style={{
-        ...cssVars,
         background: 'var(--mbti-bg-pattern)',
         color: 'var(--mbti-text-primary)',
       }}

@@ -16,7 +16,6 @@ export function ThemeProvider({ children }) {
   const [themeMode, setThemeMode] = useState('dark');
   const [personalityType, setPersonalityType] = useState('');
   const [ready, setReady] = useState(false);
-  const [themeKey, setThemeKey] = useState(0); // Add key for forcing re-renders
 
   // Initialize theme system before paint to avoid mismatch/flash
   useLayoutEffect(() => {
@@ -61,6 +60,7 @@ export function ThemeProvider({ children }) {
   const updateTheme = () => {
     const currentTheme = getCurrentPersonalityTheme();
     const personality = getPersonalityType();
+    
     setTheme(currentTheme);
     setThemeMode(currentTheme.currentMode);
     setPersonalityType(personality);
@@ -91,10 +91,7 @@ export function ThemeProvider({ children }) {
         applyPersonalityTheme(personalityType);
         updateTheme();
         
-        // Call global refreshTheme if available to sync inline script
-        if (typeof window.refreshTheme === 'function') {
-          window.refreshTheme();
-        }
+        // Inline refreshTheme no longer used to avoid race conditions
         
         // Dispatch theme changed event for other components
         window.dispatchEvent(new CustomEvent('theme-changed', {
@@ -118,25 +115,22 @@ export function ThemeProvider({ children }) {
 
   // Toggle between personality theme and mint theme
   const toggleTheme = () => {
-    // Apply theme changes immediately without delays
+    // Let utilities update localStorage and DOM CSS variables
     const newMode = themeUtils.toggleTheme();
-    
-    // Update React state immediately
+
+    // Do not call window.refreshTheme to avoid double application
+
+    // Sync React state with the applied theme
+    const currentTheme = getCurrentPersonalityTheme();
+    const personality = getPersonalityType();
     setThemeMode(newMode);
-    updateTheme();
-    
-    // Call global refreshTheme if available to sync inline script
-    if (typeof window.refreshTheme === 'function') {
-      window.refreshTheme();
-    }
-    
-    // Dispatch event immediately for navbar sync
-    window.dispatchEvent(new CustomEvent('theme-changed', { 
-      detail: { mode: newMode, theme: getCurrentPersonalityTheme() } 
+    setPersonalityType(personality);
+    setTheme(currentTheme);
+
+    // Notify any listeners (optional)
+    window.dispatchEvent(new CustomEvent('theme-changed', {
+      detail: { mode: newMode, theme: currentTheme }
     }));
-    
-    // Force components to re-render with new theme by incrementing key
-    setThemeKey(prev => prev + 1);
   };
 
   // Apply theme for specific personality type
@@ -145,12 +139,9 @@ export function ThemeProvider({ children }) {
     updateTheme();
     setPersonalityType(personality);
     
-    // Call global refreshTheme if available to sync inline script
-    if (typeof window.refreshTheme === 'function') {
-      window.refreshTheme();
-    }
+    // Inline refreshTheme no longer used to avoid race conditions
     
-    // Small delay to ensure DOM is updated before dispatching event
+    // Dispatch event for components to re-render
     requestAnimationFrame(() => {
       window.dispatchEvent(new CustomEvent('personality-changed', { 
         detail: { personality, theme: getCurrentPersonalityTheme() } 

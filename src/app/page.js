@@ -320,13 +320,12 @@ export default function Home() {
     return set;
   }, [cluster]);
 
-  // All available components
-  const allComponents = ["ProductivityGraph", "QuestBoard", "LeaderboardSection", "PeerStatusPanel", "CommunityChallenges", "Badges"];
-  
   // Components to show in More For You (all remaining components not in hero)
   const moreItems = useMemo(() => {
+    const allComponents = ["ProductivityGraph", "QuestBoard", "LeaderboardSection", "PeerStatusPanel", "CommunityChallenges", "Badges"];
     return allComponents.filter(component => !used.has(component));
   }, [used]);
+  
 
   const [moreOpen, setMoreOpen] = useState(false);
 
@@ -359,7 +358,6 @@ export default function Home() {
     {showProfile && <PersonalityProfile cluster={cluster} onDone={handleProfileDone} />}
     <section 
       className="w-full"
-      style={getCSSVariables()}
       data-tutorial="dashboard"
     >
       <div className="w-full px-4 md:px-6 py-6 flex flex-col items-center gap-6 md:gap-8">

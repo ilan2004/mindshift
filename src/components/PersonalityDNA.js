@@ -1,14 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { TRAIT_DESCRIPTIONS } from '@/lib/personalityData';
 
 export default function PersonalityDNA({ personalityType }) {
   const [animatedPercentages, setAnimatedPercentages] = useState({});
-  
-  if (!personalityType || personalityType.length !== 4) return null;
-
-  const traits = personalityType.split('');
   
   // Simulate realistic trait strength percentages based on personality type
   // In a real app, these would come from the actual quiz results
@@ -35,42 +31,49 @@ export default function PersonalityDNA({ personalityType }) {
     return strengths[type] || { E: 50, I: 50, N: 50, S: 50, T: 50, F: 50, J: 50, P: 50 };
   };
   
-  const traitStrengths = getTraitStrengths(personalityType);
+  const traits = useMemo(() => personalityType?.split('') || [], [personalityType]);
+  const traitStrengths = useMemo(() => personalityType ? getTraitStrengths(personalityType) : {}, [personalityType]);
   
   // Pair opposing traits with their percentages
-  const traitPairs = [
-    { 
-      dominant: traits[0], 
-      recessive: traits[0] === 'E' ? 'I' : 'E', 
-      category: 'Energy',
-      dominantPercent: traitStrengths[traits[0]],
-      recessivePercent: traitStrengths[traits[0] === 'E' ? 'I' : 'E']
-    },
-    { 
-      dominant: traits[1], 
-      recessive: traits[1] === 'N' ? 'S' : 'N', 
-      category: 'Information',
-      dominantPercent: traitStrengths[traits[1]],
-      recessivePercent: traitStrengths[traits[1] === 'N' ? 'S' : 'N']
-    },
-    { 
-      dominant: traits[2], 
-      recessive: traits[2] === 'T' ? 'F' : 'T', 
-      category: 'Decisions',
-      dominantPercent: traitStrengths[traits[2]],
-      recessivePercent: traitStrengths[traits[2] === 'T' ? 'F' : 'T']
-    },
-    { 
-      dominant: traits[3], 
-      recessive: traits[3] === 'J' ? 'P' : 'J', 
-      category: 'Structure',
-      dominantPercent: traitStrengths[traits[3]],
-      recessivePercent: traitStrengths[traits[3] === 'J' ? 'P' : 'J']
-    }
-  ];
+  const traitPairs = useMemo(() => {
+    if (!personalityType) return [];
+    
+    return [
+      { 
+        dominant: traits[0], 
+        recessive: traits[0] === 'E' ? 'I' : 'E', 
+        category: 'Energy',
+        dominantPercent: traitStrengths[traits[0]],
+        recessivePercent: traitStrengths[traits[0] === 'E' ? 'I' : 'E']
+      },
+      { 
+        dominant: traits[1], 
+        recessive: traits[1] === 'N' ? 'S' : 'N', 
+        category: 'Information',
+        dominantPercent: traitStrengths[traits[1]],
+        recessivePercent: traitStrengths[traits[1] === 'N' ? 'S' : 'N']
+      },
+      { 
+        dominant: traits[2], 
+        recessive: traits[2] === 'T' ? 'F' : 'T', 
+        category: 'Decisions',
+        dominantPercent: traitStrengths[traits[2]],
+        recessivePercent: traitStrengths[traits[2] === 'T' ? 'F' : 'T']
+      },
+      { 
+        dominant: traits[3], 
+        recessive: traits[3] === 'J' ? 'P' : 'J', 
+        category: 'Structure',
+        dominantPercent: traitStrengths[traits[3]],
+        recessivePercent: traitStrengths[traits[3] === 'J' ? 'P' : 'J']
+      }
+    ];
+  }, [personalityType, traits, traitStrengths]);
   
   // Animate percentages on mount
   useEffect(() => {
+    if (!personalityType || personalityType.length !== 4) return;
+    
     const timer = setTimeout(() => {
       const animated = {};
       traitPairs.forEach((pair, index) => {
@@ -81,7 +84,9 @@ export default function PersonalityDNA({ personalityType }) {
     }, 300);
     
     return () => clearTimeout(timer);
-  }, [personalityType]);
+  }, [personalityType, traitPairs]);
+  
+  if (!personalityType || personalityType.length !== 4) return null;
 
   return (
     <div className="retro-console rounded-xl p-4">
