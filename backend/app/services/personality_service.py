@@ -194,26 +194,26 @@ def map_answers_to_mbti_likert(answers: Dict[str, int]) -> str:
     if ei_diff >= threshold:
         ei_letter = "E" if E > I else "I"
     else:
-        # Close scores - use slight bias toward introversion (more common in developer/knowledge workers)
-        ei_letter = "I" if I >= E else "E"
+        # Close scores - random selection to avoid bias
+        ei_letter = random.choice(["E", "I"])
     
     if sn_diff >= threshold:
         sn_letter = "S" if S > N else "N"
     else:
-        # Close scores - slight bias toward intuition
-        sn_letter = "N" if N >= S else "S"
+        # Close scores - random selection to avoid bias
+        sn_letter = random.choice(["S", "N"])
         
     if tf_diff >= threshold:
         tf_letter = "T" if T > F else "F"
     else:
-        # Close scores - use random selection to avoid bias
+        # Close scores - random selection to avoid bias
         tf_letter = random.choice(["T", "F"])
         
     if jp_diff >= threshold:
         jp_letter = "J" if J > P else "P"
     else:
-        # Close scores - slight bias toward perceiving (more flexible)
-        jp_letter = "P" if P >= J else "J"
+        # Close scores - random selection to avoid bias
+        jp_letter = random.choice(["J", "P"])
     
     letters = ei_letter + sn_letter + tf_letter + jp_letter
     
