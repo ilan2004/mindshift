@@ -165,23 +165,57 @@ export default function TestRunner({ mode = "general", onComplete }) {
   const containerRef = useRef(null);
   const questionRefs = useRef({});
 
-  // Optional mobile haptics helper (Android/Chrome supports navigator.vibrate)
+  // Mobile haptics helper with better support detection
   function vibrate(durationOrPattern = 12) {
     try {
-      if (typeof window !== 'undefined' && navigator && typeof navigator.vibrate === 'function') {
-        navigator.vibrate(durationOrPattern);
+      if (typeof window !== 'undefined' && 
+          typeof navigator !== 'undefined' && 
+          navigator.vibrate && 
+          typeof navigator.vibrate === 'function') {
+        // Check if we're on a mobile device or touch-enabled device
+        const isMobile = /Android|iPhone|iPad|iPod|Mobile|Opera Mini/i.test(navigator.userAgent) || 
+                        'ontouchstart' in window || 
+                        navigator.maxTouchPoints > 0;
+        if (isMobile) {
+          console.debug('Attempting vibration:', durationOrPattern);
+          navigator.vibrate(durationOrPattern);
+        } else {
+          console.debug('Not mobile device, skipping vibration');
+        }
       }
-    } catch {}
+    } catch (e) {
+      console.debug('Vibration not supported:', e);
+    }
   }
 
   function scrollToQuestion(qid) {
     try {
       const el = questionRefs.current[qid];
       const container = containerRef.current;
-      if (el && container && typeof el.scrollIntoView === "function") {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (el && container) {
+        // Use scrollIntoView with mobile-friendly options
+        if (typeof el.scrollIntoView === "function") {
+          el.scrollIntoView({ 
+            behavior: "smooth", 
+            block: "center",
+            inline: "nearest"
+          });
+        } else {
+          // Fallback: calculate manual scroll position
+          const containerRect = container.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
+          const scrollTop = container.scrollTop + elRect.top - containerRect.top - (containerRect.height / 2) + (elRect.height / 2);
+          
+          if (container.scrollTo) {
+            container.scrollTo({ top: scrollTop, behavior: 'smooth' });
+          } else {
+            container.scrollTop = scrollTop;
+          }
+        }
       }
-    } catch {}
+    } catch (e) {
+      console.debug('Scroll to question failed:', e);
+    }
   }
 
   // Scroll snapping active-state highlighting
@@ -210,12 +244,20 @@ export default function TestRunner({ mode = "general", onComplete }) {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    
     // Reset scroll position immediately (avoid being stuck at last question on mobile)
     try {
-      el.scrollTo({ top: 0, behavior: 'auto' });
-    } catch {
+      // Force immediate scroll to top without smooth behavior to avoid conflicts
+      el.scrollTop = 0;
+      // Also try the modern API as backup
+      if (el.scrollTo) {
+        el.scrollTo({ top: 0, behavior: 'auto' });
+      }
+    } catch (e) {
+      // Fallback for older browsers
       el.scrollTop = 0;
     }
+    
     // Trigger a subtle fade-in to reinforce page change
     try {
       el.classList.add('fade-in');
@@ -223,14 +265,21 @@ export default function TestRunner({ mode = "general", onComplete }) {
         try { el.classList.remove('fade-in'); } catch {}
       }, 220);
     } catch {}
+    
     // Subtle haptic confirmation on page change (mobile)
     vibrate(12);
+    
     // After layout, center the first question for snap alignment
+    // Use longer delay to ensure scroll-to-top completes first
     if (pageItems && pageItems.length > 0) {
       const firstId = pageItems[0].id;
-      // Use rAF to ensure refs are attached, then smooth scroll to center
+      // Use double rAF to ensure DOM is fully updated and scroll-to-top is complete
       requestAnimationFrame(() => {
-        scrollToQuestion(firstId);
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            scrollToQuestion(firstId);
+          }, 100); // Small delay to prevent scroll conflict
+        });
       });
     }
   }, [page, pageItems]);
@@ -585,8 +634,15 @@ export default function TestRunner({ mode = "general", onComplete }) {
           {/* Questions container */}
           <div
             ref={containerRef}
-            className="overflow-y-auto rounded-2xl px-4 md:px-6 py-4 md:py-6"
-            style={{ maxHeight: "70vh", border: "2px solid var(--color-green-900)", scrollSnapType: "y mandatory", scrollSnapStop: "always" }}
+            className="overflow-y-auto rounded-2xl px-4 md:px-6 py-4 md:py-6 scroll-container"
+            style={{ 
+              maxHeight: "70vh", 
+              border: "2px solid var(--color-green-900)", 
+              scrollSnapType: "y mandatory", 
+              scrollSnapStop: "always",
+              WebkitOverflowScrolling: "touch", // iOS momentum scrolling
+              overscrollBehavior: "contain" // Prevent page scroll when reaching container limits
+            }}
           >
             <div className="space-y-10">
               {pageItems.map((q) => (
@@ -653,6 +709,31 @@ export default function TestRunner({ mode = "general", onComplete }) {
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(6px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        /* Mobile scroll improvements */
+        .scroll-container {
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior-y: contain;
+          scroll-behavior: smooth;
+        }
+        /* Ensure proper scroll snap on mobile */
+        @media (max-width: 768px) {
+          .scroll-container {
+            scroll-snap-type: y mandatory;
+            scroll-padding-top: 2rem;
+            scroll-padding-bottom: 2rem;
+          }
+          [data-question] {
+            scroll-snap-align: center;
+            scroll-snap-stop: always;
+          }
+        }
+        /* Fix scroll issues on iOS Safari */
+        @supports (-webkit-touch-callout: none) {
+          .scroll-container {
+            -webkit-overflow-scrolling: touch;
+            transform: translateZ(0); /* Force hardware acceleration */
+          }
         }
       `}</style>
     </div>
