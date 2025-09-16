@@ -58,10 +58,10 @@ export default function FinalReveal({ onComplete }) {
     <div ref={rootRef} className="fixed inset-0 z-[98] flex items-center justify-center" style={{ background: "var(--surface)", color: "var(--text)" }}>
       <div className="text-center" style={{ fontFamily: "Tanker, sans-serif" }}>
         <div className="overflow-hidden">
-          <span className="ms-word-1 block text-5xl md:text-7xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Mind</span>
+          <span className="ms-word-1 block text-5xl md:text-7xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Nudge</span>
         </div>
         <div className="overflow-hidden">
-          <span className="ms-word-2 block text-5xl md:text-7xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Shift</span>
+          <span className="ms-word-2 block text-5xl md:text-7xl tracking-tight" style={{ color: "var(--color-green-900)" }}></span>
         </div>
         {mbti && (
           <div className="mt-4">

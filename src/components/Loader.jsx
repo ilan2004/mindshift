@@ -133,11 +133,11 @@ export default function Loader({ onComplete }) {
       <div className="intro-logo">
         <div className="word" id="word-1">
           <h1>
-            <span>Mind</span>
+            <span>Nudge</span>
           </h1>
         </div>
         <div className="word" id="word-2">
-          <h1>Shift</h1>
+          <h1></h1>
         </div>
       </div>
       <div className="divider"></div>

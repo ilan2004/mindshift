@@ -16,7 +16,7 @@ export default function IntroOverlay({
       <div className="absolute inset-0 flex items-center justify-center px-6">
         <div className="w-full max-w-xl">
           <div className="text-center mb-8" style={{ fontFamily: "Tanker, sans-serif" }}>
-            <h1 className="text-4xl md:text-5xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Mind / Shift</h1>
+            <h1 className="text-4xl md:text-5xl tracking-tight" style={{ color: "var(--color-green-900)" }}>Nudge</h1>
             <p className="mt-2 text-neutral-500">Let’s personalize your experience</p>
           </div>
 
