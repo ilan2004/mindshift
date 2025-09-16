@@ -39,8 +39,9 @@ export default function TestRunner({ mode = "general", onComplete }) {
           // Do not auto-fetch; wait for user to upload history JSON
           q = [];
         } else {
-          const res = await getGeneralQuestions(user_id);
-          q = res?.questions || [];
+          // Use curated 24-item balanced bank
+          const { MBTI_QUESTIONS_24 } = await import("@/lib/mbtiQuestions24");
+          q = MBTI_QUESTIONS_24;
         }
         // Normalize to objects with unique ids
         let list = (q || []).map((text, i) => ({ id: `q${i + 1}`, text: String(text) }));
@@ -164,6 +165,15 @@ export default function TestRunner({ mode = "general", onComplete }) {
   const containerRef = useRef(null);
   const questionRefs = useRef({});
 
+  // Optional mobile haptics helper (Android/Chrome supports navigator.vibrate)
+  function vibrate(durationOrPattern = 12) {
+    try {
+      if (typeof window !== 'undefined' && navigator && typeof navigator.vibrate === 'function') {
+        navigator.vibrate(durationOrPattern);
+      }
+    } catch {}
+  }
+
   function scrollToQuestion(qid) {
     try {
       const el = questionRefs.current[qid];
@@ -182,19 +192,48 @@ export default function TestRunner({ mode = "general", onComplete }) {
       (entries) => {
         entries.forEach((entry) => {
           const qEl = entry.target;
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
             qEl.classList.add("is-centered");
           } else {
             qEl.classList.remove("is-centered");
           }
         });
       },
-      { root: el, threshold: [0.6] }
+      { root: el, threshold: [0.5] }
     );
     const nodes = el.querySelectorAll("[data-question]");
     nodes.forEach((n) => io.observe(n));
     return () => io.disconnect();
   }, [page, pageItems.length]);
+
+  // Ensure the container scrolls to the top and centers the first question on page change (mobile-safe)
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    // Reset scroll position immediately (avoid being stuck at last question on mobile)
+    try {
+      el.scrollTo({ top: 0, behavior: 'auto' });
+    } catch {
+      el.scrollTop = 0;
+    }
+    // Trigger a subtle fade-in to reinforce page change
+    try {
+      el.classList.add('fade-in');
+      setTimeout(() => {
+        try { el.classList.remove('fade-in'); } catch {}
+      }, 220);
+    } catch {}
+    // Subtle haptic confirmation on page change (mobile)
+    vibrate(12);
+    // After layout, center the first question for snap alignment
+    if (pageItems && pageItems.length > 0) {
+      const firstId = pageItems[0].id;
+      // Use rAF to ensure refs are attached, then smooth scroll to center
+      requestAnimationFrame(() => {
+        scrollToQuestion(firstId);
+      });
+    }
+  }, [page, pageItems]);
 
   const onPick = (qid, val) => {
     setAnswers((a) => {
@@ -235,8 +274,6 @@ export default function TestRunner({ mode = "general", onComplete }) {
       if (currentPageComplete) {
         // Move to next page if current page is complete
         setPage((p) => p + 1);
-        const el = containerRef.current;
-        if (el) el.scrollTo({ top: 0, behavior: "smooth" });
       } else {
         // Find first unanswered question on current page and scroll to it
         const unansweredOnPage = pageItems.find(q => !answers[q.id]);
@@ -248,6 +285,8 @@ export default function TestRunner({ mode = "general", onComplete }) {
             questionEl.classList.add('highlight-required');
             setTimeout(() => questionEl.classList.remove('highlight-required'), 2000);
           }
+          // Haptic nudge to draw attention
+          vibrate([20, 40, 20]);
         }
       }
     } else {
@@ -265,6 +304,8 @@ export default function TestRunner({ mode = "general", onComplete }) {
             questionEl.classList.add('highlight-required');
             setTimeout(() => questionEl.classList.remove('highlight-required'), 2000);
           }
+          // Haptic nudge to draw attention on mobile
+          vibrate([20, 40, 20]);
         }, 100);
         return;
       }
@@ -318,8 +359,6 @@ export default function TestRunner({ mode = "general", onComplete }) {
   const onBack = () => {
     if (page > 0) {
       setPage((p) => p - 1);
-      const el = containerRef.current;
-      if (el) el.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -547,7 +586,7 @@ export default function TestRunner({ mode = "general", onComplete }) {
           <div
             ref={containerRef}
             className="overflow-y-auto rounded-2xl px-4 md:px-6 py-4 md:py-6"
-            style={{ maxHeight: "70vh", border: "2px solid var(--color-green-900)", scrollSnapType: "y mandatory" }}
+            style={{ maxHeight: "70vh", border: "2px solid var(--color-green-900)", scrollSnapType: "y mandatory", scrollSnapStop: "always" }}
           >
             <div className="space-y-10">
               {pageItems.map((q) => (
@@ -608,6 +647,12 @@ export default function TestRunner({ mode = "general", onComplete }) {
         @keyframes pulse-highlight {
           0%, 100% { background-color: rgba(239, 68, 68, 0.1); }
           50% { background-color: rgba(239, 68, 68, 0.2); }
+        }
+        /* Page transition: subtle fade/slide-in on page change */
+        .fade-in { animation: fade-in 0.22s ease-out; }
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
