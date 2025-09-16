@@ -353,19 +353,33 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
                 {/* Strengths */}
                 <div>
                   <h3 className="font-tanker text-lg text-green tracking-wide mb-3">STRENGTHS</h3>
-                  <div className="space-y-2">
-                    {personalityData.strengths.map((strength) => (
-                      <div key={strength} className="flex items-center justify-between gap-3 p-2 rounded-lg border border-neutral-200">
-                        <span className="text-sm font-medium text-neutral-800">{strength}</span>
-                        <button 
-                          onClick={() => handleTrainStrength(strength)}
-                          className="nav-pill nav-pill--cyan text-xs px-3 py-1"
-                          title={`Start a personalized session to train your ${strength} skills`}
-                        >
-                          💪 Train This
-                        </button>
-                      </div>
-                    ))}
+                  <div className="space-y-3">
+                    {personalityData.strengths.map((strength) => {
+                      // Define non-trainable strengths that shouldn't show Train This button
+                      const nonTrainableStrengths = [
+                        'Enthusiasm',
+                        'Creativity', 
+                        'People Skills',
+                        'Adaptability'
+                      ];
+                      
+                      const isTrainable = !nonTrainableStrengths.includes(strength);
+                      
+                      return (
+                        <div key={strength} className="flex items-center justify-between gap-3 p-2 rounded-lg border border-neutral-200">
+                          <span className="text-sm font-medium text-neutral-800">{strength}</span>
+                          {isTrainable && (
+                            <button 
+                              onClick={() => handleTrainStrength(strength)}
+                              className="nav-pill nav-pill--cyan text-xs px-3 py-1"
+                              title={`Start a personalized session to train your ${strength} skills`}
+                            >
+                              💪 Train This
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -388,10 +402,27 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
                 🚀 Start Focus Session
               </button>
               <button 
-                onClick={() => setShowComparison(!showComparison)}
-                className="nav-pill"
+                onClick={() => {
+                  if (!showComparison) {
+                    setShowComparison(true);
+                    // Scroll to comparison section after component renders
+                    setTimeout(() => {
+                      const comparisonElement = document.getElementById('personality-comparison');
+                      if (comparisonElement) {
+                        comparisonElement.scrollIntoView({ 
+                          behavior: 'smooth', 
+                          block: 'start',
+                          inline: 'nearest'
+                        });
+                      }
+                    }, 100); // Small delay to ensure component is rendered
+                  } else {
+                    setShowComparison(false);
+                  }
+                }}
+                className={`nav-pill ${showComparison ? 'nav-pill--primary' : ''}`}
               >
-                ⚖️ Compare Types
+                ⚖️ {showComparison ? 'Hide Comparison' : 'Compare Types'}
               </button>
               <Link href="#explore" className="nav-pill">
                 🔍 Explore All Types
@@ -599,7 +630,7 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
 
         {/* Comparison Tool */}
         {showComparison && (
-          <div className="w-full max-w-6xl reveal-on-scroll">
+          <div id="personality-comparison" className="w-full max-w-6xl reveal-on-scroll">
             <PersonalityComparison 
               primaryType={personalityData.type}
               onClose={() => setShowComparison(false)}

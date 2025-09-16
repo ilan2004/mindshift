@@ -124,16 +124,16 @@ export default function ProductivityGraph({ maxMinutes = 120, personalityType = 
   const peak = Math.max(1, ...data.map((d) => d.minutes));
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div 
-        data-tutorial="productivity-analytics"
-        className="rounded-xl p-4 backdrop-blur-sm"
-        style={{
-          background: "rgba(249, 248, 244, 0.85)",
-          border: "2px solid var(--color-green-900)",
-          boxShadow: "0 4px 20px rgba(3, 89, 77, 0.15)",
-        }}
-      >
+    <div className="w-full max-w-md mx-auto min-w-0">
+        <div 
+          data-tutorial="productivity-analytics"
+          className="rounded-xl p-3 sm:p-4 backdrop-blur-sm"
+          style={{
+            background: "rgba(249, 248, 244, 0.85)",
+            border: "2px solid var(--color-green-900)",
+            boxShadow: "0 4px 20px rgba(3, 89, 77, 0.15)",
+          }}
+        >
         <div className="mb-4">
           <div className="text-center relative">
             <div className="flex justify-between items-start mb-2">
@@ -158,29 +158,32 @@ export default function ProductivityGraph({ maxMinutes = 120, personalityType = 
           </div>
         </div>
 
-        <div className="h-40 md:h-48 flex items-end gap-3 px-4 py-3 bg-gray-50 rounded-lg">
+        <div className="h-32 sm:h-40 md:h-48 flex items-end gap-1 sm:gap-2 md:gap-3 px-2 sm:px-4 py-3 bg-gray-50 rounded-lg overflow-hidden">
           {data.map((d) => {
-            // Calculate height in pixels instead of percentage
-            const maxHeight = 140; // Increased max height to fill the card better
-            const h = Math.max(20, Math.round((d.minutes / peak) * maxHeight));
+            // Simple responsive height calculation
+            // Use a base height that works well across all screen sizes
+            const maxHeight = 120; // Good balance for all screen sizes
+            const h = Math.max(12, Math.round((d.minutes / peak) * maxHeight));
             return (
-              <div key={d.key} className="flex-1 flex flex-col items-center gap-2">
+              <div key={d.key} className="flex-1 flex flex-col items-center gap-1 sm:gap-2 min-w-0">
                 <div className="relative flex items-end justify-center group w-full" title={`${d.fullMinutes} minutes on ${d.key}`}>
                   <div
-                    className="rounded-t-lg transition-all duration-300 hover:scale-105 cursor-pointer"
+                    className="rounded-t-lg transition-all duration-300 hover:scale-105 cursor-pointer mx-auto"
                     style={{ 
-                      width: "24px",
+                      width: "min(24px, calc(100% - 2px))", // Responsive width that fits container
+                      maxWidth: "28px",
+                      minWidth: "16px",
                       height: `${h}px`,
                       background: d.isToday 
                         ? "linear-gradient(45deg, #035947, #059669)" // Gradient for today
                         : "linear-gradient(45deg, rgba(3, 89, 77, 0.8), rgba(5, 150, 105, 0.6))", // Gradient for other days
                       boxShadow: d.isToday ? "0 3px 12px rgba(3, 89, 77, 0.5)" : "0 2px 6px rgba(3, 89, 77, 0.3)",
-                      minHeight: "20px", // Ensure bars are always visible
+                      minHeight: "12px", // Ensure bars are always visible
                       border: "1px solid rgba(3, 89, 77, 0.3)"
                     }}
                   />
                 </div>
-                <div className={`text-sm font-medium ${d.isToday ? "font-bold" : ""}`} style={{ color: d.isToday ? "#035947" : "#6b7280" }}>
+                <div className={`text-xs sm:text-sm font-medium text-center truncate w-full ${d.isToday ? "font-bold" : ""}`} style={{ color: d.isToday ? "#035947" : "#6b7280" }}>
                   {d.label}
                 </div>
               </div>
@@ -189,21 +192,22 @@ export default function ProductivityGraph({ maxMinutes = 120, personalityType = 
         </div>
         
         {/* Summary Stats */}
-        <div className="mt-4 pt-3 border-t flex justify-between text-sm" style={{ borderColor: "rgba(3, 89, 77, 0.1)" }}>
-          <div className="text-neutral-600 text-center">
-            <div className="font-medium">Total</div>
-            <div className="text-green font-bold text-base">{data.reduce((sum, d) => sum + d.fullMinutes, 0)}m</div>
+        <div className="mt-3 sm:mt-4 pt-3 border-t flex justify-between text-xs sm:text-sm gap-2" style={{ borderColor: "rgba(3, 89, 77, 0.1)" }}>
+          <div className="text-neutral-600 text-center flex-1 min-w-0">
+            <div className="font-medium truncate">Total</div>
+            <div className="text-green font-bold text-sm sm:text-base truncate">{data.reduce((sum, d) => sum + d.fullMinutes, 0)}m</div>
           </div>
-          <div className="text-neutral-600 text-center">
-            <div className="font-medium">Avg</div>
-            <div className="text-green font-bold text-base">{Math.round(data.reduce((sum, d) => sum + d.fullMinutes, 0) / 7)}m/day</div>
+          <div className="text-neutral-600 text-center flex-1 min-w-0">
+            <div className="font-medium truncate">Avg</div>
+            <div className="text-green font-bold text-sm sm:text-base truncate">{Math.round(data.reduce((sum, d) => sum + d.fullMinutes, 0) / 7)}m/day</div>
           </div>
-          <div className="text-neutral-600 text-center">
-            <div className="font-medium">Best</div>
-            <div className="text-green font-bold text-base">{Math.max(...data.map(d => d.fullMinutes))}m</div>
+          <div className="text-neutral-600 text-center flex-1 min-w-0">
+            <div className="font-medium truncate">Best</div>
+            <div className="text-green font-bold text-sm sm:text-base truncate">{Math.max(...data.map(d => d.fullMinutes))}m</div>
           </div>
         </div>
       </div>
     </div>
   );
 }
+

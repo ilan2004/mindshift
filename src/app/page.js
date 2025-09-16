@@ -229,12 +229,6 @@ export default function Home() {
   const cluster = useMemo(() => mbtiToCluster(mbti), [mbti]);
   const tone = useMemo(() => clusterTone(cluster), [cluster]);
 
-  // Toggle theme mode function for navbar
-  const toggleThemeMode = () => {
-    themeUtils.toggleTheme();
-    setTheme(getCurrentPersonalityTheme());
-  };
-
   // Handle template selection and start
   const handleStartFocus = (template) => {
     try {
@@ -326,20 +320,13 @@ export default function Home() {
     return set;
   }, [cluster]);
 
-  // Low-priority components per cluster to show in collapsed area
+  // All available components
+  const allComponents = ["ProductivityGraph", "QuestBoard", "LeaderboardSection", "PeerStatusPanel", "CommunityChallenges", "Badges"];
+  
+  // Components to show in More For You (all remaining components not in hero)
   const moreItems = useMemo(() => {
-    switch (cluster) {
-      case "analysts":
-        return ["QuestBoard", "Badges"];
-      case "explorers":
-        return ["ProductivityGraph"]; // heavy stats hidden here
-      case "diplomats":
-        return ["LeaderboardSection", "ProductivityGraph"];
-      case "achievers":
-      default:
-        return ["QuestBoard", "Badges", "ProductivityGraph"]; // graphs/deep stats
-    }
-  }, [cluster]);
+    return allComponents.filter(component => !used.has(component));
+  }, [used]);
 
   const [moreOpen, setMoreOpen] = useState(false);
 
@@ -366,43 +353,6 @@ export default function Home() {
     return () => ctx.revert();
   }, [moreOpen]);
 
-  // Apply personality-based semantic color overrides via CSS custom properties
-  useEffect(() => {
-    if (!mbti) {
-      // Reset to default theme
-      document.documentElement.style.setProperty('--bg-default', 'var(--color-mint-500)');
-      document.documentElement.style.setProperty('--accent', 'var(--color-pink-500)');
-      document.documentElement.style.setProperty('--muted', 'var(--color-teal-300)');
-      return;
-    }
-    
-    // Personality-specific theme using your existing color palette
-    const personalityThemes = {
-      INTJ: { bg: '--color-purple-400', accent: '--color-purple-400', muted: '--color-purple-400' },
-      INTP: { bg: '--color-cyan-200', accent: '--color-cyan-200', muted: '--color-cyan-200' },
-      ENTJ: { bg: '--color-orange-500', accent: '--color-orange-500', muted: '--color-orange-500' },
-      ENTP: { bg: '--color-pink-500', accent: '--color-pink-500', muted: '--color-pink-500' },
-      INFJ: { bg: '--color-blue-400', accent: '--color-blue-400', muted: '--color-blue-400' },
-      INFP: { bg: '--color-pink-200', accent: '--color-pink-200', muted: '--color-pink-200' },
-      ENFJ: { bg: '--color-teal-300', accent: '--color-teal-300', muted: '--color-teal-300' },
-      ENFP: { bg: '--color-amber-400', accent: '--color-amber-400', muted: '--color-amber-400' },
-      ISTJ: { bg: '--color-blue-400', accent: '--color-blue-400', muted: '--color-blue-400' },
-      ISFJ: { bg: '--color-pink-200', accent: '--color-pink-200', muted: '--color-pink-200' },
-      ESTJ: { bg: '--color-orange-500', accent: '--color-orange-500', muted: '--color-orange-500' },
-      ESFJ: { bg: '--color-pink-500', accent: '--color-pink-500', muted: '--color-pink-500' },
-      ISTP: { bg: '--color-teal-300', accent: '--color-teal-300', muted: '--color-teal-300' },
-      ISFP: { bg: '--color-lilac-300', accent: '--color-lilac-300', muted: '--color-lilac-300' },
-      ESTP: { bg: '--color-amber-400', accent: '--color-amber-400', muted: '--color-amber-400' },
-      ESFP: { bg: '--color-yellow-200', accent: '--color-yellow-200', muted: '--color-yellow-200' }
-    };
-    
-    const theme = personalityThemes[mbti.toUpperCase()];
-    if (theme) {
-      document.documentElement.style.setProperty('--bg-default', `var(${theme.bg})`);
-      document.documentElement.style.setProperty('--accent', `var(${theme.accent})`);
-      document.documentElement.style.setProperty('--muted', `var(${theme.muted})`);
-    }
-  }, [mbti]);
 
   return (
     <>
@@ -453,7 +403,7 @@ export default function Home() {
             {hasActive && <span className="nav-pill nav-pill--primary">Session Active</span>}
           </div>
           {/* Subtle personality progress overview */}
-          <div className="mt-4 rounded-xl" style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}>
+          <div className="mt-4 rounded-xl" style={{ background: "var(--mbti-surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}>
             <div className="p-3">
               <PersonalityProgressOverview personalityType={mbti} compact />
             </div>
@@ -465,7 +415,7 @@ export default function Home() {
           <div 
             className="rounded-xl p-4 relative"
             style={{
-              background: "var(--surface)",
+              background: "var(--mbti-surface)",
               border: "2px solid var(--color-green-900)",
               boxShadow: "0 2px 0 var(--color-green-900)"
             }}
@@ -530,13 +480,13 @@ export default function Home() {
           </div>
           {moreOpen && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 reveal-on-scroll">
-              {moreItems.includes("ProductivityGraph") && !used.has("ProductivityGraph") && (
+              {moreItems.includes("ProductivityGraph") && (
                 <ProductivityGraph personalityType={mbti} />
               )}
-              {moreItems.includes("QuestBoard") && !used.has("QuestBoard") && (
+              {moreItems.includes("QuestBoard") && (
                 <QuestBoard personalityType={mbti} />
               )}
-              {moreItems.includes("LeaderboardSection") && !used.has("LeaderboardSection") && (
+              {moreItems.includes("LeaderboardSection") && (
                 <div data-tutorial="leaderboard" className="relative">
                   <LeaderboardSection personalityType={mbti} />
                   {userPreferences.showTooltips && !completedTutorials.has('leaderboard') && (
@@ -551,19 +501,20 @@ export default function Home() {
                   )}
                 </div>
               )}
+              {moreItems.includes("PeerStatusPanel") && (
+                <PeerStatusPanel personalityType={mbti} />
+              )}
+              {moreItems.includes("CommunityChallenges") && (
+                <div data-tutorial="challenges" className="relative">
+                  <CommunityChallenges personalityType={mbti} />
+                </div>
+              )}
               {moreItems.includes("Badges") && (
                 <div data-tutorial="badges" className="relative">
                   <Badges />
                 </div>
               )}
-              {!used.has("CommunityChallenges") && (
-                <div data-tutorial="challenges" className="relative">
-                  <CommunityChallenges personalityType={mbti} />
-                </div>
-              )}            
-              </div>
-
-              
+            </div>
           )}
         </div>
         
@@ -716,7 +667,7 @@ function RecentFeed() {
   }, []);
   if (items.length === 0) return null;
   return (
-    <div className="rounded-xl p-3" style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}>
+      <div className="rounded-xl p-3" style={{ background: "var(--mbti-surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 2px 0 var(--color-green-900)" }}>
       <div className="mb-2 flex items-center justify-between">
         <div className="text-sm font-semibold text-neutral-800">Recent Activity</div>
         <div className="text-xs text-neutral-500">Last 3</div>
@@ -804,7 +755,7 @@ function QuizGateModal({ items, url, loading, metadata, error, onClose }) {
   
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.5)" }}>
-      <div className="rounded-xl max-w-md w-full p-4" style={{ background: "var(--surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 4px 0 var(--color-green-900)" }}>
+            <div className="rounded-xl max-w-md w-full p-4" style={{ background: "var(--mbti-surface)", border: "2px solid var(--color-green-900)", boxShadow: "0 4px 0 var(--color-green-900)" }}>
         <div className="mb-2 flex items-center justify-between">
           <h3 className="font-tanker text-2xl tracking-widest text-green" style={{ lineHeight: 1 }}>
             Content Focus Gate

@@ -66,7 +66,6 @@ export default function SlideMenu({ isOpen, onClose }) {
     { href: "/about", label: "About Your Type" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/leaderboard", label: "Leaderboard" },
-    { href: "/game", label: "Game" },
     { href: "/stake", label: "Stake" },
     { href: "/profile", label: "Profile" },
   ];
