@@ -353,33 +353,12 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
                 {/* Strengths */}
                 <div>
                   <h3 className="font-tanker text-lg text-green tracking-wide mb-3">STRENGTHS</h3>
-                  <div className="space-y-3">
-                    {personalityData.strengths.map((strength) => {
-                      // Define non-trainable strengths that shouldn't show Train This button
-                      const nonTrainableStrengths = [
-                        'Enthusiasm',
-                        'Creativity', 
-                        'People Skills',
-                        'Adaptability'
-                      ];
-                      
-                      const isTrainable = !nonTrainableStrengths.includes(strength);
-                      
-                      return (
-                        <div key={strength} className="flex items-center justify-between gap-3 p-2 rounded-lg border border-neutral-200">
-                          <span className="text-sm font-medium text-neutral-800">{strength}</span>
-                          {isTrainable && (
-                            <button 
-                              onClick={() => handleTrainStrength(strength)}
-                              className="nav-pill nav-pill--cyan text-xs px-3 py-1"
-                              title={`Start a personalized session to train your ${strength} skills`}
-                            >
-                              💪 Train This
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
+                  <div className="flex flex-wrap gap-2">
+                    {personalityData.strengths.map((strength) => (
+                      <div key={strength} className="pill text-sm">
+                        {strength}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -387,19 +366,17 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3 justify-center mt-6 pt-6 border-t border-neutral-200">
-              {isOwnType && (
-                <button 
-                  onClick={() => setShowRetakeQuiz(true)}
-                  className="nav-pill nav-pill--outline"
-                >
-                  🔄 Retake Quiz
-                </button>
-              )}
               <button 
                 onClick={() => handleStartFocus()}
                 className="nav-pill nav-pill--primary"
               >
                 🚀 Start Focus Session
+              </button>
+              <button 
+                onClick={() => setShowRetakeQuiz(true)}
+                className={`nav-pill ${isOwnType ? 'nav-pill--cyan' : 'nav-pill--outline'}`}
+              >
+                🔄 {isOwnType ? 'Retake Test' : 'Take Test'}
               </button>
               <button 
                 onClick={() => {
@@ -660,14 +637,12 @@ export default function AboutPageContent({ personalityData, isOwnType, userStore
             >
               🚀 Start Focusing Now
             </button>
-            {isOwnType && (
-              <button 
-                onClick={() => setShowRetakeQuiz(true)}
-                className="nav-pill nav-pill--outline"
-              >
-                🔄 Retake Personality Quiz
-              </button>
-            )}
+            <button 
+              onClick={() => setShowRetakeQuiz(true)}
+              className={`nav-pill ${isOwnType ? 'nav-pill--cyan' : 'nav-pill--outline'}`}
+            >
+              🔄 {isOwnType ? 'Retake Test' : 'Take Test'}
+            </button>
           </div>
         </div>
       </div>

@@ -65,7 +65,7 @@ export function scoreMbtiLocal(answersMap, orderedTexts) {
     if (val == null) continue;
     const w = likertWeight(val);
 
-    if (w === 0) return; // neutral, no contribution
+    if (w === 0) continue; // neutral, no contribution
     if (w > 0) {
       sums[dim][side] += Math.abs(w);
     } else {
@@ -83,10 +83,10 @@ export function scoreMbtiLocal(answersMap, orderedTexts) {
     const sa = sums[dim][a];
     const sb = sums[dim][b];
     if (sa === sb) {
-      // tie-break: prefer previous type if exists, or default to a reasonable bias
-      // We'll default E over I, N over S, T over F, J over P for now
-      const defaultPref = { EI: 'E', SN: 'N', TF: 'T', JP: 'J' }[dim];
-      letters.push(defaultPref);
+      // tie-break: use balanced random selection to avoid systematic bias
+      const options = [a, b];
+      const randomChoice = options[Math.floor(Math.random() * options.length)];
+      letters.push(randomChoice);
     } else {
       letters.push(sa > sb ? a : b);
     }

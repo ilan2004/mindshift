@@ -15,7 +15,9 @@ export default function PersonalityTypePage() {
   const readStoredType = () => {
     if (typeof window === 'undefined') return '';
     try {
-      return (localStorage.getItem('nudge_personality_type') || '').toUpperCase();
+      // Check both possible keys for compatibility
+      const stored = localStorage.getItem('Nudge_personality_type') || localStorage.getItem('nudge_personality_type') || '';
+      return stored.toUpperCase();
     } catch {
       return '';
     }
