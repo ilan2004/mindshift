@@ -281,7 +281,7 @@ export const usePersonalityColors = (mbtiType, gender = null) => {
 };
 
 // Default export with all utilities
-export default {
+const personalityColorUtils = {
   getPersonalityCluster,
   getPersonalityColors,
   generatePersonalityCSS,
@@ -293,3 +293,5 @@ export default {
   withPersonalityColors,
   usePersonalityColors
 };
+
+export default personalityColorUtils;

@@ -8,7 +8,7 @@ import { Sun, Palette } from 'lucide-react';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { themeMode, toggleTheme, getCSSVariables } = useTheme();
+  const { themeMode, toggleTheme } = useTheme();
   
   // Close menu on route change/hash change
   useEffect(() => {
@@ -21,14 +21,11 @@ export default function Navbar() {
     };
   }, []);
 
-  // Get current CSS variables - this will automatically update when theme context changes
-  const cssVars = getCSSVariables();
   
   return (
     <header
       className="sticky top-0 z-30 w-full border-b-2"
       style={{
-        ...cssVars,
         background: 'var(--mbti-bg-pattern)',
         borderColor: 'var(--mbti-primary)',
         transition: 'all 0.2s ease-in-out',

@@ -65,7 +65,6 @@ export default function SlideMenu({ isOpen, onClose }) {
   const menuItems = [
     { href: "/about", label: "About Your Type" },
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/leaderboard", label: "Leaderboard" },
     { href: "/stake", label: "Stake" },
     { href: "/profile", label: "Profile" },
   ];

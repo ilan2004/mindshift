@@ -262,7 +262,7 @@ export function TutorialProvider({ children }) {
         const state = JSON.parse(saved);
         setCompletedTutorials(new Set(state.completed || []));
         setSkippedTutorials(new Set(state.skipped || []));
-        setUserPreferences({ ...userPreferences, ...state.preferences });
+        setUserPreferences(prev => ({ ...prev, ...state.preferences }));
       }
     } catch (error) {
       console.warn('Failed to load tutorial state:', error);
@@ -298,19 +298,6 @@ export function TutorialProvider({ children }) {
     }
   }, [profileDismissed]);
   
-  useEffect(() => {
-    if (userPreferences.autoStart && 
-        profileDismissed && 
-        !completedTutorials.has('onboarding') && 
-        !skippedTutorials.has('onboarding')) {
-      // Small delay to ensure UI is ready
-      const timer = setTimeout(() => {
-        startTutorial('onboarding');
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [userPreferences.autoStart, profileDismissed, completedTutorials, skippedTutorials]);
-
   const startTutorial = useCallback((tutorialId) => {
     const tutorial = TUTORIAL_CONFIG[tutorialId];
     if (!tutorial) {
@@ -322,7 +309,30 @@ export function TutorialProvider({ children }) {
     setCurrentStep(0);
     setIsActive(true);
   }, []);
+  
+  useEffect(() => {
+    if (userPreferences.autoStart && 
+        profileDismissed && 
+        !completedTutorials.has('onboarding') && 
+        !skippedTutorials.has('onboarding')) {
+      // Small delay to ensure UI is ready
+      const timer = setTimeout(() => {
+        startTutorial('onboarding');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [userPreferences.autoStart, profileDismissed, completedTutorials, skippedTutorials, startTutorial]);
 
+
+  const completeTutorial = useCallback(() => {
+    if (!currentTutorial) return;
+    
+    setCompletedTutorials(prev => new Set([...prev, currentTutorial.id]));
+    setIsActive(false);
+    setCurrentTutorial(null);
+    setCurrentStep(0);
+  }, [currentTutorial]);
+  
   const nextStep = useCallback(() => {
     if (!currentTutorial) return;
     
@@ -331,7 +341,7 @@ export function TutorialProvider({ children }) {
     } else {
       completeTutorial();
     }
-  }, [currentTutorial, currentStep]);
+  }, [currentTutorial, currentStep, completeTutorial]);
 
   const previousStep = useCallback(() => {
     if (currentStep > 0) {
@@ -348,14 +358,6 @@ export function TutorialProvider({ children }) {
     setCurrentStep(0);
   }, [currentTutorial]);
 
-  const completeTutorial = useCallback(() => {
-    if (!currentTutorial) return;
-    
-    setCompletedTutorials(prev => new Set([...prev, currentTutorial.id]));
-    setIsActive(false);
-    setCurrentTutorial(null);
-    setCurrentStep(0);
-  }, [currentTutorial]);
 
   const restartTutorial = useCallback((tutorialId) => {
     setCompletedTutorials(prev => {
