@@ -16,6 +16,7 @@ export function ThemeProvider({ children }) {
   const [themeMode, setThemeMode] = useState('dark');
   const [personalityType, setPersonalityType] = useState('');
   const [ready, setReady] = useState(false);
+  const [themeKey, setThemeKey] = useState(0); // Add key for forcing re-renders
 
   // Initialize theme system before paint to avoid mismatch/flash
   useLayoutEffect(() => {
@@ -134,11 +135,8 @@ export function ThemeProvider({ children }) {
       detail: { mode: newMode, theme: getCurrentPersonalityTheme() } 
     }));
     
-    // Force a re-render to ensure all components update together
-    setReady(false);
-    requestAnimationFrame(() => {
-      setReady(true);
-    });
+    // Force components to re-render with new theme by incrementing key
+    setThemeKey(prev => prev + 1);
   };
 
   // Apply theme for specific personality type

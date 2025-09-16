@@ -10,7 +10,7 @@ export default function ThemeDebug() {
     personalityType, 
     toggleTheme, 
     applyThemeForPersonality,
-    getCSSVariables 
+    getCSSVariables
   } = useTheme();
 
   const personalityTypes = Object.keys(MBTI_THEMES);

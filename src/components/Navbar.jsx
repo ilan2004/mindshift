@@ -25,11 +25,11 @@ export default function Navbar() {
   const cssVars = getCSSVariables();
   
   return (
-    <header 
+    <header
       className="sticky top-0 z-30 w-full border-b-2"
       style={{
         ...cssVars,
-        background: 'var(--mbti-bg-pattern, var(--bg-default))',
+        background: 'var(--mbti-bg-pattern)',
         borderColor: 'var(--mbti-primary)',
         transition: 'all 0.2s ease-in-out',
       }}

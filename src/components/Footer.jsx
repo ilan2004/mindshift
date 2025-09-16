@@ -42,7 +42,7 @@ export default function Footer() {
   };
 
   return (
-    <footer 
+    <footer
       className="w-full mt-12 mb-8 md:mb-12"
       style={{
         ...cssVars,
@@ -120,7 +120,6 @@ export default function Footer() {
                 {[
                   { href: '/dashboard', label: 'Dashboard' },
                   { href: '/leaderboard', label: 'Leaderboard' },
-                  { href: '/game', label: 'Focus Game' },
                   { href: '/profile', label: 'Profile' },
                 ].map((link) => (
                   <Link
