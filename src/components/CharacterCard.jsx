@@ -182,9 +182,15 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
 
   const type = normalizeType(personalityType) || normalizeType(storedType) || null;
 
-  // Character variant (M/W) should be available before any effects use it
+  // Character variant (M/W). Normalize to 'M' or 'W' and default to 'M' if unknown
   const [gender, setGender] = useState(() => {
-    try { return localStorage.getItem("ms_gender") || ""; } catch { return ""; }
+    try {
+      const raw = localStorage.getItem("ms_gender") || "";
+      const s = String(raw).trim().toUpperCase();
+      if (s === 'W' || s === 'F' || s === 'FEMALE') return 'W';
+      if (s === 'M' || s === 'MALE') return 'M';
+      return 'M';
+    } catch { return 'M'; }
   });
 
   // Session status for ring progress
@@ -263,7 +269,7 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
   // Play on initial mount when character is known
   useEffect(() => {
     if (!type) return;
-    const src = getVideoPath(type, gender || "M");
+    const src = getVideoPath(type, gender);
     setVideoSrc(src);
     setShowAnim(true);
     setVideoNonce((n) => n + 1);
@@ -278,7 +284,7 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
     const now = status;
     const completed = (prev.active && !now.active) || (prev.remainingMs > 0 && (now.remainingMs || 0) === 0 && prev.active);
     if (completed && type) {
-      const src = getVideoPath(type, gender || "M");
+      const src = getVideoPath(type, gender);
       setVideoSrc(src);
       setShowAnim(true);
       setVideoNonce((n) => n + 1);
@@ -581,7 +587,7 @@ export default function CharacterCard({ personalityType, title = null, size = 0 
               showAnim && videoSrc ? 'opacity-0' : 'opacity-100'
             }`}>
               <Image
-                src={getAssetPath(type, gender || "M")}
+                src={getAssetPath(type, gender)}
                 alt={type}
                 fill
                 priority
