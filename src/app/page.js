@@ -333,7 +333,20 @@ export default function Home() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
-      gsap.utils.toArray(".reveal-on-scroll").forEach((el) => {
+      const elements = gsap.utils.toArray(".reveal-on-scroll");
+      // Only proceed if elements exist
+      if (elements.length === 0) {
+        console.warn("GSAP: No .reveal-on-scroll elements found");
+        return;
+      }
+      
+      elements.forEach((el) => {
+        // Double-check element exists and is in DOM
+        if (!el || !document.contains(el)) {
+          console.warn("GSAP: Skipping null or detached element", el);
+          return;
+        }
+        
         gsap.from(el, {
           opacity: 0,
           y: 24,

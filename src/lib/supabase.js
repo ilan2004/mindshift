@@ -13,7 +13,20 @@ export function getSupabaseClient() {
     return null;
   }
   client = createClient(url, anon, {
-    auth: { persistSession: true, autoRefreshToken: true },
+    auth: { 
+      persistSession: true, 
+      autoRefreshToken: true,
+      storageKey: 'nudge-auth-token'
+    },
+    global: {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    },
+    db: {
+      schema: 'public'
+    }
   });
   return client;
 }

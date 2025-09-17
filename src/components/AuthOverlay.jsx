@@ -26,12 +26,22 @@ export default function AuthOverlay({
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        // Get user metadata
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('username, gender, test_completed')
-          .eq('id', user.id)
-          .single();
+        // Get user metadata with error handling
+        let profile = null;
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('username, gender, test_completed')
+            .eq('id', user.id)
+            .maybeSingle(); // Use maybeSingle() to avoid errors when no row exists
+          
+          if (error && !error.message.includes('no rows')) {
+            console.warn('Error fetching profile on auth check:', error);
+          }
+          profile = data;
+        } catch (err) {
+          console.warn('Profile fetch failed:', err.message);
+        }
         
         if (profile) {
           setUsername(profile.username);
@@ -56,18 +66,25 @@ export default function AuthOverlay({
       if (event === 'SIGNED_IN' && session?.user) {
         setUser(session.user);
         try {
-          const { data: profile } = await supabase
+          const { data: profile, error } = await supabase
             .from('profiles')
             .select('username, gender, test_completed')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
+          
+          if (error && !error.message.includes('no rows')) {
+            console.warn('Error fetching profile in auth state change:', error);
+          }
+          
           if (profile?.test_completed) {
             try { localStorage.setItem("ms_intro_complete", "1"); } catch {}
             try { localStorage.setItem("ms_display_name", profile.username || ""); } catch {}
             try { localStorage.setItem("ms_gender", profile.gender === "female" ? "W" : "M"); } catch {}
             try { window.dispatchEvent(new CustomEvent('Nudge:auth:signed_in', { detail: { testCompleted: true, username: profile.username, gender: profile.gender } })); } catch {}
           }
-        } catch {}
+        } catch (err) {
+          console.warn('Profile fetch in auth state change failed:', err.message);
+        }
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setUsername("");
@@ -82,6 +99,9 @@ export default function AuthOverlay({
   const handleAuth = async (e) => {
     e.preventDefault();
     console.log('Button clicked!', { isSignUp, email, password, username, gender });
+    
+    // Prevent multiple simultaneous submissions
+    if (loading) return;
     
     if (!supabase) {
       console.error('Supabase client is null! Check environment variables.');
@@ -120,7 +140,8 @@ export default function AuthOverlay({
         // Try to create profile, but don't block UX or throw on RLS errors
         if (data?.user) {
           try {
-            await supabase
+            // Add timeout to prevent hanging operations
+            const profilePromise = supabase
               .from('profiles')
               .insert({
                 id: data.user.id,
@@ -128,7 +149,17 @@ export default function AuthOverlay({
                 gender: gender,
                 email: data.user.email
               });
-          } catch {}
+            
+            // Race against timeout to prevent hanging
+            await Promise.race([
+              profilePromise,
+              new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Profile creation timeout')), 10000)
+              )
+            ]);
+          } catch (profileError) {
+            console.warn('Profile creation failed or timed out:', profileError.message);
+          }
           
           // Dispatch signed_in event immediately after successful sign-up and profile creation
           try {
@@ -153,18 +184,25 @@ export default function AuthOverlay({
           setUser(data.user);
           // Fetch profile and notify shell for immediate stage switch if completed
           try {
-            const { data: profile } = await supabase
+            const { data: profile, error } = await supabase
               .from('profiles')
               .select('username, gender, test_completed')
               .eq('id', data.user.id)
-              .single();
+              .maybeSingle();
+            
+            if (error && !error.message.includes('no rows')) {
+              console.warn('Error fetching profile in sign-in:', error);
+            }
+            
             if (profile?.test_completed) {
               try { localStorage.setItem("ms_intro_complete", "1"); } catch {}
               try { localStorage.setItem("ms_display_name", profile.username || ""); } catch {}
               try { localStorage.setItem("ms_gender", profile.gender === "female" ? "W" : "M"); } catch {}
               try { window.dispatchEvent(new CustomEvent('Nudge:auth:signed_in', { detail: { testCompleted: true, username: profile.username, gender: profile.gender } })); } catch {}
             }
-          } catch {}
+          } catch (err) {
+            console.warn('Profile fetch in sign-in failed:', err.message);
+          }
         }
       }
     } catch (err) {

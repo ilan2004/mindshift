@@ -29,18 +29,27 @@ export async function fetchUserProfile() {
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select('username,gender,test_completed,mbti_type,points,streak,total_focus_minutes,bio,avatar_url')
       .eq('id', user.id)
       .single();
     
     if (error) {
-      console.warn('Error fetching profile:', error);
+      // Handle specific HTTP errors
+      if (error.code === 'PGRST116' || error.message.includes('406')) {
+        console.warn('Profile not found or access denied:', error.message);
+      } else {
+        console.warn('Error fetching profile:', error);
+      }
       return null;
     }
     
     return data;
   } catch (error) {
     console.warn('Error fetching user profile:', error);
+    // If it's a network or HTTP error, log more details
+    if (error.response) {
+      console.warn('HTTP Response:', error.response.status, error.response.statusText);
+    }
     return null;
   }
 }
