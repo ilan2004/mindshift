@@ -128,18 +128,18 @@ def map_answers_to_mbti_likert(answers: Dict[str, int]) -> str:
     # Initialize axis totals
     E = I = S = N = T = F = J = P = 0
 
-    # Index sets per axis (0-based indices in STATIC_QUESTIONS)
-    ei_e_indices = {0, 1, 2}  # E phrased
-    ei_i_indices = {3}        # I phrased (reverse of E)
+    # Index sets per axis for 24-item MBTI questions (0-based indices in STATIC_QUESTIONS)
+    ei_e_indices = {0, 1, 2}     # E-leaning questions (indices 0-2)
+    ei_i_indices = {3, 4, 5}     # I-leaning questions (indices 3-5)
 
-    sn_s_indices = {4, 6}     # S phrased
-    sn_n_indices = {5, 7}     # N phrased
+    sn_s_indices = {6, 7, 8}     # S-leaning questions (indices 6-8)
+    sn_n_indices = {9, 10, 11}   # N-leaning questions (indices 9-11)
 
-    tf_t_indices = {8, 10}    # T phrased
-    tf_f_indices = {9, 11}    # F phrased
+    tf_t_indices = {12, 13, 14}  # T-leaning questions (indices 12-14)
+    tf_f_indices = {15, 16, 17}  # F-leaning questions (indices 15-17)
 
-    jp_j_indices = {12, 14}   # J phrased
-    jp_p_indices = {13, 15}   # P phrased
+    jp_j_indices = {18, 19, 20}  # J-leaning questions (indices 18-20)
+    jp_p_indices = {21, 22, 23}  # P-leaning questions (indices 21-23)
 
     # Build lookup from text -> index (exact match)
     text_to_index = {q: i for i, q in enumerate(STATIC_QUESTIONS)}
@@ -161,6 +161,9 @@ def map_answers_to_mbti_likert(answers: Dict[str, int]) -> str:
         if idx in ei_e_indices:
             E += v; I += comp
         elif idx in ei_i_indices:
+            # FIXED: I-phrased questions are reverse coded
+            # When someone agrees with I-statement, they get I points
+            # When someone disagrees with I-statement, they get E points
             I += v; E += comp
 
         if idx in sn_s_indices:

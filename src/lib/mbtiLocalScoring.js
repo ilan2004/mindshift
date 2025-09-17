@@ -66,10 +66,14 @@ export function scoreMbtiLocal(answersMap, orderedTexts) {
     const w = likertWeight(val);
 
     if (w === 0) continue; // neutral, no contribution
+    
+    // FIXED LOGIC: If w > 0 (agree), add points to the question's stated side
+    // If w < 0 (disagree), add points to the OPPOSITE side
     if (w > 0) {
+      // Agreeing with question -> add points to the side the question represents
       sums[dim][side] += Math.abs(w);
     } else {
-      // credit opposite side
+      // Disagreeing with question -> add points to the OPPOSITE side
       const [a, b] = DIM_SIDES[dim];
       const opposite = side === a ? b : a;
       sums[dim][opposite] += Math.abs(w);
