@@ -56,13 +56,13 @@ def submit_answers(data: AnswerRequest):
         # Also compute axis totals for debugging/visibility in scores
         E = I = S = N = T = F = J = P = 0
         ei_e_indices = {0, 1, 2}
-        ei_i_indices = {3}
-        sn_s_indices = {4, 6}
-        sn_n_indices = {5, 7}
-        tf_t_indices = {8, 10}
-        tf_f_indices = {9, 11}
-        jp_j_indices = {12, 14}
-        jp_p_indices = {13, 15}
+        ei_i_indices = {3, 4, 5}
+        sn_s_indices = {6, 7, 8}
+        sn_n_indices = {9, 10, 11}
+        tf_t_indices = {12, 13, 14}
+        tf_f_indices = {15, 16, 17}
+        jp_j_indices = {18, 19, 20}
+        jp_p_indices = {21, 22, 23}
         text_to_index = {q: i for i, q in enumerate(STATIC_QUESTIONS)}
         for q_text, v in likert_payload.items():
             if not (1 <= v <= 5):
